@@ -11,9 +11,9 @@ const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const secret = process.env.RATE_LIMIT_SECRET || process.env.GEMINI_API_KEY;
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
-if (!url || !publishableKey || !secret) {
+if (!url || !publishableKey || !secret || !supabaseSecretKey) {
   throw new Error(
-    "Supabase URL, publishable key, and a server-only rate-limit secret are required.",
+    "Supabase URL, publishable key, Supabase secret key, and a server-only rate-limit secret are required.",
   );
 }
 
@@ -57,17 +57,52 @@ async function main() {
     throw new Error("The public catalog exposed a record outside the publication contract.");
   }
 
-  const serviceOnlyTables = ["search_briefs", "buyer_sessions", "tool_runs", "inquiries"];
+  const serviceOnlyTables = [
+    "search_briefs",
+    "search_runs",
+    "buyer_sessions",
+    "tool_runs",
+    "inquiries",
+    "audit_events",
+  ];
+  const posture = await request("/rest/v1/rpc/verify_operational_security_posture", {
+    method: "POST",
+    headers: {
+      apikey: supabaseSecretKey,
+      Authorization: `Bearer ${supabaseSecretKey}`,
+    },
+    body: "{}",
+  });
+  if (!posture.ok) {
+    const payload = await posture.json().catch(() => ({}));
+    throw new Error(`Operational security-posture verification failed with ${posture.status} ${payload.code || "unknown"}.`);
+  }
+  const postureRows = await posture.json();
+  if (!Array.isArray(postureRows) || postureRows.length !== serviceOnlyTables.length) {
+    throw new Error("Operational security-posture verification returned an incomplete table set.");
+  }
+  for (const table of serviceOnlyTables) {
+    const row = postureRows.find((candidate) => candidate.table_name === table);
+    if (!row || row.rls_enabled !== true || row.anon_select === true) {
+      throw new Error(`Operational security posture is unsafe for ${table}.`);
+    }
+  }
   for (const table of serviceOnlyTables) {
     const response = await request(`/rest/v1/${table}?select=id&limit=1`);
-    const rows = response.ok ? await response.json() : [];
-    if (!Array.isArray(rows) || rows.length > 0) {
+    if (response.ok) {
+      const rows = await response.json();
+      if (!Array.isArray(rows) || rows.length > 0) {
+        throw new Error(`Anonymous access unexpectedly returned protected ${table} records.`);
+      }
+      continue;
+    }
+    if (response.status !== 401 && response.status !== 403) {
       throw new Error(`Anonymous access unexpectedly returned protected ${table} records.`);
     }
   }
 
-  let sharedRateLimitAtomicWrite = "not-run: SUPABASE_SECRET_KEY is not configured";
-  if (supabaseSecretKey) {
+  let sharedRateLimitAtomicWrite = false;
+  {
     const bucketKey = createHmac("sha256", secret)
       .update(`hosted-verification:${Date.now()}`)
       .digest("hex");
@@ -103,7 +138,8 @@ async function main() {
       ok: true,
       governedCatalogReadable: true,
       publicCatalogPredicateVerified: true,
-      anonymousOperationalReadsDenied: serviceOnlyTables,
+      anonymousOperationalRowsNotExposed: serviceOnlyTables,
+      operationalSecurityPostureVerified: true,
       sharedRateLimitAtomicWrite,
     }),
   );

@@ -23,7 +23,7 @@
     "chromatic:ci": "chromatic --only-changed",
     "verify:gemini-live": "node scripts/verify-gemini-live.mjs",
     "verify:supabase": "node scripts/verify-supabase.mjs",
-    "check": "pnpm lint && pnpm typecheck"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "dependencies": {
     "@google/genai": "^2.17.1",
@@ -48,14 +48,14 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "8.6.14",
-    "@storybook/addon-essentials": "8.6.14",
-    "@storybook/addon-interactions": "8.6.14",
-    "@storybook/blocks": "8.6.14",
-    "@storybook/nextjs": "8.6.14",
-    "@storybook/react": "8.6.14",
-    "@storybook/react-vite": "8.6.14",
-    "@storybook/test": "8.6.14",
+    "@storybook/addon-a11y": "8.6.18",
+    "@storybook/addon-essentials": "8.6.18",
+    "@storybook/addon-interactions": "8.6.18",
+    "@storybook/blocks": "8.6.18",
+    "@storybook/nextjs": "8.6.18",
+    "@storybook/react": "8.6.18",
+    "@storybook/react-vite": "8.6.18",
+    "@storybook/test": "8.6.18",
     "@tailwindcss/postcss": "4.1.14",
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
@@ -64,7 +64,7 @@
     "chromatic": "^18.3.0",
     "eslint": "9.39.2",
     "eslint-config-next": "16.3.1",
-    "storybook": "8.6.14",
+    "storybook": "8.6.18",
     "tailwindcss": "4.1.14",
     "typescript": "5.9.3",
     "vite": "^6.2.1",

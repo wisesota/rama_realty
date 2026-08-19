@@ -13,9 +13,8 @@ export function SiteFooter() {
         <div className="footer-nav">
           <div>
             <span>Explore</span>
-            <a href="#residences">Residences</a>
-            <a href="#services">Services</a>
-            <a href="#methodology">Decision method</a>
+            <a href="#top">Invitation</a>
+            <a href="#trust">Decision method</a>
           </div>
           <div>
             <span>Concierge</span>

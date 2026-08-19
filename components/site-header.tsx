@@ -7,9 +7,8 @@ import { Button, LinkButton } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 
 const navigation = [
-  { href: "#residences", label: "Residences" },
-  { href: "#services", label: "Services" },
-  { href: "#methodology", label: "How Rama works" },
+  { href: "#guided-search", label: "Shape a brief" },
+  { href: "#trust", label: "How Rama works" },
 ];
 
 export function SiteHeader() {

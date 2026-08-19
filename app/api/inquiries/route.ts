@@ -1,4 +1,4 @@
-import { getOrCreateBuyerSessionTokenHash } from "@/lib/buyer-session-server";
+import { commitBuyerSessionToken, createBuyerSessionTokenRotation } from "@/lib/buyer-session-server";
 import { consumeApiRateLimit, RateLimitBackendUnavailableError } from "@/lib/rate-limit-server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSameOrigin } from "@/lib/supabase/auth";
@@ -43,8 +43,10 @@ export async function POST(request: Request) {
 
   const correlationId = crypto.randomUUID();
   const admin = createAdminClient();
+  const rotation = await createBuyerSessionTokenRotation(`handoff:${idempotencyKey}`);
   const { data, error } = await admin.rpc("create_buyer_inquiry", {
-    p_token_hash: await getOrCreateBuyerSessionTokenHash(),
+    p_token_hash: rotation.currentTokenHash,
+    p_next_token_hash: rotation.nextTokenHash,
     p_search_run_id: searchRunId,
     p_property_id: propertyId,
     p_full_name: fullName,
@@ -61,5 +63,6 @@ export async function POST(request: Request) {
     console.error("Buyer inquiry creation failed:", error?.code ?? "InvalidResult");
     return errorResponse("The advisor request could not be saved. Your contact details were not shared.", 503);
   }
+  await commitBuyerSessionToken(rotation.nextToken);
   return Response.json({ inquiryId: data, correlationId }, { status: 201, headers: { "Cache-Control": "no-store" } });
 }

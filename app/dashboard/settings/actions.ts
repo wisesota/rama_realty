@@ -15,6 +15,7 @@ import {
   isAllowedAvatarType,
   maximumAvatarBytes,
 } from "@/lib/dashboard/avatar";
+import { resetBuyerSessionCookie, rotateBuyerSessionToken } from "@/lib/buyer-session-server";
 
 function refreshDashboardProfile() {
   revalidatePath("/dashboard");
@@ -153,7 +154,7 @@ export async function updatePasswordAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const { supabase } = await requireStaffContext();
+  const { supabase, userId } = await requireStaffContext();
   const password = readText(formData, "password", 200);
   const confirmation = readText(formData, "confirmation", 200);
   const fieldErrors: Record<string, string> = {};
@@ -166,6 +167,13 @@ export async function updatePasswordAction(
   const { error } = await supabase.auth.updateUser({ password });
   if (error) {
     return { status: "error", message: "Supabase could not update this password. Reauthenticate and try again." };
+  }
+  try {
+    await rotateBuyerSessionToken({ mode: "bind", reason: "password_change", userId });
+  } catch {
+    await supabase.auth.signOut();
+    await resetBuyerSessionCookie();
+    return { status: "error", message: "Password updated, but the buyer session could not be secured. Sign in again." };
   }
   return { status: "success", message: "Password updated." };
 }

@@ -33,4 +33,32 @@ describe("buyer Decision Room envelope", () => {
     delete malformed.entities.properties["home-1"].provenance;
     expect(isBuyerDecisionEnvelope(malformed)).toBe(false);
   });
+
+  it("accepts illustrative inventory only when it is not owned by a brokerage organization", () => {
+    const illustrative = structuredClone(envelope);
+    illustrative.entities.properties["home-1"].organizationId = null;
+    illustrative.entities.properties["home-1"].provenance.kind = "illustrative";
+    illustrative.sourceSummary = { publishedCount: 0, illustrativeCount: 1, staleCount: 0, label: "1 representative residence" };
+    expect(isBuyerDecisionEnvelope(illustrative)).toBe(true);
+  });
+
+  it("rejects published inventory without an organization owner", () => {
+    const malformed = structuredClone(envelope);
+    malformed.entities.properties["home-1"].organizationId = null;
+    expect(isBuyerDecisionEnvelope(malformed)).toBe(false);
+  });
+
+  it("rejects illustrative inventory assigned to a brokerage organization", () => {
+    const malformed = structuredClone(envelope);
+    malformed.entities.properties["home-1"].provenance.kind = "illustrative";
+    malformed.sourceSummary = { publishedCount: 0, illustrativeCount: 1, staleCount: 0, label: "1 representative residence" };
+    expect(isBuyerDecisionEnvelope(malformed)).toBe(false);
+  });
+
+  it("rejects source-summary counts that drift from the rendered properties", () => {
+    const malformed = structuredClone(envelope);
+    malformed.sourceSummary.publishedCount = 0;
+    malformed.sourceSummary.illustrativeCount = 1;
+    expect(isBuyerDecisionEnvelope(malformed)).toBe(false);
+  });
 });

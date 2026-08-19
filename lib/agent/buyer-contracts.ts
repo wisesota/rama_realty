@@ -86,7 +86,10 @@ function isStringArray(value: unknown): value is string[] {
 
 export function isBuyerPropertySummary(value: unknown): value is BuyerPropertySummary {
   if (!isRecord(value) || !isRecord(value.price) || !isRecord(value.area) || !isRecord(value.image) || !isRecord(value.provenance)) return false;
-  return typeof value.id === "string"
+  const ownershipMatchesProvenance = (value.organizationId === null && value.provenance.kind === "illustrative")
+    || (typeof value.organizationId === "string" && value.provenance.kind === "published");
+  return ownershipMatchesProvenance
+    && typeof value.id === "string"
     && (value.organizationId === null || typeof value.organizationId === "string")
     && (value.developmentId === null || typeof value.developmentId === "string")
     && (value.slug === null || typeof value.slug === "string")
@@ -144,7 +147,12 @@ export function isBuyerDecisionEnvelope(value: unknown): value is BuyerDecisionE
     && typeof action.id === "string" && actions.includes(action.id)
     && typeof action.label === "string"
     && (action.propertyId === undefined || typeof action.propertyId === "string"))) return false;
+  const propertyValues = Object.values(properties) as BuyerPropertySummary[];
+  const publishedCount = propertyValues.filter((property) => property.provenance.kind === "published").length;
+  const illustrativeCount = propertyValues.filter((property) => property.provenance.kind === "illustrative").length;
   return [value.sourceSummary.publishedCount, value.sourceSummary.illustrativeCount, value.sourceSummary.staleCount]
-    .every((count) => typeof count === "number" && Number.isFinite(count) && count >= 0)
+    .every((count) => typeof count === "number" && Number.isInteger(count) && count >= 0)
+    && value.sourceSummary.publishedCount === publishedCount
+    && value.sourceSummary.illustrativeCount === illustrativeCount
     && typeof value.sourceSummary.label === "string";
 }

@@ -43,6 +43,8 @@ pnpm verify:gemini-live
 5. The room can retrieve details, comparisons, published payment schedules, deterministic purchase scenarios, floor plans, documents, development facts, area guidance, and a consented advisor handoff.
 6. A handoff is written through a narrow idempotent server RPC and appears in `/dashboard/inquiries` with audited status transitions.
 
+The opaque buyer token rotates at login, OAuth callback, password change, advisor handoff, and sign-out. Rotation preserves the stable buyer-session owner when safe, tombstones the retired hash against delayed-tab resurrection, and revokes prior ownership on sign-out or shared-browser user mismatch.
+
 The legacy `/api/property-search` route returns `410 Gone`. Production never substitutes local demo rows after a catalog error or legitimate zero-result response. Bundled samples are available only when `RAMA_DEMO_MODE=true` and remain explicitly illustrative.
 
 ## Gemini Live contract
@@ -64,6 +66,8 @@ Hosted migrations create:
 - published property documents and deterministic child-record selection;
 - consented, idempotent inquiry creation and a CRM outbox; and
 - service-role-only operational RPCs plus role-scoped CRM reads and audited inquiry transitions.
+
+`pnpm verify:supabase` uses a service-only posture RPC to verify RLS is enabled and the anonymous role has no `SELECT` grant on buyer sessions, search briefs/runs, tool runs, inquiries, and audit events. It then probes each table anonymously and accepts only a response exposing no rows or an explicit authorization denial. The deployed multi-identity RLS matrix remains a separate hosted gate.
 
 The buyer-facing repository always uses a cookieless anonymous client, so an administrator signed into the same browser cannot make draft CRM records appear publicly.
 

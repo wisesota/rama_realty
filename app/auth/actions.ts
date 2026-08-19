@@ -7,6 +7,7 @@ import {
   type ActionState,
   readText,
 } from "@/lib/dashboard/validation";
+import { resetBuyerSessionCookie, rotateBuyerSessionToken } from "@/lib/buyer-session-server";
 
 export async function signInWithPasswordAction(
   _previous: ActionState,
@@ -21,9 +22,17 @@ export async function signInWithPasswordAction(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data.user) {
     return { status: "error", message: "We could not verify those credentials." };
+  }
+
+  try {
+    await rotateBuyerSessionToken({ mode: "bind", reason: "login", userId: data.user.id });
+  } catch {
+    await supabase.auth.signOut();
+    await resetBuyerSessionCookie();
+    return { status: "error", message: "Your account was verified, but the buyer session could not be secured. Please try again." };
   }
 
   redirect(next);
@@ -31,6 +40,16 @@ export async function signInWithPasswordAction(
 
 export async function signOutAction() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/auth/sign-in");
+  let buyerRevocationUnconfirmed = false;
+  try {
+    await rotateBuyerSessionToken({ mode: "revoke", reason: "signout" });
+  } catch {
+    buyerRevocationUnconfirmed = true;
+    await resetBuyerSessionCookie();
+  }
+  const { error } = await supabase.auth.signOut();
+  if (error) throw new Error("Sign-out could not be confirmed. Please try again.");
+  redirect(buyerRevocationUnconfirmed
+    ? "/auth/sign-in?notice=buyer-revocation-unconfirmed"
+    : "/auth/sign-in");
 }

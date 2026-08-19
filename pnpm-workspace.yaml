@@ -1,6 +1,9 @@
 packages:
   - .
 
+overrides:
+  '@storybook/nextjs>sharp': 0.35.3
+
 allowBuilds:
   '@google/genai': false
   '@sentry/cli': true

@@ -30,6 +30,13 @@ function normalizeTokens(value: string) {
 
 function mapProperty(row: PublicPropertyRow, reason?: string): BuyerPropertySummary {
   const status = required(row.status, "status");
+  if (status !== "illustrative" && status !== "live") {
+    throw new CatalogUnavailableError("Catalog row has an unsupported publication status.");
+  }
+  const isIllustrative = status === "illustrative";
+  if ((isIllustrative && row.organization_id !== null) || (!isIllustrative && row.organization_id === null)) {
+    throw new CatalogUnavailableError("Catalog row has inconsistent provenance ownership.");
+  }
   return {
     id: required(row.id, "id"),
     organizationId: row.organization_id,
@@ -55,8 +62,8 @@ function mapProperty(row: PublicPropertyRow, reason?: string): BuyerPropertySumm
     handoverAt: row.handover_at,
     serviceChargeAed: row.service_charge_aed,
     provenance: {
-      kind: status === "illustrative" ? "illustrative" : "published",
-      sourceName: row.source_name ?? (status === "illustrative" ? "Rama demonstration catalog" : "Rama governed catalog"),
+      kind: isIllustrative ? "illustrative" : "published",
+      sourceName: row.source_name ?? (isIllustrative ? "Rama demonstration catalog" : "Rama governed catalog"),
       observedAt: row.source_updated_at,
       publishedAt: row.published_at,
       version: required(row.version, "version"),
@@ -71,7 +78,18 @@ function criterionList(brief: string): BuyerCriterion[] {
     const hardCriterion = (hard.location && label === hard.location)
       || (hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms)))
       || (hard.maximumPriceAed !== undefined && label.startsWith("Up to"));
-    return { key: `criterion-${index + 1}`, label, value: label, kind: hardCriterion ? "hard" : "preference" };
+    const key = hard.location && label === hard.location
+      ? "location"
+      : hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms))
+        ? "bedrooms"
+        : hard.maximumPriceAed !== undefined && label.startsWith("Up to")
+          ? "budget"
+          : ["Penthouse", "Villa", "Townhouse", "Apartment"].includes(label)
+            ? "property-type"
+            : label === "Flexible Dubai brief"
+              ? "flexible"
+              : `lifestyle-${index + 1}`;
+    return { key, label, value: label, kind: hardCriterion ? "hard" : "preference" };
   });
 }
 

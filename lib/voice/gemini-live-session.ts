@@ -160,7 +160,7 @@ export class GeminiLiveVoiceSession {
     this.callbacks = callbacks;
   }
 
-  async start(stream: MediaStream, voiceName: GeminiVoiceName) {
+  async start(stream: MediaStream, voiceName: GeminiVoiceName, initialContext?: string) {
     this.inputStream = stream;
     this.callbacks.onStatus("connecting");
     await this.player.prepare();
@@ -183,6 +183,13 @@ export class GeminiLiveVoiceSession {
     this.model = tokenPayload.model;
     this.voiceName = voiceName;
     await this.connectSession();
+
+    if (initialContext?.trim()) {
+      this.session?.sendClientContent({
+        turns: [{ role: "user", parts: [{ text: initialContext.trim() }] }],
+        turnComplete: false,
+      });
+    }
 
     await this.startAudioCapture(stream);
     this.callbacks.onStatus("listening");

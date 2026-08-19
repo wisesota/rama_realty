@@ -1,6 +1,6 @@
 # Rama Realty enterprise implementation status
 
-Date: 18 August 2026  
+Date: 19 August 2026
 Status: vertical slice implemented and locally verified; production activation gates remain
 
 ## Shipped product slice
@@ -40,6 +40,7 @@ Text uses `/api/discovery/query`. Gemini Live uses `/api/agent/tools`; the final
 - Published property facts, related records, and published-plan installments are immutable until returned to review.
 - Payment-plan publication checks installment totals and deterministic default/effective ordering.
 - Buyer sessions use a 256-bit opaque HttpOnly cookie and store only an HMAC digest.
+- Identity and consent boundaries rotate the opaque token through a service-only RPC. The active row is locked and normally updated in place; the retired hash is tombstoned so a delayed tab cannot recreate it through search persistence. Sign-out and shared-browser identity mismatches revoke prior ownership.
 - Search persistence stores the candidate property version, source observation time, and minimal fact snapshot.
 - Agent telemetry stores allowlisted IDs, field names, result classes, timings, and correlation IDs, not raw buyer briefs or wholesale tool arguments.
 - Advisor requests require explicit consent and one contact channel, validate property membership in the owned search run, deduplicate by idempotency key, and write the inquiry, audit event, and CRM outbox together.
@@ -55,6 +56,8 @@ Text uses `/api/discovery/query`. Gemini Live uses `/api/agent/tools`; the final
 - React renders known components only; there is no arbitrary model HTML, URL fetch tool, SQL tool, `eval`, or dynamic component execution.
 - Service-role access is isolated to narrow server modules for rate limiting, persistence, inquiry creation, and audited CRM transitions.
 - Direct browser DML on buyer operational/audit tables is revoked and denied by RLS.
+- Runtime provenance validation rejects published properties without an organization owner, illustrative properties with an organization owner, and envelope source-summary counts that disagree with the rendered entities.
+- Development-only funnel events include one redacted room outcome per search run. They contain opaque identifiers, counts, and allowlisted criterion categories only; production output remains disabled.
 
 ## Verification evidence
 
@@ -62,13 +65,13 @@ Current local gates:
 
 - `pnpm lint`: pass
 - `pnpm typecheck`: pass
-- `pnpm test`: 8 files, 26 tests pass
+- `pnpm test`: 16 files, 63 tests pass
 - `pnpm build`: pass
-- `pnpm audit --audit-level=high`: no known vulnerabilities
-- `pnpm verify:supabase`: governed public catalog readable, protected operational tables hidden from anonymous users, shared limiter write succeeds
+- `pnpm audit --audit-level=high`: Storybook and `sharp` advisories remediated through 8.6.18 plus a patched `sharp` override; two high-severity `image-size` parser denial-of-service advisories remain in the development-only Storybook graph because the registry has not yet published the advisory's patched 2.0.3 release. Storybook's production build passes.
+- `pnpm verify:supabase`: the probe now checks RLS and anon grants through a service-only posture RPC, then verifies that anonymous reads expose no rows from `search_briefs`, `search_runs`, `buyer_sessions`, `tool_runs`, `inquiries`, or `audit_events`; unexpected 404/5xx responses fail. A fresh hosted multi-identity run remains required after applying the token-rotation migration.
 - `pnpm verify:gemini-live`: `gemini-3.1-flash-live-preview`, one tool call/response, 61 native audio chunks, both transcripts, completed turn
 - Rendered browser QA: 1920x1080 landing/room/CRM and 390px mobile; Decision Room is 1280x828 on desktop with zero horizontal overflow. Its React Aria dialog traps focus across repeated Tab navigation, closes on Escape, restores the landing route, locks background scroll, and disables advisor handoff for illustrative records.
-- Hosted migrations: `buyer_decision_room_foundation` and `advisor_lint_and_index_hardening` are applied
+- Hosted migrations previously verified: `buyer_decision_room_foundation` and `advisor_lint_and_index_hardening`. The repository migration `20260819120000_buyer_session_token_rotation.sql` is locally reviewed and tested but not claimed as hosted-applied.
 - Supabase security advisor: one external setting warning, leaked-password protection disabled
 - Supabase performance advisor: no WARN-level findings; only expected unused-index INFO notices on a new low-traffic schema
 

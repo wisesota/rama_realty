@@ -1525,6 +1525,7 @@ export type Database = {
           p_full_name: string
           p_idempotency_key: string
           p_message: string
+          p_next_token_hash: string
           p_phone: string
           p_policy_version: string
           p_property_id: string
@@ -1543,6 +1544,17 @@ export type Database = {
           p_source: string
           p_token_hash: string
           p_ttl_seconds?: number
+        }
+        Returns: Json
+      }
+      rotate_buyer_session: {
+        Args: {
+          p_current_token_hash: string
+          p_mode?: string
+          p_next_token_hash: string
+          p_reason?: string
+          p_ttl_seconds?: number
+          p_user_id?: string | null
         }
         Returns: Json
       }
@@ -1582,6 +1594,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      verify_operational_security_posture: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          anon_select: boolean
+          rls_enabled: boolean
+          table_name: string
+        }[]
       }
     }
     Enums: {

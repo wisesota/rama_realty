@@ -77,8 +77,6 @@ export function VoiceConversation({
   const active = ["requesting", "connecting", "listening", "thinking", "speaking"].includes(
     state.phase,
   );
-  const panelRef = useRef<HTMLElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
   const activeRef = useRef(active);
   const onCloseRef = useRef(onClose);
   const onStopRef = useRef(onStop);
@@ -94,53 +92,17 @@ export function VoiceConversation({
   useEffect(() => {
     if (!isOpen) return;
 
-    previousFocusRef.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const focusFrame = window.requestAnimationFrame(() => {
-      const firstAction = panelRef.current?.querySelector<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      (firstAction ?? panelRef.current)?.focus();
-    });
-
-    const keepFocusInDialog = (event: KeyboardEvent) => {
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         if (activeRef.current) onStopRef.current();
         else onCloseRef.current();
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-      const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable?.length) {
-        event.preventDefault();
-        panelRef.current?.focus();
-        return;
-      }
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
       }
     };
 
-    document.addEventListener("keydown", keepFocusInDialog);
+    document.addEventListener("keydown", handleEscape);
     return () => {
-      window.cancelAnimationFrame(focusFrame);
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", keepFocusInDialog);
-      previousFocusRef.current?.focus();
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen]);
 
@@ -149,51 +111,46 @@ export function VoiceConversation({
   const copy = getVoiceCopy(state);
 
   return (
-    <div className="voice-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) { if (active) onStop(); else onClose(); } }}>
-      <section
-        ref={panelRef}
-        id="voice-conversation-panel"
-        className="voice-dialog-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={detailId}
-        tabIndex={-1}
-      >
-        <div className="voice-conversation__copy">
-          <div className="voice-conversation__status">
-            <span data-active={active} aria-hidden="true" />
-            <p>{copy.label}</p>
-          </div>
-          <p id={titleId} className="voice-conversation__transcript">{copy.title}</p>
-          <p id={detailId} className="voice-conversation__detail">{copy.detail}</p>
-          <p className="sr-only" aria-live="polite">
-            {state.announcement}
-          </p>
+    <section
+      id="voice-conversation-panel"
+      className="voice-dialog-panel"
+      role="region"
+      aria-labelledby={titleId}
+      aria-describedby={detailId}
+    >
+      <div className="voice-conversation__copy">
+        <div className="voice-conversation__status">
+          <span data-active={active} aria-hidden="true" />
+          <p>{copy.label}</p>
         </div>
+        <p id={titleId} className="voice-conversation__transcript">{copy.title}</p>
+        <p id={detailId} className="voice-conversation__detail">{copy.detail}</p>
+        <p className="sr-only" aria-live="polite">
+          {state.announcement}
+        </p>
+      </div>
 
-        <div className="voice-conversation__actions">
-          {active ? (
-            <Button className="voice-stop" type="button" variant="outline" onPress={onStop}>
-              <Square aria-hidden="true" />
-              Stop
-            </Button>
-          ) : (
-            <Button
-              className="voice-close"
-              type="button"
-              variant="ghost"
-              aria-label="Close voice conversation"
-              onPress={onClose}
-            >
-              <X aria-hidden="true" />
-            </Button>
-          )}
-          <span className="voice-text-fallback">
-            <Keyboard aria-hidden="true" /> Text always works
-          </span>
-        </div>
-      </section>
-    </div>
+      <div className="voice-conversation__actions">
+        {active ? (
+          <Button className="voice-stop" type="button" variant="outline" onPress={onStop}>
+            <Square aria-hidden="true" />
+            Stop
+          </Button>
+        ) : (
+          <Button
+            className="voice-close"
+            type="button"
+            variant="ghost"
+            aria-label="Close voice conversation"
+            onPress={onClose}
+          >
+            <X aria-hidden="true" />
+          </Button>
+        )}
+        <span className="voice-text-fallback">
+          <Keyboard aria-hidden="true" /> Text always works
+        </span>
+      </div>
+    </section>
   );
 }
