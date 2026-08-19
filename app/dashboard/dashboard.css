@@ -1460,7 +1460,7 @@
   .ops-settings-form-footer button { width: 100%; }
   .publication-control { grid-template-columns: 1fr; }
   .publication-control small { grid-column: auto; }
-  .ops-bottom-nav { position: fixed; inset: auto 0 0; z-index: 60; display: grid; grid-template-columns: repeat(4, 1fr); padding: .35rem .3rem max(.35rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--ops-rule); background: rgba(251, 251, 248, .98); }
+  .ops-bottom-nav { position: fixed; inset: auto 0 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); padding: .35rem .3rem max(.35rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--ops-rule); background: rgba(251, 251, 248, .98); }
   .ops-bottom-nav a, .ops-bottom-nav button { min-height: 3.5rem; display: grid; place-items: center; align-content: center; gap: .2rem; border: 0; background: transparent; color: var(--ops-muted); font-size: .58rem; font-weight: 700; }
   .ops-bottom-nav a[aria-current="page"] { color: var(--ops-ink); }
   .ops-bottom-nav svg { width: 1rem; }

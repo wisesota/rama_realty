@@ -1,4 +1,9 @@
 import type { Preview } from '@storybook/react';
+import React from 'react';
+import {
+  AppRouterContext,
+  type AppRouterInstance,
+} from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import '../app/globals.css';
 
 const customViewports = {
@@ -32,7 +37,23 @@ const customViewports = {
   },
 };
 
+const mockRouter: AppRouterInstance = {
+  back: () => {},
+  forward: () => {},
+  push: () => {},
+  replace: () => {},
+  refresh: () => {},
+  prefetch: () => Promise.resolve(),
+};
+
 const preview: Preview = {
+  decorators: [
+    (Story) => (
+      <AppRouterContext.Provider value={mockRouter}>
+        <Story />
+      </AppRouterContext.Provider>
+    ),
+  ],
   parameters: {
     nextjs: {
       appDirectory: true,

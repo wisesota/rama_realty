@@ -19,6 +19,11 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { AnalyticsSummary } from "@/lib/posthog/analytics";
+import {
+  calculateInquiryConversionRate,
+  calculateShortlistRate,
+  calculateVoiceEngagementRate,
+} from "@/lib/posthog/metrics";
 
 type AnalyticsWorkspaceProps = {
   data: AnalyticsSummary;
@@ -97,14 +102,14 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
     }, 600);
   }
 
-  // Calculate funnel conversions
-  const totalViews = data.overview.totalPageviews || 1;
-  const voiceRate = ((data.funnel.voiceSearches / totalViews) * 100).toFixed(1);
-  const shortlistRate = ((data.funnel.shortlists / totalViews) * 100).toFixed(1);
-  const inquiryConversionRate =
-    data.overview.uniqueVisitors > 0
-      ? ((inquiriesCount / data.overview.uniqueVisitors) * 100).toFixed(1)
-      : "0.0";
+  // Calculate funnel conversions via pure metric functions
+  const totalViews = data.overview.totalPageviews;
+  const voiceRate = calculateVoiceEngagementRate(data.funnel.voiceSearches, totalViews);
+  const shortlistRate = calculateShortlistRate(data.funnel.shortlists, totalViews);
+  const inquiryConversionRate = calculateInquiryConversionRate(inquiriesCount, data.overview.uniqueVisitors);
+
+  const voiceBarPercent = totalViews > 0 ? Math.min(100, (data.funnel.voiceSearches / totalViews) * 100) : 0;
+  const shortlistBarPercent = totalViews > 0 ? Math.min(100, (data.funnel.shortlists / totalViews) * 100) : 0;
 
   // Daily trends max for bar scaling
   const maxDailyViews = Math.max(...data.dailyTrends.map((d) => d.pageviews), 1);
@@ -421,9 +426,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{data.funnel.voiceSearches}</strong>
                   </div>
                   <div className="ops-funnel-bar">
-                    <span
-                      style={{ width: `${Math.min(100, (data.funnel.voiceSearches / totalViews) * 100)}%` }}
-                    />
+                    <span style={{ width: `${voiceBarPercent}%` }} />
                   </div>
                 </div>
 
@@ -433,9 +436,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{data.funnel.shortlists}</strong>
                   </div>
                   <div className="ops-funnel-bar">
-                    <span
-                      style={{ width: `${Math.min(100, (data.funnel.shortlists / totalViews) * 100)}%` }}
-                    />
+                    <span style={{ width: `${shortlistBarPercent}%` }} />
                   </div>
                 </div>
 
@@ -570,7 +571,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
               <strong>Governed AI Search Telemetry</strong>
               <span>
                 Rama tracks tool executions ({data.funnel.agentToolRuns} tool runs) and search briefs (
-                {data.funnel.searchBriefs} briefs) with strict consent enforcement and zero PII leakage.
+                {data.funnel.searchBriefs} briefs) with strict consent enforcement and privacy-first telemetry architecture.
               </span>
             </div>
           </div>
