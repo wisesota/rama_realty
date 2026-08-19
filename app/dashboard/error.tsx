@@ -3,7 +3,7 @@
 import { RefreshCw, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 
-export default function DashboardError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function DashboardError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <main className="ops-dashboard-error">
       <ShieldAlert aria-hidden="true" />

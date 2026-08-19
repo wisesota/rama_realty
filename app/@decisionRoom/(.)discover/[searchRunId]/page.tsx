@@ -1,5 +1,5 @@
 import { BuyerDecisionRoom } from "@/components/buyer-decision-room";
-import { requireDecisionEnvelope } from "../../discover/helper";
+import { requireDecisionEnvelope } from "../../../discover/helper";
 
 export const dynamic = "force-dynamic";
 

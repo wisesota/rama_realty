@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Bath, BedDouble, Heart, LoaderCircle, MapPin, Ruler, ShieldCheck, X } from "lucide-react";
 import { Dialog, Modal, ModalOverlay } from "react-aria-components";
-import { type FormEvent, useMemo, useRef, useState } from "react";
+import { type FormEvent, useMemo, useRef, useState, useEffect } from "react";
 import type { BuyerDecisionEnvelopeV1, BuyerPropertySummary } from "@/lib/agent/buyer-contracts";
 import { isAgentToolResponse, type AgentBlock, type AgentToolName } from "@/lib/agent/contracts";
 import { AgentResponseBlocks } from "@/components/agent-response-blocks";

@@ -137,7 +137,7 @@ export async function removeAvatarAction(
     .from("profiles")
     .update({ avatar_path: null })
     .eq("id", userId)
-    .eq("avatar_path", profile?.avatar_path ?? null);
+    .eq("avatar_path", (profile?.avatar_path ?? "") as string);
   if (error) return { status: "error", message: "The profile photo could not be removed." };
 
   if (profile?.avatar_path?.startsWith(`${userId}/`)) {
