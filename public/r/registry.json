@@ -1,0 +1,153 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "rama-editorial",
+  "homepage": "http://localhost:3000",
+  "items": [
+    {
+      "name": "section-shell",
+      "type": "registry:component",
+      "title": "Rama Section Shell",
+      "description": "The shared responsive content rail for Rama Realty editorial pages.",
+      "files": [
+        {
+          "path": "components/rama/section-shell.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "section-heading",
+      "type": "registry:component",
+      "title": "Rama Editorial Heading",
+      "description": "A consistent serif heading, eyebrow, and supporting-copy composition.",
+      "registryDependencies": ["@rama/section-shell"],
+      "files": [
+        {
+          "path": "components/rama/section-heading.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "media-frame",
+      "type": "registry:component",
+      "title": "Rama Media Frame",
+      "description": "The restrained architectural media container used across listings and editorial features.",
+      "files": [
+        {
+          "path": "components/rama/media-frame.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Displays a button or a component that looks like a button.",
+      "dependencies": ["@radix-ui/react-slot"],
+      "files": [
+        {
+          "path": "components/ui/button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "site-navigation",
+      "type": "registry:component",
+      "title": "Rama Editorial Navigation Rail",
+      "description": "The responsive public navigation rail with buyer discovery links and staff access.",
+      "dependencies": ["lucide-react", "react-aria-components"],
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "components/site-header.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/logo.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "operations-shell",
+      "type": "registry:component",
+      "title": "Rama Operations Shell",
+      "description": "The responsive CRM frame with governed navigation, command search, account context, and mobile task navigation.",
+      "dependencies": ["lucide-react", "react-aria-components"],
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "components/logo.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/dashboard-shell.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/ops-command-center.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/page-header.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/profile-menu.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/profile-avatar.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/profile-settings-form.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "inventory-workspace",
+      "type": "registry:component",
+      "title": "Rama Governed Inventory Workspace",
+      "description": "A source-aware residence catalog with filters, readiness states, responsive records, a property inspector, and staged record creation.",
+      "dependencies": ["lucide-react", "react-aria-components"],
+      "registryDependencies": ["@rama/operations-shell"],
+      "files": [
+        {
+          "path": "components/dashboard/inventory-workspace.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/inventory-create-sheet.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/inventory-create-form.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/dashboard/publication-control.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "conversation-workspace",
+      "type": "registry:component",
+      "title": "Rama Buyer Conversation Workspace",
+      "description": "The advisor master-detail queue and consented buyer dossier used for AI-to-human handoffs.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@rama/operations-shell"],
+      "files": [
+        {
+          "path": "components/dashboard/conversations-workspace.tsx",
+          "type": "registry:component"
+        }
+      ]
+    }
+  ]
+}

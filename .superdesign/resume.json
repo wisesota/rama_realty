@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "targets": {
+    "/": {
+      "targetKind": "existing-ui",
+      "projectId": "0df38fd7-cb9f-4866-83b8-9d8338ed4f98",
+      "baselineDraftId": "4da95f1f-cc8d-4d98-9c61-345d45b51ad0",
+      "activeDraftId": "fce5490f-806c-4b35-a80a-c1d54445ae81",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "bc2689d0-b047-4092-acb1-37cfa70b27eb",
+        "892d706f-0c23-4844-9d84-4ba4ac5cc6fd"
+      ],
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "components/landing-page.tsx",
+        "components/voice-signal.tsx",
+        "components/voice-conversation.tsx",
+        "components/site-header.tsx",
+        "components/site-footer.tsx",
+        "components/logo.tsx",
+        "components/ui/button.tsx",
+        "components/ui/accordion.tsx",
+        "components/rama/section-shell.tsx",
+        "components/rama/section-heading.tsx",
+        "components/rama/media-frame.tsx",
+        "app/globals.css",
+        "app/layout.tsx",
+        "app/page.tsx",
+        "registry.json",
+        "components.json"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3cf2788ee7be29c85aba47d829fc412746125aeaf2c493607684b8b43577ac73",
+        "components/landing-page.tsx": "e097f1eaed79c528bc08a043ea30e25bbfd4cfc726f677ae90160455206da7d3",
+        "components/voice-signal.tsx": "a65ad93a294f245bab588c92008a1084c2a319beece81246cec8c54be9f7655f",
+        "components/voice-conversation.tsx": "b5d131afd8ffa107cd6b833bc0c6a87a7ba38739af5cc5ffc261a295d07566d8",
+        "components/site-header.tsx": "980f07e7e5842fc3bbdecc93ae4d8a75ac87cd3c0a867e06d49399d2318686a9",
+        "components/site-footer.tsx": "e86e0db822fb416cef7da9b8e69828d48d601f2d70e8e0e9c9916f05b1bd9325",
+        "components/logo.tsx": "9b1919b348a528dda93888c7fc320a6b038618b90668474acbdd016c321685f2",
+        "components/ui/button.tsx": "451a9248be52acb07ba33217455f2bc8aa67bc7d324f1e60e40431b29a46c218",
+        "components/ui/accordion.tsx": "6dd2b205fc4a9e19f55dc08b0c3943569d5f648bae8cf1f037bdfd9bc477154e",
+        "components/rama/section-shell.tsx": "f239cf66a951009b87cae7a183e28726a1115392b652c74720fef2aa62213359",
+        "components/rama/section-heading.tsx": "e6aef1039ad1a0515ddbb96460dc230a82d028b2897c9cb793ea3aba3aa63ede",
+        "components/rama/media-frame.tsx": "6f44b2f0bb082fc6ac20d2b2df0f198603255d5d89e1f3228179b2cf203573e8",
+        "app/globals.css": "fb9f439d12edd48080f1d2a01fbf842975bbf7de75ea3bb5903f55f31d6b4f28",
+        "app/layout.tsx": "d3abd262de9f6a42323e335c43d51c7b3fcd480ec66bf7c9251f396fe14edd5e",
+        "app/page.tsx": "de6ee491dc8aa39692908696dd9e2eb33c93ac13075e6dddb412f85b48233fa0",
+        "registry.json": "d2a397ec369f5f25ccb283386ccf5ea5a558cfc998a0874bace8ae435ec78d70",
+        "components.json": "b01811b03f74b851eeb8e693ac9fb13e433767958b770024d7ede0c8fb682883"
+      },
+      "components": [
+        {
+          "name": "SiteHeader",
+          "id": "d1f4829e-b1d1-48a7-aece-44948e84676e",
+          "sourcePath": "components/site-header.tsx"
+        },
+        {
+          "name": "SiteFooter",
+          "id": "e7497c11-8113-4c97-867e-8382ecb61d88",
+          "sourcePath": "components/site-footer.tsx"
+        }
+      ],
+      "drafts": {
+        "4da95f1f-cc8d-4d98-9c61-345d45b51ad0": {
+          "title": "Rama Realty — Current Voice Hero Baseline 2026-08-17",
+          "visualDirection": "current Dubai photo hero baseline",
+          "currentVersion": 1
+        },
+        "fce5490f-806c-4b35-a80a-c1d54445ae81": {
+          "title": "Rama Realty — Editorial Property Atelier",
+          "visualDirection": "airy architecture-led editorial with a monumental wordmark, centered voice search, asymmetric property stories, and explicit prototype boundaries",
+          "parentDraftId": "4da95f1f-cc8d-4d98-9c61-345d45b51ad0",
+          "currentVersion": 8
+        }
+      },
+      "updatedAt": "2026-08-18T01:49:37.5067577Z"
+    }
+  }
+}

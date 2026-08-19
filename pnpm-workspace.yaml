@@ -1,0 +1,15 @@
+packages:
+  - .
+
+allowBuilds:
+  '@google/genai': false
+  '@sentry/cli': true
+  '@tailwindcss/oxide': true
+  core-js: false
+  protobufjs: false
+  unrs-resolver: true
+
+onlyBuiltDependencies:
+  - "@sentry/cli"
+  - "@tailwindcss/oxide"
+  - "unrs-resolver"

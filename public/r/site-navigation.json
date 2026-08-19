@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "site-navigation",
+  "title": "Rama Editorial Navigation Rail",
+  "description": "The responsive public navigation rail with buyer discovery links and staff access.",
+  "dependencies": [
+    "lucide-react",
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "components/site-header.tsx",
+      "content": "\"use client\";\r\n\r\nimport { Menu, X } from \"lucide-react\";\r\nimport Link from \"next/link\";\r\nimport { useEffect, useRef, useState } from \"react\";\r\nimport { Button, LinkButton } from \"@/components/ui/button\";\r\nimport { Logo } from \"@/components/logo\";\r\n\r\nconst navigation = [\r\n  { href: \"#residences\", label: \"Residences\" },\r\n  { href: \"#services\", label: \"Services\" },\r\n  { href: \"#methodology\", label: \"How Rama works\" },\r\n];\r\n\r\nexport function SiteHeader() {\r\n  const [menuOpen, setMenuOpen] = useState(false);\r\n  const menuButton = useRef<HTMLButtonElement | null>(null);\r\n\r\n  useEffect(() => {\r\n    if (!menuOpen) return;\r\n    const closeOnEscape = (event: KeyboardEvent) => {\r\n      if (event.key !== \"Escape\") return;\r\n      setMenuOpen(false);\r\n      requestAnimationFrame(() => menuButton.current?.focus());\r\n    };\r\n    document.addEventListener(\"keydown\", closeOnEscape);\r\n    return () => document.removeEventListener(\"keydown\", closeOnEscape);\r\n  }, [menuOpen]);\r\n\r\n  return (\r\n    <header className=\"site-header\">\r\n      <div className=\"site-header__inner\">\r\n        <a className=\"brand-link\" href=\"#top\" aria-label=\"Rama Realty home\">\r\n          <Logo />\r\n        </a>\r\n\r\n        <nav className=\"desktop-nav\" aria-label=\"Primary navigation\">\r\n          {navigation.map((item) => (\r\n            <a key={item.href} href={item.href}>\r\n              {item.label}\r\n            </a>\r\n          ))}\r\n        </nav>\r\n\r\n        <div className=\"header-actions\">\r\n          <LinkButton className=\"rama-button rama-button--login\" variant=\"outline\" href=\"/auth/sign-in?next=/dashboard\">\r\n            Staff login\r\n          </LinkButton>\r\n          <LinkButton className=\"rama-button rama-button--header\" href=\"#guided-search\">\r\n            Begin a brief\r\n          </LinkButton>\r\n          <Button\r\n            ref={menuButton}\r\n            className=\"menu-button\"\r\n            variant=\"ghost\"\r\n            size=\"icon\"\r\n            aria-label={menuOpen ? \"Close navigation\" : \"Open navigation\"}\r\n            aria-expanded={menuOpen}\r\n            aria-controls=\"mobile-navigation\"\r\n            onPress={() => setMenuOpen((open) => !open)}\r\n          >\r\n            {menuOpen ? <X aria-hidden=\"true\" /> : <Menu aria-hidden=\"true\" />}\r\n          </Button>\r\n        </div>\r\n      </div>\r\n\r\n      {menuOpen ? (\r\n        <nav\r\n          id=\"mobile-navigation\"\r\n          className=\"mobile-nav px-4 md:px-8\"\r\n          aria-label=\"Mobile navigation\"\r\n        >\r\n          {navigation.map((item) => (\r\n            <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>\r\n              {item.label}\r\n            </a>\r\n          ))}\r\n          <Link href=\"/auth/sign-in?next=/dashboard\" onClick={() => setMenuOpen(false)}>\r\n            Staff login\r\n          </Link>\r\n          <a className=\"mobile-nav__primary\" href=\"#guided-search\" onClick={() => setMenuOpen(false)}>\r\n            Begin a brief\r\n          </a>\r\n        </nav>\r\n      ) : null}\r\n    </header>\r\n  );\r\n}\r\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "components/logo.tsx",
+      "content": "type LogoProps = {\r\n  inverse?: boolean;\r\n};\r\n\r\nexport function Logo({ inverse = false }: LogoProps) {\r\n  return (\r\n    <span className={`brand-lockup${inverse ? \" brand-lockup--inverse\" : \"\"}`}>\r\n      <span className=\"brand-mark\" aria-hidden=\"true\">\r\n        <span className=\"brand-mark__point\" />\r\n      </span>\r\n      <span className=\"brand-name\">\r\n        <span className=\"brand-name__rama\">RAMA</span>\r\n        <span className=\"brand-name__realty\">REALTY</span>\r\n      </span>\r\n    </span>\r\n  );\r\n}\r\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}
