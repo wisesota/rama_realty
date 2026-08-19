@@ -7,10 +7,9 @@ import { Button } from "@/components/ui/button";
 import type { VoiceExperienceState } from "@/lib/voice/types";
 
 const LottiePlayer = dynamic(
-  () => import("lottie-react"),
+  () => import("lottie-react").then((mod) => mod.Lottie),
   { ssr: false },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-) as any;
+);
 
 type VoiceSignalProps = {
   state: VoiceExperienceState;
@@ -73,16 +72,6 @@ export function VoiceSignal({ state, onPress }: VoiceSignalProps) {
     state.phase,
   );
 
-  const [animationData, setAnimationData] = useState<unknown>(null);
-  useEffect(() => {
-    if (active && !animationData) {
-      fetch("/lottie/ai.json")
-        .then((res) => res.json())
-        .then((data) => setAnimationData(data))
-        .catch(() => {});
-    }
-  }, [active, animationData]);
-
   const accessibleLabel = signalCopy(state);
   const visibleLabel = visibleSignalCopy(state);
 
@@ -98,13 +87,13 @@ export function VoiceSignal({ state, onPress }: VoiceSignalProps) {
         onPress={onPress}
       >
         <VoiceSignalFallback />
-        {!reducedMotion && active && animationData ? (
+        {!reducedMotion && active ? (
           <LottiePlayer
             key={state.phase}
-            animationData={animationData}
+            src="/lottie/ai.json"
             autoplay={active}
             loop={false}
-            initialSegment={[0, 150]}
+            segment={[0, 150]}
             className="voice-signal__lottie"
             aria-hidden="true"
           />
