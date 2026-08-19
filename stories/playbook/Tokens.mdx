@@ -1,0 +1,74 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Playbook/Design Tokens & Architecture" />
+
+# Rama Realty Design Token Architecture
+
+The Rama Realty design system uses a code-first token pipeline compliant with the **DTCG (Design Tokens Community Group)** specification.
+
+Design tokens are structured into three distinct layers:
+1. **Primitives** (`tokens/primitives.json`): Raw values for color hexes, typography scales, spacing units, and border radii.
+2. **Semantics** (`tokens/semantics.json`): Contextual intent abstractions (canvas surfaces, text hierarchy, interactive focus states, feedback).
+3. **Components** (`tokens/components.json`): Component-scoped measurements and tokens (buttons, media frames, voice indicators).
+
+---
+
+## 🎨 Color Palette & Primitives
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+  <div style={{ padding: '1rem', background: '#fbfbf8', border: '1px solid #d8dad8', borderRadius: '8px' }}>
+    <div style={{ width: '100%', height: '48px', background: '#fbfbf8', border: '1px solid #d8dad8', borderRadius: '4px', marginBottom: '8px' }}></div>
+    <strong>Gallery Canvas</strong>
+    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#585d5b' }}><code>#fbfbf8</code> — Primary canvas surface</p>
+  </div>
+  <div style={{ padding: '1rem', background: '#ffffff', border: '1px solid #d8dad8', borderRadius: '8px' }}>
+    <div style={{ width: '100%', height: '48px', background: '#ffffff', border: '1px solid #d8dad8', borderRadius: '4px', marginBottom: '8px' }}></div>
+    <strong>Paper Card</strong>
+    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#585d5b' }}><code>#ffffff</code> — Cards, modals, elevated surfaces</p>
+  </div>
+  <div style={{ padding: '1rem', background: '#f0f1f1', border: '1px solid #d8dad8', borderRadius: '8px' }}>
+    <div style={{ width: '100%', height: '48px', background: '#f0f1f1', border: '1px solid #d8dad8', borderRadius: '4px', marginBottom: '8px' }}></div>
+    <strong>Architecture</strong>
+    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#585d5b' }}><code>#f0f1f1</code> — Structural panels, header background</p>
+  </div>
+  <div style={{ padding: '1rem', background: '#202321', color: '#ffffff', borderRadius: '8px' }}>
+    <div style={{ width: '100%', height: '48px', background: '#202321', borderRadius: '4px', marginBottom: '8px' }}></div>
+    <strong>Ink</strong>
+    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#ddecf4' }}><code>#202321</code> — Primary typographic & high-contrast tone</p>
+  </div>
+  <div style={{ padding: '1rem', background: '#82b8d7', color: '#202321', borderRadius: '8px' }}>
+    <div style={{ width: '100%', height: '48px', background: '#82b8d7', borderRadius: '4px', marginBottom: '8px' }}></div>
+    <strong>Sky Accent</strong>
+    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#202321' }}><code>#82b8d7</code> — Sky-blue luxury highlight</p>
+  </div>
+  <div style={{ padding: '1rem', background: '#b99463', color: '#ffffff', borderRadius: '8px' }}>
+    <div style={{ width: '100%', height: '48px', background: '#b99463', borderRadius: '4px', marginBottom: '8px' }}></div>
+    <strong>Sand Accent</strong>
+    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#ffffff' }}><code>#b99463</code> — Architectural warm sand tone</p>
+  </div>
+</div>
+
+---
+
+## 🔤 Typography
+
+- **Heading Font:** `Source Serif 4` (Editorial authority, balanced optical weighting)
+- **Body & Sans Font:** `Instrument Sans` (Clear geometric precision for UI controls, body copy, and metadata)
+
+| Token | CSS Variable | Value | Usage |
+| :--- | :--- | :--- | :--- |
+| `font.size.xs` | `--font-size-xs` | `0.72rem` | Eyebrow badges, tags, caption metrics |
+| `font.size.sm` | `--font-size-sm` | `0.84rem` | Interactive buttons, navigation links |
+| `font.size.base` | `--font-size-base` | `1.0rem` | Primary body prose |
+| `font.size.lg` | `--font-size-lg` | `1.12rem` | Subheadings, intro copy |
+| `font.size.xl` | `--font-size-xl` | `1.25rem` | Card titles, block headers |
+| `font.size.hero` | `--font-size-hero` | `3.85rem` | Hero title (strictly 1 line at ≥1280px desktop) |
+
+---
+
+## 📐 Layout & Radii Rules
+
+- **Corner Radii:**
+  - `radius.media` = `0px` (Strict architectural discipline for luxury photography).
+  - `radius.content` = `0.625rem` (10px for cards, dialog panels, and workspace sheets).
+  - `radius.control` = `0.5rem` (8px for interactive button and input elements).

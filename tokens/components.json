@@ -1,0 +1,25 @@
+{
+  "component": {
+    "button": {
+      "radius": { "$value": "{radius.control}", "$type": "dimension" },
+      "minHeight": { "$value": "2.75rem", "$type": "dimension" },
+      "paddingInline": { "$value": "1rem", "$type": "dimension" },
+      "fontSize": { "$value": "{font.size.sm}", "$type": "dimension" }
+    },
+    "badge": {
+      "radius": { "$value": "0.38rem", "$type": "dimension" },
+      "paddingBlock": { "$value": "0.2rem", "$type": "dimension" },
+      "paddingInline": { "$value": "0.5rem", "$type": "dimension" },
+      "fontSize": { "$value": "{font.size.xs}", "$type": "dimension" }
+    },
+    "mediaFrame": {
+      "radius": { "$value": "{radius.media}", "$type": "dimension" },
+      "background": { "$value": "{color.architecture}", "$type": "color" }
+    },
+    "voiceSignal": {
+      "size": { "$value": "10rem", "$type": "dimension" },
+      "accent": { "$value": "{color.sky}", "$type": "color" },
+      "active": { "$value": "#378264", "$type": "color" }
+    }
+  }
+}

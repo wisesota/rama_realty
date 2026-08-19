@@ -31,3 +31,8 @@ stderr.txt
 .superdesign/
 .gstack/
 .vscode/
+
+# Storybook & Chromatic
+/storybook-static/
+build-storybook.log
+
