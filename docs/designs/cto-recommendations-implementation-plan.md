@@ -127,7 +127,7 @@ PUBLIC FLOW
 - [x] Add the landing disclosure and privacy-safe search-outcome event.
 - [x] Keep shortlist expansion legible by focusing and revealing the dossier heading.
 - [x] Extend Supabase verification and document local versus hosted evidence.
-- [ ] Run lint, typecheck, tests, build, security review, design review, and browser verification.
+- [x] Run lint, typecheck, tests, build, security review, design review, and browser verification.
 
 Sequential implementation is preferred. The changes are small but converge on the shared contract and test files; worktree parallelism would add coordination cost without shortening the critical path.
 
@@ -179,7 +179,11 @@ Sequential implementation is preferred. The changes are small but converge on th
 | Eng Review | `/gstack-plan-eng-review` | Architecture and tests | 1 | CLEAR WITH FIXES | Token resurrection and stale dossier response folded into implementation |
 | Design Review | `/gstack-plan-design-review` | UI and UX gaps | 1 | CLEAR | 8/10; disclosure, semantic zero-result taxonomy, and shortlist focus folded into plan |
 | DX Review | applicability gate | Developer experience | 0 | NOT APPLICABLE | Internal API routes are not a developer-facing product |
+| Security Review | `/gstack-cso` | Auth, token rotation, Supabase, and supply chain | 1 | CLEAR WITH FIXES | Rotation recovery, revocation fallback, and false-green hosted verification corrected |
+| Code Review | `/gstack-review` | Pre-handoff correctness | 1 | CLEAR WITH FIXES | Concurrency, stale-request, route-return, and focus defects corrected and re-reviewed |
+| Rendered Design Review | `/gstack-design-review` with supported browser fallback | Implemented visual system | 1 | CLEAR | Editorial hierarchy, 16px media geometry, disclosure, and mobile sheet verified |
+| Browser QA | `/gstack-qa` with supported browser fallback | Route and interaction funnel | 1 | CLEAR | Landing, modal and direct routes, dossier focus, focus trap, Escape return, and responsive overflow verified |
 
-**VERDICT:** CEO, design, and engineering reviews are complete; the corrected plan is ready to implement.
+**VERDICT:** The corrected route-first implementation is complete and locally verified. Hosted controls remain explicit external gates.
 
 NO UNRESOLVED DECISIONS
