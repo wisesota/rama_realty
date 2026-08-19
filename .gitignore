@@ -27,5 +27,6 @@ stderr.txt
 *.tsbuildinfo
 
 # Superdesign temporary conversion files
-.superdesign/tmp/
+.superdesign/
 .gstack/
+.vscode/
