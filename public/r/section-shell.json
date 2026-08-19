@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "section-shell",
+  "title": "Rama Section Shell",
+  "description": "The shared responsive content rail for Rama Realty editorial pages.",
+  "files": [
+    {
+      "path": "components/rama/section-shell.tsx",
+      "content": "import type { ComponentPropsWithoutRef, ElementType } from \"react\";\r\nimport { cn } from \"@/lib/utils\";\r\n\r\ntype SectionShellProps<T extends ElementType = \"div\"> = {\r\n  as?: T;\r\n} & Omit<ComponentPropsWithoutRef<T>, \"as\">;\r\n\r\nexport function SectionShell<T extends ElementType = \"div\">({\r\n  as,\r\n  className,\r\n  ...props\r\n}: SectionShellProps<T>) {\r\n  const Component = as ?? \"div\";\r\n\r\n  return (\r\n    <Component\r\n      className={cn(\"section-shell px-4 md:px-8 xl:px-10\", className)}\r\n      {...props}\r\n    />\r\n  );\r\n}\r\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

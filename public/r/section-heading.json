@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "section-heading",
+  "title": "Rama Editorial Heading",
+  "description": "A consistent serif heading, eyebrow, and supporting-copy composition.",
+  "registryDependencies": [
+    "@rama/section-shell"
+  ],
+  "files": [
+    {
+      "path": "components/rama/section-heading.tsx",
+      "content": "import type { ReactNode } from \"react\";\r\nimport { cn } from \"@/lib/utils\";\r\n\r\ntype SectionHeadingProps = {\r\n  eyebrow: string;\r\n  title: ReactNode;\r\n  description?: ReactNode;\r\n  align?: \"left\" | \"center\";\r\n  id?: string;\r\n  className?: string;\r\n};\r\n\r\nexport function SectionHeading({\r\n  eyebrow,\r\n  title,\r\n  description,\r\n  align = \"left\",\r\n  id,\r\n  className,\r\n}: SectionHeadingProps) {\r\n  return (\r\n    <div className={cn(\"editorial-heading\", `editorial-heading--${align}`, className)}>\r\n      <p className=\"eyebrow\">{eyebrow}</p>\r\n      <h2 id={id}>{title}</h2>\r\n      {description ? <p className=\"editorial-heading__description\">{description}</p> : null}\r\n    </div>\r\n  );\r\n}\r\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

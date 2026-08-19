@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "media-frame",
+  "title": "Rama Media Frame",
+  "description": "The restrained architectural media container used across listings and editorial features.",
+  "files": [
+    {
+      "path": "components/rama/media-frame.tsx",
+      "content": "import type { HTMLAttributes } from \"react\";\r\nimport { cn } from \"@/lib/utils\";\r\n\r\ntype MediaFrameProps = HTMLAttributes<HTMLDivElement> & {\r\n  tone?: \"plain\" | \"muted\";\r\n};\r\n\r\nexport function MediaFrame({ className, tone = \"plain\", ...props }: MediaFrameProps) {\r\n  return (\r\n    <div\r\n      data-slot=\"media-frame\"\r\n      data-tone={tone}\r\n      className={cn(\"media-frame\", className)}\r\n      {...props}\r\n    />\r\n  );\r\n}\r\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}
