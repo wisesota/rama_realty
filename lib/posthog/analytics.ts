@@ -51,6 +51,9 @@ export type AnalyticsSummary = {
   periodDays: number;
   lastUpdated: string;
   isConfigured: boolean;
+  hasErrors?: boolean;
+  projectId?: string;
+  projectUrl?: string;
 };
 
 type HogQLResponse = {
@@ -81,6 +84,7 @@ async function executeHogQL(sql: string): Promise<HogQLResponse> {
           query: sql,
         },
       }),
+      signal: AbortSignal.timeout(8000),
       next: { revalidate: 60 },
     });
 
@@ -100,25 +104,17 @@ async function executeHogQL(sql: string): Promise<HogQLResponse> {
 
 export async function fetchPostHogAnalytics(periodDays: number = 30): Promise<AnalyticsSummary> {
   const safePeriod = Math.max(1, Math.min(periodDays, 90));
-  const isConfigured = Boolean(
-    process.env.POSTHOG_PERSONAL_API_KEY?.trim() && process.env.POSTHOG_PROJECT_ID?.trim()
-  );
+  const apiKey = process.env.POSTHOG_PERSONAL_API_KEY?.trim();
+  const projectId = process.env.POSTHOG_PROJECT_ID?.trim();
+  const host = process.env.POSTHOG_HOST?.trim() || "https://eu.posthog.com";
+  const isConfigured = Boolean(apiKey && projectId);
 
   if (!isConfigured) {
     return getFallbackAnalytics(safePeriod);
   }
 
   try {
-    const [
-      overviewRes,
-      dailyTrendsRes,
-      topPagesRes,
-      funnelRes,
-      browsersRes,
-      osRes,
-      webVitalsRes,
-      liveRes,
-    ] = await Promise.all([
+    const queryResults = await Promise.all([
       // 1. Overall counts
       executeHogQL(`
         SELECT 
@@ -197,7 +193,7 @@ export async function fetchPostHogAnalytics(periodDays: number = 30): Promise<An
         FROM events 
         WHERE event = '$web_vitals' AND timestamp > now() - interval ${safePeriod} day
       `),
-      // 8. Live activity stream
+      // 8. Live activity stream (bounded to recent 2 days)
       executeHogQL(`
         SELECT 
           uuid,
@@ -208,13 +204,28 @@ export async function fetchPostHogAnalytics(periodDays: number = 30): Promise<An
           properties.$browser as browser,
           properties.$os as os
         FROM events 
+        WHERE timestamp > now() - interval 2 day
         ORDER BY timestamp DESC 
         LIMIT 15
       `),
     ]);
 
+    const [
+      overviewRes,
+      dailyTrendsRes,
+      topPagesRes,
+      funnelRes,
+      browsersRes,
+      osRes,
+      webVitalsRes,
+      liveRes,
+    ] = queryResults;
+
+    const hasErrors = queryResults.some((res) => Boolean(res.error));
+
     // Parse overview
     let totalPageviews = 0;
+    let pageviewUniqueUsers = 0;
     let totalEvents = 0;
     let deadClicks = 0;
     let webVitalsEvents = 0;
@@ -222,8 +233,12 @@ export async function fetchPostHogAnalytics(periodDays: number = 30): Promise<An
     for (const row of overviewRes.results || []) {
       const eventName = String(row[0]);
       const count = Number(row[1]) || 0;
+      const uniqueUsers = Number(row[2]) || 0;
       totalEvents += count;
-      if (eventName === "$pageview") totalPageviews = count;
+      if (eventName === "$pageview") {
+        totalPageviews = count;
+        pageviewUniqueUsers = uniqueUsers;
+      }
       if (eventName === "$dead_click") deadClicks = count;
       if (eventName === "$web_vitals") webVitalsEvents = count;
     }
@@ -237,11 +252,13 @@ export async function fetchPostHogAnalytics(periodDays: number = 30): Promise<An
       })
     );
 
-    // Calculate unique visitors across daily trends or fallback
-    const uniqueVisitors = Math.max(
-      dailyTrends.reduce((max, d) => Math.max(max, d.visitors), 0),
-      totalPageviews > 0 ? 1 : 0
-    );
+    // Period-wide unique visitors (derived directly from pageview unique distinct_id aggregation)
+    const uniqueVisitors =
+      pageviewUniqueUsers ||
+      Math.max(
+        dailyTrends.reduce((max, d) => Math.max(max, d.visitors), 0),
+        totalPageviews > 0 ? 1 : 0
+      );
 
     // Parse top pages
     const topPages: AnalyticsSummary["topPages"] = (topPagesRes.results || []).map((row) => {
@@ -347,10 +364,16 @@ export async function fetchPostHogAnalytics(periodDays: number = 30): Promise<An
       periodDays: safePeriod,
       lastUpdated: new Date().toISOString(),
       isConfigured: true,
+      hasErrors,
+      projectId,
+      projectUrl: host,
     };
   } catch (err) {
     console.error("Failed to parse PostHog response:", err);
-    return getFallbackAnalytics(safePeriod);
+    return {
+      ...getFallbackAnalytics(safePeriod),
+      hasErrors: true,
+    };
   }
 }
 
@@ -388,5 +411,6 @@ function getFallbackAnalytics(periodDays: number): AnalyticsSummary {
     periodDays,
     lastUpdated: new Date().toISOString(),
     isConfigured: false,
+    hasErrors: false,
   };
 }

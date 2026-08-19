@@ -36,7 +36,7 @@
     "content-max": { "$value": "74rem", "$type": "dimension" }
   },
   "radius": {
-    "media": { "$value": "0px", "$type": "dimension", "$description": "Sharp architectural media frame edge" },
+    "media": { "$value": "16px", "$type": "dimension", "$description": "Editorial architectural media frame corner radius" },
     "content": { "$value": "0.625rem", "$type": "dimension", "$description": "10px radius for cards and panels" },
     "control": { "$value": "0.5rem", "$type": "dimension", "$description": "8px radius for compact interactive controls" }
   }

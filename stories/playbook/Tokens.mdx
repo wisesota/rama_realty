@@ -18,17 +18,17 @@ Design tokens are structured into three distinct layers:
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
   <div style={{ padding: '1rem', background: '#fbfbf8', border: '1px solid #d8dad8', borderRadius: '8px' }}>
     <div style={{ width: '100%', height: '48px', background: '#fbfbf8', border: '1px solid #d8dad8', borderRadius: '4px', marginBottom: '8px' }}></div>
-    <strong>Gallery Canvas</strong>
+    <strong style={{ color: '#202321' }}>Gallery Canvas</strong>
     <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#585d5b' }}><code>#fbfbf8</code> — Primary canvas surface</p>
   </div>
   <div style={{ padding: '1rem', background: '#ffffff', border: '1px solid #d8dad8', borderRadius: '8px' }}>
     <div style={{ width: '100%', height: '48px', background: '#ffffff', border: '1px solid #d8dad8', borderRadius: '4px', marginBottom: '8px' }}></div>
-    <strong>Paper Card</strong>
+    <strong style={{ color: '#202321' }}>Paper Card</strong>
     <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#585d5b' }}><code>#ffffff</code> — Cards, modals, elevated surfaces</p>
   </div>
   <div style={{ padding: '1rem', background: '#f0f1f1', border: '1px solid #d8dad8', borderRadius: '8px' }}>
     <div style={{ width: '100%', height: '48px', background: '#f0f1f1', border: '1px solid #d8dad8', borderRadius: '4px', marginBottom: '8px' }}></div>
-    <strong>Architecture</strong>
+    <strong style={{ color: '#202321' }}>Architecture</strong>
     <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#585d5b' }}><code>#f0f1f1</code> — Structural panels, header background</p>
   </div>
   <div style={{ padding: '1rem', background: '#202321', color: '#ffffff', borderRadius: '8px' }}>
@@ -41,10 +41,10 @@ Design tokens are structured into three distinct layers:
     <strong>Sky Accent</strong>
     <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#202321' }}><code>#82b8d7</code> — Sky-blue luxury highlight</p>
   </div>
-  <div style={{ padding: '1rem', background: '#b99463', color: '#ffffff', borderRadius: '8px' }}>
+  <div style={{ padding: '1rem', background: '#b99463', color: '#202321', borderRadius: '8px' }}>
     <div style={{ width: '100%', height: '48px', background: '#b99463', borderRadius: '4px', marginBottom: '8px' }}></div>
     <strong>Sand Accent</strong>
-    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#ffffff' }}><code>#b99463</code> — Architectural warm sand tone</p>
+    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#202321' }}><code>#b99463</code> — Architectural warm sand tone</p>
   </div>
 </div>
 
@@ -52,23 +52,25 @@ Design tokens are structured into three distinct layers:
 
 ## 🔤 Typography
 
-- **Heading Font:** `Source Serif 4` (Editorial authority, balanced optical weighting)
-- **Body & Sans Font:** `Instrument Sans` (Clear geometric precision for UI controls, body copy, and metadata)
+- **Heading Font:** `Source Serif 4` (`tokens.primitives.font.family.serif`)
+- **Body & Sans Font:** `Instrument Sans` (`tokens.primitives.font.family.sans`)
 
-| Token | CSS Variable | Value | Usage |
+| Token Property | Generated TypeScript Path | Value | Usage |
 | :--- | :--- | :--- | :--- |
-| `font.size.xs` | `--font-size-xs` | `0.72rem` | Eyebrow badges, tags, caption metrics |
-| `font.size.sm` | `--font-size-sm` | `0.84rem` | Interactive buttons, navigation links |
-| `font.size.base` | `--font-size-base` | `1.0rem` | Primary body prose |
-| `font.size.lg` | `--font-size-lg` | `1.12rem` | Subheadings, intro copy |
-| `font.size.xl` | `--font-size-xl` | `1.25rem` | Card titles, block headers |
-| `font.size.hero` | `--font-size-hero` | `3.85rem` | Hero title (strictly 1 line at ≥1280px desktop) |
+| `font.size.xs` | `tokens.primitives.font.size.xs` | `0.72rem` | Eyebrow badges, tags, caption metrics |
+| `font.size.sm` | `tokens.primitives.font.size.sm` | `0.84rem` | Interactive buttons, navigation links |
+| `font.size.base` | `tokens.primitives.font.size.base` | `1.0rem` | Primary body prose |
+| `font.size.lg` | `tokens.primitives.font.size.lg` | `1.12rem` | Subheadings, intro copy |
+| `font.size.xl` | `tokens.primitives.font.size.xl` | `1.25rem` | Card titles, block headers |
+| `font.size.2xl` | `tokens.primitives.font.size['2xl']` | `1.75rem` | Section headers |
+| `font.size.3xl` | `tokens.primitives.font.size['3xl']` | `2.45rem` | Major title headers |
+| `font.size.hero` | `tokens.primitives.font.size.hero` | `3.85rem` | Hero title (strictly 1 line at ≥1280px desktop) |
 
 ---
 
 ## 📐 Layout & Radii Rules
 
 - **Corner Radii:**
-  - `radius.media` = `0px` (Strict architectural discipline for luxury photography).
-  - `radius.content` = `0.625rem` (10px for cards, dialog panels, and workspace sheets).
-  - `radius.control` = `0.5rem` (8px for interactive button and input elements).
+  - `radius.media` (`tokens.primitives.radius.media`) = `16px` (Strict 16px architectural media frame corners).
+  - `radius.content` (`tokens.primitives.radius.content`) = `0.625rem` (10px for cards, dialog panels, and workspace sheets).
+  - `radius.control` (`tokens.primitives.radius.control`) = `0.5rem` (8px for compact interactive controls).

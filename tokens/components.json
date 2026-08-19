@@ -3,7 +3,7 @@
     "button": {
       "radius": { "$value": "{radius.control}", "$type": "dimension" },
       "minHeight": { "$value": "2.75rem", "$type": "dimension" },
-      "paddingInline": { "$value": "1rem", "$type": "dimension" },
+      "paddingInline": { "$value": "0.5rem", "$type": "dimension" },
       "fontSize": { "$value": "{font.size.sm}", "$type": "dimension" }
     },
     "badge": {

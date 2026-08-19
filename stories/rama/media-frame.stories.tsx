@@ -18,9 +18,12 @@ export default meta;
 type Story = StoryObj<typeof MediaFrame>;
 
 export const Default: Story = {
-  render: () => (
+  args: {
+    tone: 'plain',
+  },
+  render: ({ tone }) => (
     <div style={{ width: '400px', height: '260px' }}>
-      <MediaFrame tone="plain" className="w-full h-full">
+      <MediaFrame tone={tone} className="w-full h-full">
         <img
           src="/images/rama-hero-editorial-daylight.png"
           alt="Rama Editorial Residence"
@@ -32,9 +35,12 @@ export const Default: Story = {
 };
 
 export const MutedTone: Story = {
-  render: () => (
+  args: {
+    tone: 'muted',
+  },
+  render: ({ tone }) => (
     <div style={{ width: '400px', height: '260px' }}>
-      <MediaFrame tone="muted" className="w-full h-full flex items-center justify-center">
+      <MediaFrame tone={tone} className="w-full h-full flex items-center justify-center">
         <span className="text-xs uppercase tracking-widest text-quiet">Architectural Blueprint</span>
       </MediaFrame>
     </div>

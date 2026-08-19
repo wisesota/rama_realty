@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Activity,
+  AlertTriangle,
   BarChart3,
   Compass,
   Cpu,
@@ -16,7 +17,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AnalyticsSummary } from "@/lib/posthog/analytics";
 
 type AnalyticsWorkspaceProps = {
@@ -25,11 +26,57 @@ type AnalyticsWorkspaceProps = {
   catalogCount: number;
 };
 
+const DUBAI_TIME_ZONE = "Asia/Dubai";
+
+function formatDubaiTime(isoString: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      timeStyle: "short",
+      timeZone: DUBAI_TIME_ZONE,
+    }).format(new Date(isoString));
+  } catch {
+    return isoString;
+  }
+}
+
+function formatDubaiDateTime(isoString: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      dateStyle: "short",
+      timeStyle: "medium",
+      timeZone: DUBAI_TIME_ZONE,
+    }).format(new Date(isoString));
+  } catch {
+    return isoString;
+  }
+}
+
+function formatDubaiDate(isoString: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      month: "short",
+      day: "numeric",
+      timeZone: DUBAI_TIME_ZONE,
+    }).format(new Date(isoString));
+  } catch {
+    return isoString;
+  }
+}
+
 export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: AnalyticsWorkspaceProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"overview" | "funnel" | "pages" | "tech" | "live">("overview");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
+    };
+  }, []);
 
   const currentPeriod = data.periodDays;
 
@@ -42,19 +89,29 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
   function refresh() {
     setIsRefreshing(true);
     router.refresh();
-    setTimeout(() => setIsRefreshing(false), 600);
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+    }
+    refreshTimerRef.current = setTimeout(() => {
+      setIsRefreshing(false);
+    }, 600);
   }
 
   // Calculate funnel conversions
   const totalViews = data.overview.totalPageviews || 1;
   const voiceRate = ((data.funnel.voiceSearches / totalViews) * 100).toFixed(1);
   const shortlistRate = ((data.funnel.shortlists / totalViews) * 100).toFixed(1);
-  const inquiryConversionRate = data.overview.uniqueVisitors > 0
-    ? ((inquiriesCount / data.overview.uniqueVisitors) * 100).toFixed(1)
-    : "0.0";
+  const inquiryConversionRate =
+    data.overview.uniqueVisitors > 0
+      ? ((inquiriesCount / data.overview.uniqueVisitors) * 100).toFixed(1)
+      : "0.0";
 
   // Daily trends max for bar scaling
   const maxDailyViews = Math.max(...data.dailyTrends.map((d) => d.pageviews), 1);
+
+  const posthogUrl = `${(data.projectUrl || "https://eu.posthog.com").replace(/\/$/, "")}/project/${
+    data.projectId || "252521"
+  }`;
 
   return (
     <div className="ops-analytics-workspace">
@@ -64,6 +121,8 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
           <button
             type="button"
             role="tab"
+            id="tab-overview"
+            aria-controls="panel-overview"
             aria-selected={activeTab === "overview"}
             className="ops-analytics-tab-btn"
             data-active={activeTab === "overview"}
@@ -75,6 +134,8 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
           <button
             type="button"
             role="tab"
+            id="tab-funnel"
+            aria-controls="panel-funnel"
             aria-selected={activeTab === "funnel"}
             className="ops-analytics-tab-btn"
             data-active={activeTab === "funnel"}
@@ -86,6 +147,8 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
           <button
             type="button"
             role="tab"
+            id="tab-pages"
+            aria-controls="panel-pages"
             aria-selected={activeTab === "pages"}
             className="ops-analytics-tab-btn"
             data-active={activeTab === "pages"}
@@ -97,6 +160,8 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
           <button
             type="button"
             role="tab"
+            id="tab-tech"
+            aria-controls="panel-tech"
             aria-selected={activeTab === "tech"}
             className="ops-analytics-tab-btn"
             data-active={activeTab === "tech"}
@@ -108,6 +173,8 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
           <button
             type="button"
             role="tab"
+            id="tab-live"
+            aria-controls="panel-live"
             aria-selected={activeTab === "live"}
             className="ops-analytics-tab-btn"
             data-active={activeTab === "live"}
@@ -169,23 +236,39 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
       {/* PostHog Connection Status Banner */}
       <aside className="ops-analytics-status-bar">
         <div className="ops-status-indicator">
-          <span className="ops-pulse-dot" />
-          <strong>PostHog Telemetry Pipeline Active</strong>
-          <small>HogQL EU Cluster · Project #252521</small>
+          {data.hasErrors ? (
+            <>
+              <AlertTriangle className="ops-warn-icon" aria-hidden="true" />
+              <strong>PostHog Telemetry Partially Degraded</strong>
+              <small>Some HogQL subqueries encountered an error or timed out.</small>
+            </>
+          ) : data.isConfigured ? (
+            <>
+              <span className="ops-pulse-dot" />
+              <strong>PostHog Telemetry Pipeline Active</strong>
+              <small>HogQL Cluster · Project #{data.projectId || "252521"}</small>
+            </>
+          ) : (
+            <>
+              <AlertTriangle className="ops-warn-icon" aria-hidden="true" />
+              <strong>PostHog Not Configured</strong>
+              <small>Add POSTHOG_PERSONAL_API_KEY and POSTHOG_PROJECT_ID to .env.local</small>
+            </>
+          )}
         </div>
         <div className="ops-status-links">
-          <time dateTime={data.lastUpdated}>
-            Updated {new Intl.DateTimeFormat("en-AE", { timeStyle: "short" }).format(new Date(data.lastUpdated))}
-          </time>
-          <a
-            href="https://eu.posthog.com/project/252521"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ops-external-link"
-          >
-            <span>PostHog Project</span>
-            <ExternalLink aria-hidden="true" />
-          </a>
+          <time dateTime={data.lastUpdated}>Updated {formatDubaiTime(data.lastUpdated)} GST</time>
+          {data.isConfigured && (
+            <a
+              href={posthogUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ops-external-link"
+            >
+              <span>PostHog Project</span>
+              <ExternalLink aria-hidden="true" />
+            </a>
+          )}
         </div>
       </aside>
 
@@ -200,7 +283,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
           </header>
           <div className="ops-kpi-value">{data.overview.totalPageviews.toLocaleString()}</div>
           <footer>
-            <span>{data.overview.uniqueVisitors} unique visitors</span>
+            <span>{data.overview.uniqueVisitors.toLocaleString()} unique visitors</span>
             <em>~{data.overview.averageDailyViews}/day</em>
           </footer>
         </article>
@@ -250,7 +333,12 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
 
       {/* Tab: Overview & Trends */}
       {activeTab === "overview" && (
-        <div className="ops-analytics-section-stack">
+        <div
+          id="panel-overview"
+          role="tabpanel"
+          aria-labelledby="tab-overview"
+          className="ops-analytics-section-stack"
+        >
           {/* Daily Views Bar Chart */}
           <section className="ops-analytics-panel" aria-labelledby="traffic-trend-heading">
             <header className="ops-panel-header">
@@ -259,8 +347,12 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                 <p>Pageviews and unique visitors over the selected {currentPeriod}-day window.</p>
               </div>
               <div className="ops-chart-legend">
-                <span className="ops-legend-item"><i className="ops-legend-dot ops-dot-views" /> Views</span>
-                <span className="ops-legend-item"><i className="ops-legend-dot ops-dot-visitors" /> Visitors</span>
+                <span className="ops-legend-item">
+                  <i className="ops-legend-dot ops-dot-views" /> Views
+                </span>
+                <span className="ops-legend-item">
+                  <i className="ops-legend-dot ops-dot-visitors" /> Visitors
+                </span>
               </div>
             </header>
 
@@ -269,13 +361,14 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                 <div className="ops-trend-bars">
                   {data.dailyTrends.map((point) => {
                     const heightPercent = Math.max(8, Math.round((point.pageviews / maxDailyViews) * 100));
-                    const formattedDate = new Intl.DateTimeFormat("en-AE", {
-                      month: "short",
-                      day: "numeric",
-                    }).format(new Date(point.date));
+                    const formattedDate = formatDubaiDate(point.date);
 
                     return (
-                      <div key={point.date} className="ops-trend-bar-col" title={`${formattedDate}: ${point.pageviews} views (${point.visitors} visitors)`}>
+                      <div
+                        key={point.date}
+                        className="ops-trend-bar-col"
+                        title={`${formattedDate}: ${point.pageviews} views (${point.visitors} visitors)`}
+                      >
                         <div className="ops-trend-bar-track">
                           <div className="ops-trend-bar-fill" style={{ height: `${heightPercent}%` }}>
                             <span className="ops-bar-tooltip">
@@ -294,7 +387,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
               <div className="ops-panel-empty">
                 <BarChart3 aria-hidden="true" />
                 <strong>No pageview telemetry in this date range.</strong>
-                <span>Visit the public site on http://localhost:3000 to record discovery activity.</span>
+                <span>Explore the residence catalog to record buyer discovery activity.</span>
               </div>
             )}
           </section>
@@ -317,7 +410,9 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <span>1. Catalog Exploration ({catalogCount} residences)</span>
                     <strong>{data.overview.totalPageviews}</strong>
                   </div>
-                  <div className="ops-funnel-bar"><span style={{ width: "100%" }} /></div>
+                  <div className="ops-funnel-bar">
+                    <span style={{ width: "100%" }} />
+                  </div>
                 </div>
 
                 <div className="ops-funnel-step">
@@ -326,7 +421,9 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{data.funnel.voiceSearches}</strong>
                   </div>
                   <div className="ops-funnel-bar">
-                    <span style={{ width: `${Math.min(100, (data.funnel.voiceSearches / totalViews) * 100)}%` }} />
+                    <span
+                      style={{ width: `${Math.min(100, (data.funnel.voiceSearches / totalViews) * 100)}%` }}
+                    />
                   </div>
                 </div>
 
@@ -336,7 +433,9 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{data.funnel.shortlists}</strong>
                   </div>
                   <div className="ops-funnel-bar">
-                    <span style={{ width: `${Math.min(100, (data.funnel.shortlists / totalViews) * 100)}%` }} />
+                    <span
+                      style={{ width: `${Math.min(100, (data.funnel.shortlists / totalViews) * 100)}%` }}
+                    />
                   </div>
                 </div>
 
@@ -346,7 +445,14 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{inquiriesCount}</strong>
                   </div>
                   <div className="ops-funnel-bar ops-bar-success">
-                    <span style={{ width: `${Math.min(100, (inquiriesCount / Math.max(1, data.overview.uniqueVisitors)) * 100)}%` }} />
+                    <span
+                      style={{
+                        width: `${Math.min(
+                          100,
+                          (inquiriesCount / Math.max(1, data.overview.uniqueVisitors)) * 100
+                        )}%`,
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -391,7 +497,12 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
 
       {/* Tab: Discovery Funnel */}
       {activeTab === "funnel" && (
-        <section className="ops-analytics-panel" aria-labelledby="funnel-full-heading">
+        <section
+          id="panel-funnel"
+          role="tabpanel"
+          aria-labelledby="tab-funnel"
+          className="ops-analytics-panel"
+        >
           <header className="ops-panel-header">
             <div>
               <h3 id="funnel-full-heading">Comprehensive Buyer Discovery & Conversion Funnel</h3>
@@ -458,7 +569,8 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
             <div>
               <strong>Governed AI Search Telemetry</strong>
               <span>
-                Rama tracks tool executions ({data.funnel.agentToolRuns} tool runs) and search briefs ({data.funnel.searchBriefs} briefs) with strict consent enforcement and zero PII leakage.
+                Rama tracks tool executions ({data.funnel.agentToolRuns} tool runs) and search briefs (
+                {data.funnel.searchBriefs} briefs) with strict consent enforcement and zero PII leakage.
               </span>
             </div>
           </div>
@@ -467,7 +579,12 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
 
       {/* Tab: Top Routes */}
       {activeTab === "pages" && (
-        <section className="ops-analytics-panel" aria-labelledby="pages-table-heading">
+        <section
+          id="panel-pages"
+          role="tabpanel"
+          aria-labelledby="tab-pages"
+          className="ops-analytics-panel"
+        >
           <header className="ops-panel-header">
             <div>
               <h3 id="pages-table-heading">All Explored Routes & Path Breakdown</h3>
@@ -522,7 +639,12 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
 
       {/* Tab: Clients & Web Vitals */}
       {activeTab === "tech" && (
-        <div className="ops-analytics-twin-grid">
+        <div
+          id="panel-tech"
+          role="tabpanel"
+          aria-labelledby="tab-tech"
+          className="ops-analytics-twin-grid"
+        >
           {/* Web Vitals Panel */}
           <section className="ops-analytics-panel">
             <header className="ops-panel-header">
@@ -535,8 +657,14 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
             <div className="ops-vitals-grid">
               <div className="ops-vital-box">
                 <small>Largest Contentful Paint (LCP)</small>
-                <strong>{data.webVitals.lcpAvgMs != null ? `${(data.webVitals.lcpAvgMs / 1000).toFixed(2)}s` : "—"}</strong>
-                <span data-status={data.webVitals.lcpAvgMs && data.webVitals.lcpAvgMs < 2500 ? "good" : "evaluating"}>
+                <strong>
+                  {data.webVitals.lcpAvgMs != null ? `${(data.webVitals.lcpAvgMs / 1000).toFixed(2)}s` : "—"}
+                </strong>
+                <span
+                  data-status={
+                    data.webVitals.lcpAvgMs && data.webVitals.lcpAvgMs < 2500 ? "good" : "evaluating"
+                  }
+                >
                   {data.webVitals.lcpAvgMs && data.webVitals.lcpAvgMs < 2500 ? "Good (< 2.5s)" : "Standard"}
                 </span>
               </div>
@@ -544,7 +672,11 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
               <div className="ops-vital-box">
                 <small>Interaction to Next Paint (INP)</small>
                 <strong>{data.webVitals.inpAvgMs != null ? `${data.webVitals.inpAvgMs}ms` : "—"}</strong>
-                <span data-status={data.webVitals.inpAvgMs && data.webVitals.inpAvgMs < 200 ? "good" : "evaluating"}>
+                <span
+                  data-status={
+                    data.webVitals.inpAvgMs && data.webVitals.inpAvgMs < 200 ? "good" : "evaluating"
+                  }
+                >
                   {data.webVitals.inpAvgMs && data.webVitals.inpAvgMs < 200 ? "Good (< 200ms)" : "Standard"}
                 </span>
               </div>
@@ -552,15 +684,27 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
               <div className="ops-vital-box">
                 <small>Cumulative Layout Shift (CLS)</small>
                 <strong>{data.webVitals.clsAvg != null ? data.webVitals.clsAvg : "0.00"}</strong>
-                <span data-status={data.webVitals.clsAvg != null && data.webVitals.clsAvg < 0.1 ? "good" : "evaluating"}>
-                  Good (&lt; 0.1)
+                <span
+                  data-status={
+                    data.webVitals.clsAvg != null && data.webVitals.clsAvg < 0.1 ? "good" : "evaluating"
+                  }
+                >
+                  {data.webVitals.clsAvg != null && data.webVitals.clsAvg < 0.1
+                    ? "Good (< 0.1)"
+                    : "Standard"}
                 </span>
               </div>
 
               <div className="ops-vital-box">
                 <small>First Contentful Paint (FCP)</small>
-                <strong>{data.webVitals.fcpAvgMs != null ? `${(data.webVitals.fcpAvgMs / 1000).toFixed(2)}s` : "—"}</strong>
-                <span data-status={data.webVitals.fcpAvgMs && data.webVitals.fcpAvgMs < 1800 ? "good" : "evaluating"}>
+                <strong>
+                  {data.webVitals.fcpAvgMs != null ? `${(data.webVitals.fcpAvgMs / 1000).toFixed(2)}s` : "—"}
+                </strong>
+                <span
+                  data-status={
+                    data.webVitals.fcpAvgMs && data.webVitals.fcpAvgMs < 1800 ? "good" : "evaluating"
+                  }
+                >
                   {data.webVitals.fcpAvgMs && data.webVitals.fcpAvgMs < 1800 ? "Good (< 1.8s)" : "Standard"}
                 </span>
               </div>
@@ -588,11 +732,17 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                   {data.clientBreakdown.browsers.map((b, idx) => (
                     <div key={`browser-${b.name}-${idx}`} className="ops-env-row">
                       <span>{b.name}</span>
-                      <div className="ops-env-track"><span style={{ width: `${b.percentage}%` }} /></div>
-                      <strong>{b.count} ({b.percentage}%)</strong>
+                      <div className="ops-env-track">
+                        <span style={{ width: `${b.percentage}%` }} />
+                      </div>
+                      <strong>
+                        {b.count} ({b.percentage}%)
+                      </strong>
                     </div>
                   ))}
-                  {data.clientBreakdown.browsers.length === 0 && <small>No browser telemetry logged yet.</small>}
+                  {data.clientBreakdown.browsers.length === 0 && (
+                    <small>No browser telemetry logged yet.</small>
+                  )}
                 </div>
               </div>
 
@@ -602,11 +752,17 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                   {data.clientBreakdown.operatingSystems.map((os, idx) => (
                     <div key={`os-${os.name}-${idx}`} className="ops-env-row">
                       <span>{os.name}</span>
-                      <div className="ops-env-track"><span style={{ width: `${os.percentage}%` }} /></div>
-                      <strong>{os.count} ({os.percentage}%)</strong>
+                      <div className="ops-env-track">
+                        <span style={{ width: `${os.percentage}%` }} />
+                      </div>
+                      <strong>
+                        {os.count} ({os.percentage}%)
+                      </strong>
                     </div>
                   ))}
-                  {data.clientBreakdown.operatingSystems.length === 0 && <small>No OS telemetry logged yet.</small>}
+                  {data.clientBreakdown.operatingSystems.length === 0 && (
+                    <small>No OS telemetry logged yet.</small>
+                  )}
                 </div>
               </div>
             </div>
@@ -616,13 +772,20 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
 
       {/* Tab: Live Stream */}
       {activeTab === "live" && (
-        <section className="ops-analytics-panel" aria-labelledby="live-stream-heading">
+        <section
+          id="panel-live"
+          role="tabpanel"
+          aria-labelledby="tab-live"
+          className="ops-analytics-panel"
+        >
           <header className="ops-panel-header">
             <div>
               <h3 id="live-stream-heading">Real-Time Ingestion Stream</h3>
               <p>Most recent raw events delivered through the PostHog ingestion pipeline.</p>
             </div>
-            <span className="ops-live-badge"><i className="ops-pulse-dot" /> Live Ingestion</span>
+            <span className="ops-live-badge">
+              <i className="ops-pulse-dot" /> Live Ingestion
+            </span>
           </header>
 
           {data.liveEvents.length > 0 ? (
@@ -630,7 +793,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
               <table className="ops-analytics-table">
                 <thead>
                   <tr>
-                    <th scope="col">Timestamp</th>
+                    <th scope="col">Timestamp (GST)</th>
                     <th scope="col">Event Type</th>
                     <th scope="col">URL / Context</th>
                     <th scope="col">Client</th>
@@ -641,12 +804,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                   {data.liveEvents.map((event, idx) => (
                     <tr key={`live-event-${event.id}-${idx}`}>
                       <td>
-                        <time dateTime={event.timestamp}>
-                          {new Intl.DateTimeFormat("en-AE", {
-                            timeStyle: "medium",
-                            dateStyle: "short",
-                          }).format(new Date(event.timestamp))}
-                        </time>
+                        <time dateTime={event.timestamp}>{formatDubaiDateTime(event.timestamp)}</time>
                       </td>
                       <td>
                         <span className="ops-event-chip" data-event={event.event}>
