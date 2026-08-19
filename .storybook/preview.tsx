@@ -44,6 +44,7 @@ const mockRouter: AppRouterInstance = {
   replace: () => {},
   refresh: () => {},
   prefetch: () => Promise.resolve(),
+  bfcacheId: '',
 };
 
 const preview: Preview = {
