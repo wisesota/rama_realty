@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   ArrowUpRight,
+  BarChart3,
   Building2,
   Command,
   LayoutDashboard,
@@ -22,7 +23,7 @@ import { ProfileMenu } from "@/components/dashboard/profile-menu";
 type DashboardShellProps = {
   staff: StaffContext;
   email: string | null;
-  active: "overview" | "inventory" | "inquiries" | "settings";
+  active: "overview" | "inventory" | "inquiries" | "analytics" | "settings";
   children: React.ReactNode;
 };
 
@@ -30,6 +31,7 @@ const navigation = [
   { key: "overview", label: "Daily brief", href: "/dashboard", icon: LayoutDashboard },
   { key: "inventory", label: "Inventory", href: "/dashboard/inventory", icon: Building2 },
   { key: "inquiries", label: "Conversations", href: "/dashboard/inquiries", icon: MessageSquareText },
+  { key: "analytics", label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
 ] as const;
 
 const settingsNavigation = { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings } as const;

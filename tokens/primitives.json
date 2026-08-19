@@ -1,0 +1,43 @@
+{
+  "color": {
+    "gallery": { "$value": "#fbfbf8", "$type": "color", "$description": "Airy primary gallery canvas background" },
+    "paper": { "$value": "#ffffff", "$type": "color", "$description": "Clean white card and panel surface" },
+    "architecture": { "$value": "#f0f1f1", "$type": "color", "$description": "Subtle structural surface tone" },
+    "mist": { "$value": "#e7ebec", "$type": "color", "$description": "Muted secondary background" },
+    "ink": { "$value": "#202321", "$type": "color", "$description": "Deep primary typographic and structural ink" },
+    "body-copy": { "$value": "#585d5b", "$type": "color", "$description": "High-legibility editorial body copy" },
+    "quiet": { "$value": "#747a77", "$type": "color", "$description": "Muted supporting metadata and caption tone" },
+    "sky": { "$value": "#82b8d7", "$type": "color", "$description": "Refined sky-blue accent" },
+    "sky-wash": { "$value": "#ddecf4", "$type": "color", "$description": "Atmospheric soft sky tint" },
+    "sand": { "$value": "#b99463", "$type": "color", "$description": "Warm architectural sand accent" },
+    "rule": { "$value": "#d8dad8", "$type": "color", "$description": "Hairline architectural grid and border tone" },
+    "error": { "$value": "#a34132", "$type": "color", "$description": "Restrained semantic error indicator" },
+    "focus": { "$value": "#356d8d", "$type": "color", "$description": "Accessible keyboard focus ring" }
+  },
+  "font": {
+    "family": {
+      "sans": { "$value": "var(--font-instrument-sans), sans-serif", "$type": "fontFamily", "$description": "Instrument Sans for modern structural readability" },
+      "serif": { "$value": "var(--font-source-serif), serif", "$type": "fontFamily", "$description": "Source Serif 4 for authoritative editorial luxury" }
+    },
+    "size": {
+      "xs": { "$value": "0.72rem", "$type": "dimension" },
+      "sm": { "$value": "0.84rem", "$type": "dimension" },
+      "base": { "$value": "1rem", "$type": "dimension" },
+      "lg": { "$value": "1.12rem", "$type": "dimension" },
+      "xl": { "$value": "1.25rem", "$type": "dimension" },
+      "2xl": { "$value": "1.75rem", "$type": "dimension" },
+      "3xl": { "$value": "2.45rem", "$type": "dimension" },
+      "hero": { "$value": "3.85rem", "$type": "dimension" }
+    }
+  },
+  "space": {
+    "gutter": { "$value": "clamp(1rem, 2vw, 2rem)", "$type": "dimension" },
+    "section": { "$value": "clamp(4.5rem, 6vw, 6.75rem)", "$type": "dimension" },
+    "content-max": { "$value": "74rem", "$type": "dimension" }
+  },
+  "radius": {
+    "media": { "$value": "16px", "$type": "dimension", "$description": "Editorial architectural media frame corner radius" },
+    "content": { "$value": "0.625rem", "$type": "dimension", "$description": "10px radius for cards and panels" },
+    "control": { "$value": "0.5rem", "$type": "dimension", "$description": "8px radius for compact interactive controls" }
+  }
+}

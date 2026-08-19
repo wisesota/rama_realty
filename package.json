@@ -8,12 +8,19 @@
   },
   "scripts": {
     "preinstall": "node scripts/require-pnpm.mjs",
+    "prebuild": "node scripts/build-tokens.mjs",
+    "pretest": "node scripts/build-tokens.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node scripts/build-tokens.mjs && tsc --noEmit",
     "test": "vitest run",
+    "tokens:build": "node scripts/build-tokens.mjs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic",
+    "chromatic:ci": "chromatic --only-changed",
     "verify:gemini-live": "node scripts/verify-gemini-live.mjs",
     "verify:supabase": "node scripts/verify-supabase.mjs",
     "check": "pnpm lint && pnpm typecheck"
@@ -41,14 +48,27 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "8.6.14",
+    "@storybook/addon-essentials": "8.6.14",
+    "@storybook/addon-interactions": "8.6.14",
+    "@storybook/blocks": "8.6.14",
+    "@storybook/nextjs": "8.6.14",
+    "@storybook/react": "8.6.14",
+    "@storybook/react-vite": "8.6.14",
+    "@storybook/test": "8.6.14",
     "@tailwindcss/postcss": "4.1.14",
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "chromatic": "^18.3.0",
     "eslint": "9.39.2",
     "eslint-config-next": "16.3.1",
+    "storybook": "8.6.14",
     "tailwindcss": "4.1.14",
     "typescript": "5.9.3",
+    "vite": "^6.2.1",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.10"
   }
 }

@@ -1,0 +1,27 @@
+{
+  "semantic": {
+    "surface": {
+      "canvas": { "$value": "{color.gallery}", "$type": "color", "$description": "Main viewport canvas surface" },
+      "card": { "$value": "{color.paper}", "$type": "color", "$description": "Default container surface" },
+      "subtle": { "$value": "{color.architecture}", "$type": "color", "$description": "Secondary or elevated subtle surface" },
+      "wash": { "$value": "{color.sky-wash}", "$type": "color", "$description": "Accented tint surface" }
+    },
+    "text": {
+      "primary": { "$value": "{color.ink}", "$type": "color", "$description": "Primary high-contrast text" },
+      "body": { "$value": "{color.body-copy}", "$type": "color", "$description": "Long-form editorial body copy" },
+      "muted": { "$value": "{color.quiet}", "$type": "color", "$description": "Secondary supporting text" },
+      "inverse": { "$value": "#ffffff", "$type": "color", "$description": "Text on dark background" }
+    },
+    "border": {
+      "subtle": { "$value": "{color.rule}", "$type": "color", "$description": "Standard hairline border" },
+      "focus": { "$value": "{color.focus}", "$type": "color", "$description": "Active focus indicator" }
+    },
+    "accent": {
+      "sky": { "$value": "{color.sky}", "$type": "color" },
+      "sand": { "$value": "{color.sand}", "$type": "color" }
+    },
+    "feedback": {
+      "error": { "$value": "{color.error}", "$type": "color" }
+    }
+  }
+}

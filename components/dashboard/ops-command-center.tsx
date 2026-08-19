@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Building2, Command, LayoutDashboard, MessageSquareText, Search, Settings, ShieldCheck, Sparkles, TriangleAlert, X } from "lucide-react";
+import { ArrowRight, BarChart3, Building2, Command, LayoutDashboard, MessageSquareText, Search, Settings, ShieldCheck, Sparkles, TriangleAlert, X } from "lucide-react";
 import { Dialog, Modal, ModalOverlay } from "react-aria-components";
 import { type FormEvent, useMemo, useState } from "react";
 import {
@@ -19,6 +19,7 @@ const commands: readonly CommandWithIcon[] = [
   { id: "review", label: "Review publication queue", detail: "Open records waiting for editorial approval", href: "/dashboard/inventory?status=in_review", icon: ShieldCheck, terms: "publication publish review approval waiting records" },
   { id: "conversations", label: "Open buyer conversations", detail: "Continue consented advisor handoffs", href: "/dashboard/inquiries", icon: MessageSquareText, terms: "buyer inquiry inquiries conversation conversations follow up lead leads" },
   { id: "reply", label: "Find conversations needing a reply", detail: "Open new buyer handoffs awaiting an advisor", href: "/dashboard/inquiries?view=needs_reply", icon: MessageSquareText, terms: "buyer inquiry conversations reply new advisor follow up" },
+  { id: "analytics", label: "Open analytics workspace", detail: "Inspect traffic, discovery patterns, and conversion telemetry", href: "/dashboard/analytics", icon: BarChart3, terms: "analytics traffic pageviews visitors metrics telemetry posthog conversion funnel" },
   { id: "settings", label: "Open workspace settings", detail: "Manage profile, security, and Rama governance", href: "/dashboard/settings", icon: Settings, terms: "settings profile avatar password security workspace rama ai" },
 ];
 
@@ -26,6 +27,7 @@ const suggestions = [
   { label: "Which listings need a source refresh?", href: "/dashboard/inventory?health=attention" },
   { label: "Show records waiting for publication review", href: "/dashboard/inventory?status=in_review" },
   { label: "Which buyer conversations need a reply?", href: "/dashboard/inquiries?view=needs_reply" },
+  { label: "Inspect buyer discovery and traffic analytics", href: "/dashboard/analytics" },
 ] as const;
 
 export function OpsCommandCenter({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (open: boolean) => void }) {
