@@ -1,0 +1,31 @@
+# dependencies
+/node_modules
+
+# Next.js
+/.next/
+/out/
+
+# production
+/build
+
+# local files
+.DS_Store
+*.pem
+
+# debug
+pnpm-debug.log*
+stdout.log
+stderr.log
+stdout.txt
+stderr.txt
+
+# local environment files
+.env*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Superdesign temporary conversion files
+.superdesign/tmp/
+.gstack/
