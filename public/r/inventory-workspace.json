@@ -8,7 +8,7 @@
     "react-aria-components"
   ],
   "registryDependencies": [
-    "@rama/operations-shell"
+    "operations-shell"
   ],
   "files": [
     {

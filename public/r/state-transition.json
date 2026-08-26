@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "state-transition",
+  "title": "Rama State Transition",
+  "description": "A reduced-motion-aware semantic crossfade for bounded, non-interactive state copy.",
+  "dependencies": [
+    "motion"
+  ],
+  "files": [
+    {
+      "path": "components/ui/state-transition.tsx",
+      "content": "\"use client\";\n\nimport { AnimatePresence, motion, useReducedMotion } from \"motion/react\";\nimport type { ReactNode } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nexport type StateTransitionProps = {\n  state: string;\n  children: ReactNode;\n  className?: string;\n};\n\nconst transition = {\n  duration: 0.15,\n  ease: [0.16, 1, 0.3, 1] as const,\n};\n\nexport function StateTransition({ state, children, className }: StateTransitionProps) {\n  const reduceMotion = useReducedMotion();\n\n  if (reduceMotion) {\n    return <div className={className}>{children}</div>;\n  }\n\n  return (\n    <AnimatePresence initial={false} mode=\"wait\">\n      <motion.div\n        key={state}\n        className={cn(className)}\n        initial={{ opacity: 0.86, y: 4 }}\n        animate={{ opacity: 1, y: 0 }}\n        exit={{ opacity: 0, y: -2 }}\n        transition={transition}\n      >\n        {children}\n      </motion.div>\n    </AnimatePresence>\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

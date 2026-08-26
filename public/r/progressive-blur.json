@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "progressive-blur",
+  "title": "Rama Progressive Blur",
+  "description": "A low-blur Magic UI-derived overflow cue rendered only when bounded content can scroll.",
+  "files": [
+    {
+      "path": "components/ui/progressive-blur.tsx",
+      "content": "\"use client\";\n\nimport { cn } from \"@/lib/utils\";\n\nexport interface ProgressiveBlurProps {\n  className?: string;\n  height?: string;\n  position?: \"top\" | \"bottom\";\n  blurLevels?: number[];\n}\n\n/**\n * Low-blur adaptation of Magic UI's Progressive Blur.\n * Consumers should render it only when it communicates scrollable overflow.\n */\nexport function ProgressiveBlur({\n  className,\n  height = \"2rem\",\n  position = \"bottom\",\n  blurLevels = [0.5, 1, 1.5, 2.5],\n}: ProgressiveBlurProps) {\n  return (\n    <div\n      aria-hidden=\"true\"\n      className={cn(\"progressive-blur\", `progressive-blur--${position}`, className)}\n      style={{ height }}\n    >\n      {blurLevels.map((blur, index) => {\n        const start = (index / blurLevels.length) * 100;\n        const end = ((index + 2) / blurLevels.length) * 100;\n        const direction = position === \"bottom\" ? \"to bottom\" : \"to top\";\n        const mask = `linear-gradient(${direction}, transparent ${start}%, black ${(start + end) / 2}%, transparent ${Math.min(end, 100)}%)`;\n        return (\n          <span\n            key={blur}\n            style={{\n              backdropFilter: `blur(${blur}px)`,\n              WebkitBackdropFilter: `blur(${blur}px)`,\n              maskImage: mask,\n              WebkitMaskImage: mask,\n            }}\n          />\n        );\n      })}\n    </div>\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

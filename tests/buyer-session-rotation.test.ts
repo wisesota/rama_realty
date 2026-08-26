@@ -63,7 +63,7 @@ describe("buyer-session token rotation", () => {
     mocks.rpc.mockResolvedValue({ data: null, error: { code: "42501" } });
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
-    await expect(rotateBuyerSessionToken({ mode: "bind", reason: "oauth", userId: "user-1" }))
+    await expect(rotateBuyerSessionToken({ mode: "bind", reason: "auth_callback", userId: "user-1" }))
       .rejects.toThrow("The buyer session could not be secured.");
 
     expect(mocks.setCookie).not.toHaveBeenCalled();

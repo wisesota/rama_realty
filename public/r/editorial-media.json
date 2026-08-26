@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "editorial-media",
+  "title": "Rama Editorial Media",
+  "description": "A direction-aware, responsive architectural image with localized alternative text and an explicit illustrative-context caption.",
+  "registryDependencies": [
+    "media-frame"
+  ],
+  "files": [
+    {
+      "path": "components/rama/editorial-media.tsx",
+      "content": "import Image from \"next/image\";\nimport { MediaFrame } from \"@/components/rama/media-frame\";\nimport { cn } from \"@/lib/utils\";\n\nexport type EditorialMediaModel = {\n  src: string;\n  alt: string;\n  caption: string;\n};\n\nexport function EditorialMedia({\n  media,\n  label,\n  sizes,\n  aspect = \"landscape\",\n  className,\n}: {\n  media: EditorialMediaModel;\n  label: string;\n  sizes: string;\n  aspect?: \"landscape\" | \"portrait\" | \"panorama\";\n  className?: string;\n}) {\n  return (\n    <figure className={cn(\"editorial-media\", className)} data-aspect={aspect}>\n      <MediaFrame className=\"editorial-media__frame\">\n        <Image\n          src={media.src}\n          alt={media.alt}\n          fill\n          sizes={sizes}\n          className=\"editorial-media__image\"\n        />\n      </MediaFrame>\n      <figcaption>\n        <span>{label}</span>\n        <p>{media.caption}</p>\n      </figcaption>\n    </figure>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -3,6 +3,7 @@
 
 # Next.js
 /.next/
+/.next-demo/
 /out/
 
 # production
@@ -36,3 +37,9 @@ stderr.txt
 /storybook-static/
 build-storybook.log
 
+# Playwright
+/playwright-report/
+/test-results/
+
+# Agent skills and customizations
+.agents/

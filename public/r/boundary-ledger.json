@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "boundary-ledger",
+  "title": "Rama Boundary Ledger",
+  "description": "A factual ledger for inventory, source, consent, privacy, and unknown boundaries.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "files": [
+    {
+      "path": "components/rama/boundary-ledger.tsx",
+      "content": "import { Check, CircleHelp, LockKeyhole, Shield } from \"lucide-react\";\n\nexport type BoundaryLedgerItem = {\n  title: string;\n  body: string;\n  state: \"source\" | \"consent\" | \"privacy\" | \"unknown\";\n};\n\nconst icons = {\n  source: Check,\n  consent: Shield,\n  privacy: LockKeyhole,\n  unknown: CircleHelp,\n};\n\nexport function BoundaryLedger({ items }: { items: readonly BoundaryLedgerItem[] }) {\n  return (\n    <dl className=\"boundary-ledger\">\n      {items.map((item) => {\n        const Icon = icons[item.state];\n        return (\n          <div key={item.title} data-state={item.state}>\n            <dt><Icon aria-hidden=\"true\" />{item.title}</dt>\n            <dd>{item.body}</dd>\n          </div>\n        );\n      })}\n    </dl>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

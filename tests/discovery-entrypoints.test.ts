@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { BuyerDecisionEnvelopeV1 } from "@/lib/agent/buyer-contracts";
 
 const mocks = vi.hoisted(() => {
@@ -41,6 +41,7 @@ vi.mock("@/lib/supabase/admin", () => ({
 }));
 
 import { POST as postDiscovery } from "@/app/api/discovery/query/route";
+import { POST as postPrepare } from "@/app/api/discovery/prepare/route";
 import { POST as postAgentTool } from "@/app/api/agent/tools/route";
 
 const envelope: BuyerDecisionEnvelopeV1 = {
@@ -67,25 +68,53 @@ beforeEach(() => {
   mocks.insertTelemetry.mockReset().mockResolvedValue({ error: null });
 });
 
-describe("shared property-discovery entrypoint", () => {
-  it("returns the same decision envelope for typed and voice-led searches", async () => {
+afterEach(() => vi.unstubAllEnvs());
+
+describe("confirmed property-discovery entrypoint", () => {
+  it("keeps text and voice preparation routes in full normalized-draft parity", async () => {
+    const brief = "شقة من غرفتين في دبي مارينا بأقل من 3 ملايين درهم مع شرفة";
+    const text = await postPrepare(new Request("http://localhost/api/discovery/prepare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brief, source: "text", draftId: "draft-route-parity-0001" }),
+    }));
+    const voice = await postAgentTool(new Request("http://localhost/api/agent/tools", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tool: "prepare_brief", args: { brief } }),
+    }));
+
+    const textDraft = await text.json() as Record<string, unknown>;
+    const voiceDraft = (await voice.json() as { preparedBrief: Record<string, unknown> }).preparedBrief;
+    const normalized = (draft: Record<string, unknown>) => {
+      const normalizedDraft = { ...draft };
+      delete normalizedDraft.draftId;
+      delete normalizedDraft.source;
+      return normalizedDraft;
+    };
+    expect(text.status).toBe(200);
+    expect(voice.status).toBe(200);
+    expect(normalized(voiceDraft)).toEqual(normalized(textDraft));
+  });
+
+  it("persists only the confirmed route while Live prepares a side-effect-free draft", async () => {
     mocks.discoverProperties.mockResolvedValue(envelope);
 
     const direct = await postDiscovery(new Request("http://localhost/api/discovery/query", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ brief: " Dubai Marina home ", source: "text" }),
+      body: JSON.stringify({ brief: " Dubai Marina home ", source: "text", idempotencyKey: "draft-1234567890-confirm" }),
     }));
     const voice = await postAgentTool(new Request("http://localhost/api/agent/tools", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tool: "search_properties", args: { brief: "Dubai Marina home" } }),
+      body: JSON.stringify({ tool: "prepare_brief", args: { brief: "Dubai Marina home" } }),
     }));
 
     expect(await direct.json()).toEqual(envelope);
-    expect((await voice.json()).decisionEnvelope).toEqual(envelope);
-    expect(mocks.discoverProperties).toHaveBeenNthCalledWith(1, expect.objectContaining({ brief: "Dubai Marina home", source: "text" }));
-    expect(mocks.discoverProperties).toHaveBeenNthCalledWith(2, expect.objectContaining({ brief: "Dubai Marina home", source: "voice" }));
+    expect((await voice.json()).preparedBrief).toEqual(expect.objectContaining({ transcript: "Dubai Marina home", source: "voice" }));
+    expect(mocks.discoverProperties).toHaveBeenCalledTimes(1);
+    expect(mocks.discoverProperties).toHaveBeenCalledWith(expect.objectContaining({ brief: "Dubai Marina home", source: "text", idempotencyKey: "draft-1234567890-confirm" }));
   });
 
   it("preserves intentional transport-specific failure semantics", async () => {
@@ -93,19 +122,60 @@ describe("shared property-discovery entrypoint", () => {
     const direct = await postDiscovery(new Request("http://localhost/api/discovery/query", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ brief: "Dubai Marina home", source: "text" }),
-    }));
-
-    mocks.discoverProperties.mockRejectedValueOnce(new mocks.CatalogUnavailableError("Governed catalog unavailable."));
-    const voice = await postAgentTool(new Request("http://localhost/api/agent/tools", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tool: "search_properties", args: { brief: "Dubai Marina home" } }),
+      body: JSON.stringify({ brief: "Dubai Marina home", source: "text", idempotencyKey: "draft-1234567890-confirm" }),
     }));
 
     expect(direct.status).toBe(503);
     expect(await direct.json()).toEqual({ error: "Governed catalog unavailable.", code: "CatalogUnavailable" });
-    expect(voice.status).toBe(422);
-    expect(await voice.json()).toEqual(expect.objectContaining({ ok: false, tool: "search_properties", error: "Governed catalog unavailable." }));
+    expect(mocks.discoverProperties).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails every public discovery transport closed behind the global kill switch", async () => {
+    vi.stubEnv("RAMA_PUBLIC_EXPERIENCE_ENABLED", "false");
+    const direct = await postDiscovery(new Request("http://localhost/api/discovery/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brief: "Dubai Marina home", source: "text", idempotencyKey: "draft-1234567890-confirm" }),
+    }));
+    const voice = await postAgentTool(new Request("http://localhost/api/agent/tools", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tool: "prepare_brief", args: { brief: "Dubai Marina home" } }),
+    }));
+
+    expect(direct.status).toBe(503);
+    expect(voice.status).toBe(503);
+    expect(mocks.discoverProperties).not.toHaveBeenCalled();
+  });
+
+  it("does not let a direct query bypass the confirmation kill switch", async () => {
+    vi.stubEnv("RAMA_BRIEF_CONFIRMATION_ENABLED", "false");
+    const direct = await postDiscovery(new Request("http://localhost/api/discovery/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brief: "Dubai Marina home", source: "text", idempotencyKey: "draft-1234567890-confirm" }),
+    }));
+
+    expect(direct.status).toBe(503);
+    expect(await direct.json()).toMatchObject({ code: "BriefConfirmationDisabled" });
+    expect(mocks.discoverProperties).not.toHaveBeenCalled();
+  });
+
+  it("keeps query and agent tools inside the same stable rollout cohort", async () => {
+    vi.stubEnv("RAMA_DECISION_OS_ROLLOUT_PERCENT", "0");
+    const direct = await postDiscovery(new Request("http://localhost/api/discovery/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brief: "Dubai Marina home", source: "text", idempotencyKey: "draft-1234567890-confirm" }),
+    }));
+    const voice = await postAgentTool(new Request("http://localhost/api/agent/tools", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tool: "prepare_brief", args: { brief: "Dubai Marina home" } }),
+    }));
+
+    expect(direct.status).toBe(503);
+    expect(voice.status).toBe(503);
+    expect(mocks.discoverProperties).not.toHaveBeenCalled();
   });
 });

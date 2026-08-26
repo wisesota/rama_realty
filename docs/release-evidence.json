@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-25T16:50:52Z",
+  "commit": "working-tree-uncommitted",
+  "releaseDecision": "blocked",
+  "states": {
+    "local": {
+      "status": "verified",
+      "evidence": {
+        "lint": "passed",
+        "typecheck": "passed",
+        "unitAndContractTests": "passed, 56 files and 256 tests",
+        "registryParity": "passed, 26 registry artifacts rebuilt and verified against repository sources",
+        "productionBuild": "passed, 24 page entries generated and all dynamic routes compiled",
+        "centeredLagomRedesign": "implemented and locally verified: centered Residential Horizon hero, deterministic responsive AVIF/WebP art direction and preloads, static hero Decision Aperture, interaction-loaded bounded voice/text dialog with internally scrolling long input, transparent-to-ink navigation, EN/AR parity, reduced-motion and no-JavaScript fallbacks, print treatment, governed five-stage Decision Specimen, generated token artifacts, zero active raw-token violations, public-copy claims scanner, and legal-rights manifest",
+        "performanceBaseline": "measured from five cold production-build runs per profile. Desktop median: score 99, LCP 938.23 ms, TBT 19 ms, CLS 0. Mobile Fast 3G median: score 84, FCP 1398.15 ms, LCP 3997.29 ms, TBT 183 ms, CLS 0, JavaScript transfer 269305 bytes, CSS transfer 44336 bytes. Desktop passes; mobile LCP remains above the 2500 ms staging gate and keeps release readiness blocked.",
+        "nextObservability": "passed: instrumentation-client and global-error conventions are present, early client failures are queued, privacy scrubbing is applied, client tracing is intentionally disabled, and deprecated Sentry client configuration is removed.",
+        "analyticsPrivacy": "passed: PostHog initializes only after explicit consent, authenticated identity is attached only after consent, product telemetry remains allowlisted, and pageviews exclude every query parameter so callback tokens and buyer input cannot enter analytics URLs.",
+        "impeccableSourceAudit": "passed: 285 advisory craft notes and zero actionable warnings/errors across app, components, and lib; generated Storybook and rejected exploration artifacts are excluded from the source verdict.",
+        "storybookBuild": "passed_with_upstream_bundle_warnings",
+        "dependencyAuditHigh": "passed, no known vulnerabilities",
+        "peerDependencyContract": "passed",
+        "releaseContract": "passed; blocked evidence is internally consistent",
+        "productionReadiness": "expected failure; explicit activation, external approvals, provider IDs, hosted evidence, and operational artifacts remain open",
+        "renderedBrowserQa": "passed, 38/38 Chromium E2E scenarios in the final forced-clean localhost matrix. Coverage includes interaction-loaded composer hydration, early intent retention, EN/AR, 320px and 390px, intermediate and wide layouts, 1280x720, keyboard traversal, native-dialog Escape and route-aware focus return, fixed-height long-content scrolling, reduced motion, logical RTL controls, Decision Room routes, illustrative handoff restrictions, saved comparison, export, erasure lock, and no horizontal overflow. See .impeccable/audit-2026-08-25/impeccable-audit.md",
+        "publicAssetRights": "eight active editorial WebP scenes are hash-registered with localized alternative text, crop rules, ownership basis, and generation records; every generated scene remains blocked from staging pending legal review",
+        "stagingE2EHarness": "ready but not executed: RAMA_STAGING_URL drives a separate HTTPS-only five-test deployed matrix without local web servers; a manually dispatched, environment-scoped GitHub workflow runs the environment contract, hosted Supabase posture, two-user identity isolation, and staging E2E. No staging URL exists yet",
+        "credentialFreeDemo": "passed; explicit demo mode bypasses Supabase, binds idempotent illustrative results to the opaque buyer session in bounded process memory, restores the route for 30 minutes or until restart, exports only that browser session's rooms, and deletes only records owned by the same hashed session token",
+        "dataRightsMigration": "all migration-focused contract tests passed across 25 ordered repository SQL files; native_supabase_auth_only was applied and verified on the development project; a clean staging replay remains unverified",
+        "environmentContract": "passed; local development RATE_LIMIT_SECRET and BUYER_SESSION_SECRET are configured with independent throwaway values, production rotation remains a release gate",
+        "hostedSupabasePostureProbe": "passed against the sole development project after applying native_supabase_auth_only; all public operational tables report RLS enabled and anonymous reads expose no rows; hosted Google authentication is disabled",
+        "hostedIdentityVerifier": "passed again against development with two ephemeral confirmed users after the auth migration; own insert/read passed, cross-owner read/insert was denied, and cleanup removed the disposable identities and temporary rows",
+        "telemetryCredentialVerifier": "passed; PostHog accepted a bounded authenticated HogQL query and Sentry accepted an authenticated project read whose project matched the configured DSN; no Sentry test event was sent and no credential value was printed",
+        "geminiLiveCredentialVerifier": "passed; Gemini accepted the rotated server key, issued a constrained ephemeral token, completed both transcripts, streamed native audio, and completed one governed prepare-brief tool call and response using the browser's shared ten-tool manifest",
+        "secretScanning": "repository and current history high-signal scan found no credential candidates; CI now uses SHA-pinned Gitleaks v3 with full history and CODEOWNERS protects workflows and scanner configuration",
+        "authenticationProviderContract": "native Supabase authentication only: staff email/password and buyer email-link OTP; provider-style callbacks fail before session exchange and hosted Google auth is disabled",
+        "mcpCredentialRemediation": "resolved locally: Supabase and PostHog use environment-backed direct HTTP headers, all six server definitions parse with one transport, no configured credential appears in args or running command lines, and authenticated MCP initialization returned HTTP 200 for both servers",
+        "securityReview": "local application credential boundaries passed and MCP process-argument exposure is resolved; voice-session disposal aborts in-flight startup and prevents recorder or Gemini session resurrection, voice uploads are bounded at 7 MB by both the Next.js proxy and route contract, and Supabase leaked-password protection is intentionally not used under the approved Free-plan architecture and is not a release gate"
+      }
+    },
+    "preview": {
+      "status": "not_verified",
+      "missing": ["preview deployment", "preview environment contract", "preview browser matrix"]
+    },
+    "staging": {
+      "status": "not_verified",
+      "missing": ["staging project and linked application deployment", "editorial-media legal and rights approval", "clean migration replay", "staging multi-identity RLS matrix", "live Auth redirect and deletion-email verification", "provider reconciliation", "approved processor-deletion adapter and scheduler activation", "backup restore drill", "privacy canary", "live staging E2E"]
+    },
+    "production": {
+      "status": "not_authorized",
+      "missing": ["target-environment rotation record", "verified staging evidence", "licensed provider activation", "legal approval", "penetration test", "deployed device and audio evidence"]
+    }
+  },
+  "externalGates": {
+    "licensedSupplyAgreement": "not_verified",
+    "advisorOperatingModel": "not_verified",
+    "customerPilot": "not_verified",
+    "privacyAndRetentionApproval": "not_verified"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "evidence-state",
+  "title": "Rama Evidence State",
+  "description": "A text, structure, and color redundant rendering of governed evidence state.",
+  "files": [
+    {
+      "path": "components/rama/evidence-state.tsx",
+      "content": "import type { EvidenceState as EvidenceStateValue } from \"@/lib/agent/buyer-contracts\";\nimport { cn } from \"@/lib/utils\";\n\nconst defaultLabels: Record<EvidenceStateValue, string> = {\n  source_confirmed: \"Source confirmed\",\n  buyer_confirmed: \"Buyer confirmed\",\n  inferred: \"Rama inference\",\n  stale: \"Stale\",\n  disputed: \"Changed\",\n  unknown: \"Unknown\",\n};\n\nexport function EvidenceState({\n  state,\n  label,\n  detail,\n  className,\n}: {\n  state: EvidenceStateValue;\n  label?: string;\n  detail?: string;\n  className?: string;\n}) {\n  return (\n    <div className={cn(\"evidence-state\", className)} data-state={state}>\n      <span className=\"evidence-state__mark\" aria-hidden=\"true\" />\n      <span>\n        <strong>{label ?? defaultLabels[state]}</strong>\n        {detail ? <small>{detail}</small> : null}\n      </span>\n    </div>\n  );\n}\n\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

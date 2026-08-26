@@ -1,5 +1,6 @@
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { criterionCategoriesFromKeys, emitProductEvent, type ProductEvent } from "@/lib/product-events";
+import { criterionCategoriesFromKeys, elapsedBucket, emitProductEvent, type ProductEvent } from "@/lib/product-events";
 
 const event: ProductEvent = {
   event: "room.property_expand",
@@ -16,6 +17,19 @@ afterEach(() => {
 });
 
 describe("privacy-safe product events", () => {
+  it("uses coarse voice latency buckets", () => {
+    expect(elapsedBucket(500)).toBe("lt_1s");
+    expect(elapsedBucket(4_000)).toBe("3_10s");
+    expect(elapsedBucket(120_000)).toBe("gte_120s");
+  });
+
+  it("does not download analytics before cookie consent", () => {
+    const source = readFileSync("lib/product-events.ts", "utf8");
+
+    expect(source.indexOf('localStorage.getItem("rama_cookie_consent")')).toBeLessThan(
+      source.indexOf('import("posthog-js")'),
+    );
+  });
   it("logs the redacted event in development", () => {
     vi.stubEnv("NODE_ENV", "development");
     const info = vi.spyOn(console, "info").mockImplementation(() => undefined);

@@ -33,7 +33,7 @@ This pass hardens four truth boundaries the CTO document correctly identified:
 - Enforce the actual provenance invariant in the runtime parser: `published` requires a non-null `organizationId`; an organizationless property must be `illustrative`. Keep `ready` as an envelope-completion state because approved demo mode can legitimately return an illustrative ready envelope.
 - Add a prominent, exact illustrative-supply disclosure beside the landing search rail.
 - Add a redacted `room.zero_results` development event containing allowlisted semantic criterion categories/count only, never values, labels, ordinal keys, or the raw brief.
-- Rotate the opaque buyer-session token after login, OAuth callback, successful advisor handoff, password change, and sign-out. Use an atomic service-role RPC plus an old-token tombstone so a delayed request cannot recreate the retired hash as a second buyer session.
+- Rotate the opaque buyer-session token after password login, native Supabase email-link callback, successful advisor handoff, password change, and sign-out. Use an atomic service-role RPC plus an old-token tombstone so a delayed request cannot recreate the retired hash as a second buyer session.
 - Extend hosted Supabase verification to include anonymous reads of `search_runs` and `audit_events`, and add a static SQL contract test for the operational grants/RLS posture.
 - Update implementation documentation with evidence and the honest hosted gates.
 
@@ -122,7 +122,7 @@ PUBLIC FLOW
 ## Implementation tasks
 
 - [x] Add orchestration and provenance contract tests.
-- [x] Implement tombstoned buyer-session rotation and call it at login, OAuth, handoff, password-change, and sign-out boundaries.
+- [x] Implement tombstoned buyer-session rotation and call it at password login, native Supabase email-link callback, handoff, password-change, and sign-out boundaries.
 - [x] Prevent delayed dossier-tool responses from crossing property selections.
 - [x] Add the landing disclosure and privacy-safe search-outcome event.
 - [x] Keep shortlist expansion legible by focusing and revealing the dossier heading.
@@ -133,7 +133,7 @@ Sequential implementation is preferred. The changes are small but converge on th
 
 ## Not in scope
 
-- Enabling leaked-password protection or MFA in the hosted Supabase dashboard; these require project-owner authority and live verification.
+- Leaked-password protection is intentionally excluded under the Supabase Free-plan decision. Hosted staff MFA still requires project-owner authority and live verification.
 - A licensed inventory/provider contract or ingestion pipeline; this is the next activation milestone, not a frontend patch.
 - Retention/deletion policy approval or scheduled deletion jobs; legal/product ownership is required before code can encode a policy.
 - Production analytics, consent integration, PII scrubbing certification, or production observability activation.

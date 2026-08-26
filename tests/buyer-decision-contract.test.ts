@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isBuyerDecisionEnvelope, type BuyerDecisionEnvelopeV1 } from "@/lib/agent/buyer-contracts";
+import { isBuyerDecisionEnvelope, type BuyerDecisionEnvelopeV1, type BuyerDecisionEnvelopeV2 } from "@/lib/agent/buyer-contracts";
 
 const envelope: BuyerDecisionEnvelopeV1 = {
   schemaVersion: "1",
@@ -59,6 +59,43 @@ describe("buyer Decision Room envelope", () => {
     const malformed = structuredClone(envelope);
     malformed.sourceSummary.publishedCount = 0;
     malformed.sourceSummary.illustrativeCount = 1;
+    expect(isBuyerDecisionEnvelope(malformed)).toBe(false);
+  });
+
+  it("reads a v2 envelope with explicit evidence and an immutable Decision Ledger", () => {
+    const v2: BuyerDecisionEnvelopeV2 = {
+      ...structuredClone(envelope),
+      schemaVersion: "2",
+      evidence: {
+        assertions: [{
+          id: "home-1:price:abc123",
+          propertyId: "home-1",
+          field: "price",
+          label: "Price",
+          value: 2_800_000,
+          state: "disputed",
+          sourceName: "CRM",
+          observedAt: "2026-08-18T12:00:00.000Z",
+          asSeenValue: 2_700_000,
+          currentValue: 2_800_000,
+          contentHash: "a".repeat(64),
+          explanation: "The governed price changed after the snapshot.",
+        }],
+      },
+      decisionLedger: {
+        version: "1",
+        events: [{
+          id: "event-1",
+          type: "candidate_seen",
+          occurredAt: "2026-08-18T12:00:00.000Z",
+          summary: "The candidate entered the shortlist.",
+          assertionIds: ["home-1:price:abc123"],
+        }],
+      },
+    };
+    expect(isBuyerDecisionEnvelope(v2)).toBe(true);
+    const malformed = structuredClone(v2) as BuyerDecisionEnvelopeV2;
+    malformed.evidence.assertions[0].state = "guaranteed" as never;
     expect(isBuyerDecisionEnvelope(malformed)).toBe(false);
   });
 });

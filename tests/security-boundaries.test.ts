@@ -56,6 +56,7 @@ describe("buyer-session security boundaries", () => {
 
 describe("hosted Supabase verification", () => {
   const verifier = source("scripts/verify-supabase.mjs");
+  const limiter = source("lib/rate-limit-server.ts");
 
   it("checks the operational search and audit tables without treating server errors as denial", () => {
     expect(verifier).toContain('"search_runs"');
@@ -64,5 +65,25 @@ describe("hosted Supabase verification", () => {
     expect(verifier).toContain("verify_operational_security_posture");
     expect(verifier).toContain("row.rls_enabled !== true || row.anon_select === true");
     expect(verifier).not.toContain("const rows = response.ok ? await response.json() : [];");
+  });
+
+  it("requires an independent rate-limit secret and never reuses a provider credential", () => {
+    expect(verifier).toContain("process.env.RATE_LIMIT_SECRET");
+    expect(verifier).not.toContain("process.env.RATE_LIMIT_SECRET || process.env.GEMINI_API_KEY");
+    expect(limiter).not.toContain("process.env.RATE_LIMIT_SECRET || process.env.GEMINI_API_KEY");
+  });
+});
+
+describe("recorded voice upload boundaries", () => {
+  const route = source("app/api/voice/turn/route.ts");
+  const nextConfig = source("next.config.ts");
+
+  it("bounds declared and chunked multipart bodies before parsing audio", () => {
+    expect(nextConfig).toContain('proxyClientMaxBodySize: "7mb"');
+    const declaredLengthGuard = route.indexOf('request.headers.get("content-length")');
+    const multipartParse = route.indexOf("await request.formData()");
+    expect(declaredLengthGuard).toBeGreaterThan(-1);
+    expect(multipartParse).toBeGreaterThan(declaredLengthGuard);
+    expect(route).toContain("maximumMultipartBytes");
   });
 });

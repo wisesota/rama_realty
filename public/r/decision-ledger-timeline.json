@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "decision-ledger-timeline",
+  "title": "Rama Decision Ledger Timeline",
+  "description": "A chronological index of buyer-controlled decision changes and open questions.",
+  "files": [
+    {
+      "path": "components/rama/decision-ledger-timeline.tsx",
+      "content": "export type DecisionLedgerTimelineItem = { id: string; label: string; detail: string; time?: string };\n\nexport function DecisionLedgerTimeline({ items }: { items: readonly DecisionLedgerTimelineItem[] }) {\n  return <ol className=\"decision-ledger-timeline\">{items.map((item) => <li key={item.id}><span aria-hidden=\"true\" /><div><strong>{item.label}</strong><p>{item.detail}</p>{item.time ? <time>{item.time}</time> : null}</div></li>)}</ol>;\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

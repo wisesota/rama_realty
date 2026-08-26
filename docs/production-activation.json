@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "targetEnvironment": "production",
+  "targetCommit": null,
+  "createdAt": "2026-08-22T15:40:00Z",
+  "heroGaAt": null,
+  "heroRollbackRemoveAt": null,
+  "heroRollbackWindowDays": 30,
+  "approvals": [
+    { "role": "cto", "status": "pending", "owner": null, "approvedAt": null },
+    { "role": "security", "status": "pending", "owner": null, "approvedAt": null },
+    { "role": "privacy", "status": "pending", "owner": null, "approvedAt": null },
+    { "role": "legal", "status": "pending", "owner": null, "approvedAt": null },
+    { "role": "product", "status": "pending", "owner": null, "approvedAt": null }
+  ],
+  "rollout": {
+    "cohortPercent": 0,
+    "flags": {
+      "RAMA_PUBLIC_EXPERIENCE_ENABLED": false,
+      "RAMA_LANDING_COMPOSITION_ENABLED": false,
+      "RAMA_CINEMATIC_HERO_ENABLED": false,
+      "RAMA_BRIEF_CONFIRMATION_ENABLED": false,
+      "RAMA_LOCALE_ROUTES_ENABLED": false,
+      "RAMA_EVIDENCE_V2_WRITER_ENABLED": false,
+      "RAMA_EVIDENCE_V2_RENDERER_ENABLED": false,
+      "GEMINI_LIVE_ENABLED": false,
+      "LICENSED_SUPPLY_PUBLICATION_ENABLED": false
+    },
+    "providerIds": []
+  },
+  "operations": {
+    "rollbackOwner": null,
+    "onCallOwner": null,
+    "incidentOwner": null,
+    "backupRestoreEvidence": null,
+    "penetrationTestEvidence": null,
+    "privacyCanaryEvidence": null,
+    "hostedRlsEvidence": null,
+    "credentialRotationEvidence": null
+  }
+}
