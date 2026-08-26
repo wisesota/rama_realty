@@ -10,7 +10,6 @@ export function Logo({ inverse = false }: LogoProps) {
       </span>
       <span className="brand-name">
         <span className="brand-name__rama">RAMA</span>
-        <span className="brand-name__realty">REALTY</span>
       </span>
     </span>
   );

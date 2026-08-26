@@ -5,6 +5,9 @@ export const rateLimitScopes = [
   "gemini-voice-turn",
   "agent-tool",
   "property-search",
+  "prepare-brief",
+  "decision-ledger",
+  "buyer-deletion-verification",
 ] as const;
 
 export type RateLimitScope = (typeof rateLimitScopes)[number];

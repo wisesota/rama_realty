@@ -1,0 +1,56 @@
+name: Staging verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_url:
+        description: HTTPS origin of the already-deployed staging release candidate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-verification
+  cancel-in-progress: false
+
+jobs:
+  deployed-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    env:
+      RAMA_STAGING_URL: ${{ inputs.staging_url }}
+      NEXT_PUBLIC_SITE_URL: ${{ inputs.staging_url }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.STAGING_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.STAGING_SUPABASE_SECRET_KEY }}
+      RATE_LIMIT_SECRET: ${{ secrets.STAGING_RATE_LIMIT_SECRET }}
+      BUYER_SESSION_SECRET: ${{ secrets.STAGING_BUYER_SESSION_SECRET }}
+      RAMA_DEMO_MODE: "false"
+      GEMINI_LIVE_ENABLED: "false"
+      NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: "0"
+      SENTRY_TRACES_SAMPLE_RATE: "0"
+    steps:
+      - name: Check out release candidate
+        uses: actions/checkout@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install pnpm
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 11.20.0
+          run_install: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm env:check
+      - run: pnpm verify:supabase
+      - run: pnpm verify:supabase-identities
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm e2e:staging

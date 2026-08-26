@@ -13,7 +13,7 @@ function cookieName() {
 }
 
 function secret() {
-  const value = process.env.BUYER_SESSION_SECRET || process.env.SUPABASE_SECRET_KEY;
+  const value = process.env.BUYER_SESSION_SECRET;
   if (!value || value.length < 32) throw new Error("BUYER_SESSION_SECRET must be at least 32 characters.");
   return value;
 }
@@ -58,7 +58,7 @@ export async function getOrCreateBuyerSessionTokenHash() {
 
 export type BuyerSessionRotationReason =
   | "login"
-  | "oauth"
+  | "auth_callback"
   | "handoff"
   | "password_change"
   | "signout";

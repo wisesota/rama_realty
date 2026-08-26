@@ -20,7 +20,7 @@
       "type": "registry:component",
       "title": "Rama Editorial Heading",
       "description": "A consistent serif heading, eyebrow, and supporting-copy composition.",
-      "registryDependencies": ["@rama/section-shell"],
+      "registryDependencies": ["section-shell"],
       "files": [
         {
           "path": "components/rama/section-heading.tsx",
@@ -45,7 +45,7 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "Displays a button or a component that looks like a button.",
-      "dependencies": ["@radix-ui/react-slot"],
+      "dependencies": ["class-variance-authority", "react-aria-components"],
       "files": [
         {
           "path": "components/ui/button.tsx",
@@ -115,7 +115,7 @@
       "title": "Rama Governed Inventory Workspace",
       "description": "A source-aware residence catalog with filters, readiness states, responsive records, a property inspector, and staged record creation.",
       "dependencies": ["lucide-react", "react-aria-components"],
-      "registryDependencies": ["@rama/operations-shell"],
+      "registryDependencies": ["operations-shell"],
       "files": [
         {
           "path": "components/dashboard/inventory-workspace.tsx",
@@ -141,13 +141,202 @@
       "title": "Rama Buyer Conversation Workspace",
       "description": "The advisor master-detail queue and consented buyer dossier used for AI-to-human handoffs.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@rama/operations-shell"],
+      "registryDependencies": ["operations-shell"],
       "files": [
         {
           "path": "components/dashboard/conversations-workspace.tsx",
           "type": "registry:component"
         }
       ]
+    },
+    {
+      "name": "blur-fade",
+      "type": "registry:ui",
+      "title": "Rama Blur Fade",
+      "description": "A reduced-motion-safe Magic UI-derived grouped content entrance.",
+      "dependencies": ["motion"],
+      "files": [
+        { "path": "components/ui/blur-fade.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "scroll-progress",
+      "type": "registry:ui",
+      "title": "Rama Scroll Progress",
+      "description": "A one-pixel Fjord scroll-progress rule with RTL and reduced-motion behavior.",
+      "files": [
+        { "path": "components/ui/scroll-progress.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "progressive-blur",
+      "type": "registry:ui",
+      "title": "Rama Progressive Blur",
+      "description": "A low-blur Magic UI-derived overflow cue rendered only when bounded content can scroll.",
+      "files": [
+        { "path": "components/ui/progressive-blur.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "cinematic-hero-media",
+      "type": "registry:component",
+      "title": "Rama Cinematic Hero Media",
+      "description": "An art-directed decorative Dubai residential cityscape with responsive source crops and an optimized 8K-master workflow.",
+      "files": [
+        { "path": "components/rama/cinematic-hero-media.tsx", "type": "registry:component" },
+        { "path": "public/images/rama-dubai-residential-cityscape-hero-1280.avif", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-hero-1280.avif" },
+        { "path": "public/images/rama-dubai-residential-cityscape-hero-1280.webp", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-hero-1280.webp" },
+        { "path": "public/images/rama-dubai-residential-cityscape-hero-1920.avif", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-hero-1920.avif" },
+        { "path": "public/images/rama-dubai-residential-cityscape-hero-1920.webp", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-hero-1920.webp" },
+        { "path": "public/images/rama-dubai-residential-cityscape-hero-2560.avif", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-hero-2560.avif" },
+        { "path": "public/images/rama-dubai-residential-cityscape-hero-2560.webp", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-hero-2560.webp" },
+        { "path": "public/images/rama-dubai-residential-cityscape-mobile-720.avif", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-mobile-720.avif" },
+        { "path": "public/images/rama-dubai-residential-cityscape-mobile-720.webp", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-mobile-720.webp" },
+        { "path": "public/images/rama-dubai-residential-cityscape-mobile-1080.avif", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-mobile-1080.avif" },
+        { "path": "public/images/rama-dubai-residential-cityscape-mobile-1080.webp", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-mobile-1080.webp" },
+        { "path": "public/images/rama-dubai-residential-cityscape-mobile-1440.avif", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-mobile-1440.avif" },
+        { "path": "public/images/rama-dubai-residential-cityscape-mobile-1440.webp", "type": "registry:file", "target": "public/images/rama-dubai-residential-cityscape-mobile-1440.webp" }
+      ]
+    },
+    {
+      "name": "decision-aperture",
+      "type": "registry:component",
+      "title": "Rama Decision Aperture",
+      "description": "A reduced-motion-safe architectural signal that reflects the bounded voice and brief lifecycle without becoming a working control.",
+      "dependencies": ["motion"],
+      "files": [
+        { "path": "components/rama/decision-aperture.tsx", "type": "registry:component" }
+      ]
+    },
+    {
+      "name": "landing-motion",
+      "type": "registry:component",
+      "title": "Rama Landing Motion",
+      "description": "A bounded GSAP choreography island for hero reveal, native-scroll depth, and one-time section entrances.",
+      "dependencies": ["gsap"],
+      "files": [
+        { "path": "components/rama/landing-motion.tsx", "type": "registry:component" }
+      ]
+    },
+    {
+      "name": "editorial-media",
+      "type": "registry:component",
+      "title": "Rama Editorial Media",
+      "description": "A direction-aware, responsive architectural image with localized alternative text and an explicit illustrative-context caption.",
+      "registryDependencies": ["media-frame"],
+      "files": [
+        { "path": "components/rama/editorial-media.tsx", "type": "registry:component" }
+      ]
+    },
+    {
+      "name": "state-transition",
+      "type": "registry:ui",
+      "title": "Rama State Transition",
+      "description": "A reduced-motion-aware semantic crossfade for bounded, non-interactive state copy.",
+      "dependencies": ["motion"],
+      "files": [
+        {
+          "path": "components/ui/state-transition.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "voice-action",
+      "type": "registry:component",
+      "title": "Rama Voice Action",
+      "description": "A labeled voice-first action with explicit active state and text-equivalent semantics.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button"],
+      "files": [
+        { "path": "components/rama/voice-action.tsx", "type": "registry:component" },
+        { "path": "lib/voice/types.ts", "type": "registry:lib" }
+      ]
+    },
+    {
+      "name": "gemini-live-signal",
+      "type": "registry:component",
+      "title": "Rama Gemini Live Signal",
+      "description": "A reduced-motion-safe, state-aware Gemini Live Lottie signal framed by restrained architectural motion.",
+      "dependencies": ["lottie-react", "motion"],
+      "files": [
+        { "path": "components/rama/gemini-live-signal.tsx", "type": "registry:component" },
+        { "path": "public/lottie/ai.json", "type": "registry:file", "target": "public/lottie/ai.json" }
+      ]
+    },
+    {
+      "name": "voice-discovery-dialog",
+      "type": "registry:component",
+      "title": "Rama Voice Discovery Dialog",
+      "description": "A fixed-frame native dialog that contains voice, text, recovery, and brief review without changing the landing layout.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "progressive-blur", "gemini-live-signal", "state-transition"],
+      "files": [
+        { "path": "components/rama/voice-discovery-dialog.tsx", "type": "registry:component" },
+        { "path": "components/voice-conversation.tsx", "type": "registry:component" }
+      ]
+    },
+    {
+      "name": "criteria-slip",
+      "type": "registry:component",
+      "title": "Rama Criteria Slip",
+      "description": "A direction-aware required, preferred, unknown, and contradiction summary for buyer briefs.",
+      "files": [{ "path": "components/rama/criteria-slip.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "evidence-state",
+      "type": "registry:component",
+      "title": "Rama Evidence State",
+      "description": "A text, structure, and color redundant rendering of governed evidence state.",
+      "files": [{ "path": "components/rama/evidence-state.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "boundary-ledger",
+      "type": "registry:component",
+      "title": "Rama Boundary Ledger",
+      "description": "A factual ledger for inventory, source, consent, privacy, and unknown boundaries.",
+      "dependencies": ["lucide-react"],
+      "files": [{ "path": "components/rama/boundary-ledger.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "process-rail",
+      "type": "registry:component",
+      "title": "Rama Process Rail",
+      "description": "A keyboard-accessible native scroll-snap rail for the decision method.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "components/rama/process-rail.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "decision-specimen",
+      "type": "registry:component",
+      "title": "Rama Decision Specimen",
+      "description": "The signature sticky brief-to-ledger narrative with a reduced-motion static fallback.",
+      "registryDependencies": ["evidence-state"],
+      "files": [{ "path": "components/rama/decision-specimen.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "comparison-plane",
+      "type": "registry:component",
+      "title": "Rama Comparison Plane",
+      "description": "A restrained evidence comparison plane for up to three governed candidates.",
+      "dependencies": ["lucide-react"],
+      "files": [{ "path": "components/rama/comparison-plane.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "decision-ledger-timeline",
+      "type": "registry:component",
+      "title": "Rama Decision Ledger Timeline",
+      "description": "A chronological index of buyer-controlled decision changes and open questions.",
+      "files": [{ "path": "components/rama/decision-ledger-timeline.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "consent-handoff",
+      "type": "registry:component",
+      "title": "Rama Consent Handoff",
+      "description": "An eligibility and consent boundary for licensed advisor continuity.",
+      "dependencies": ["lucide-react"],
+      "files": [{ "path": "components/rama/consent-handoff.tsx", "type": "registry:component" }]
     }
   ]
 }

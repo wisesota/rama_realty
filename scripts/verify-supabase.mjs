@@ -8,7 +8,7 @@ try {
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-const secret = process.env.RATE_LIMIT_SECRET || process.env.GEMINI_API_KEY;
+const secret = process.env.RATE_LIMIT_SECRET;
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 if (!url || !publishableKey || !secret || !supabaseSecretKey) {

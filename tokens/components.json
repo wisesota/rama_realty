@@ -1,25 +1,45 @@
 {
   "component": {
     "button": {
-      "radius": { "$value": "{radius.control}", "$type": "dimension" },
-      "minHeight": { "$value": "2.75rem", "$type": "dimension" },
-      "paddingInline": { "$value": "0.5rem", "$type": "dimension" },
-      "fontSize": { "$value": "{font.size.sm}", "$type": "dimension" }
+      "radius": { "$value": "{radius.control}", "$type": "dimension", "$description": "Compact action corner radius" },
+      "minHeight": { "$value": "2.75rem", "$type": "dimension", "$description": "Minimum accessible pointer target" },
+      "paddingInline": { "$value": "0.5rem", "$type": "dimension", "$description": "Compact button inline inset" },
+      "fontSize": { "$value": "{font.size.sm}", "$type": "dimension", "$description": "Default compact action label" }
     },
     "badge": {
-      "radius": { "$value": "0.38rem", "$type": "dimension" },
-      "paddingBlock": { "$value": "0.2rem", "$type": "dimension" },
-      "paddingInline": { "$value": "0.5rem", "$type": "dimension" },
-      "fontSize": { "$value": "{font.size.xs}", "$type": "dimension" }
+      "radius": { "$value": "0.38rem", "$type": "dimension", "$description": "Compact evidence label radius" },
+      "paddingBlock": { "$value": "0.2rem", "$type": "dimension", "$description": "Evidence label vertical inset" },
+      "paddingInline": { "$value": "0.5rem", "$type": "dimension", "$description": "Evidence label horizontal inset" },
+      "fontSize": { "$value": "{font.size.xs}", "$type": "dimension", "$description": "Evidence label type size" }
     },
     "mediaFrame": {
-      "radius": { "$value": "{radius.media}", "$type": "dimension" },
-      "background": { "$value": "{color.architecture}", "$type": "color" }
+      "radius": { "$value": "{radius.media}", "$type": "dimension", "$description": "Editorial media crop radius" },
+      "background": { "$value": "{color.architecture}", "$type": "color", "$description": "Media loading and fallback surface" }
     },
     "voiceSignal": {
-      "size": { "$value": "10rem", "$type": "dimension" },
-      "accent": { "$value": "{color.sky}", "$type": "color" },
-      "active": { "$value": "#378264", "$type": "color" }
+      "size": { "$value": "2.75rem", "$type": "dimension", "$description": "Compact voice signal target" },
+      "accent": { "$value": "{color.sky}", "$type": "color", "$description": "Resting voice signal accent" },
+      "active": { "$value": "{color.pine}", "$type": "color", "$description": "Active listening voice signal accent" }
+    },
+    "evidencePlane": {
+      "radius": { "$value": "{radius.content}", "$type": "dimension", "$description": "Evidence plane corner radius" },
+      "rule": { "$value": "{color.rule}", "$type": "color", "$description": "Evidence plane structural rule" },
+      "background": { "$value": "{color.paper}", "$type": "color", "$description": "Evidence plane reading surface" }
+    },
+    "hero": {
+      "contentMeasure": { "$value": "48rem", "$type": "dimension", "$description": "Maximum centered hero content measure" },
+      "scrimCenter": { "$value": "rgb(10 19 25 / 60%)", "$type": "color", "$description": "Contrast-protecting scrim over the centered copy footprint" },
+      "scrimEdge": { "$value": "rgb(10 19 25 / 18%)", "$type": "color", "$description": "Peripheral hero atmosphere treatment" }
+    },
+    "decisionAperture": {
+      "heroSize": { "$value": "5.5rem", "$type": "dimension", "$description": "Compact resting hero aperture size" },
+      "dialogSize": { "$value": "5rem", "$type": "dimension", "$description": "Dialog lifecycle aperture size" },
+      "stroke": { "$value": "1.5px", "$type": "dimension", "$description": "Architectural aperture line weight" }
+    },
+    "dialog": {
+      "radius": { "$value": "{radius.content}", "$type": "dimension", "$description": "Desktop discovery dialog radius" },
+      "maxWidth": { "$value": "48rem", "$type": "dimension", "$description": "Bounded discovery dialog measure" },
+      "ambientShadow": { "$value": "0 1.6rem 4rem rgb(23 33 38 / 22%)", "$type": "shadow", "$description": "Only approved transient surface elevation" }
     }
   }
 }

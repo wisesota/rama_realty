@@ -7,6 +7,10 @@ import {
 } from "@google/genai";
 import { existsSync, readFileSync } from "node:fs";
 
+const geminiLiveTools = JSON.parse(
+  readFileSync(new URL("../lib/agent/gemini-live-tools.json", import.meta.url), "utf8"),
+);
+
 const baseUrl = process.env.RAMA_VERIFY_BASE_URL || "http://localhost:3000";
 const origin = new URL(baseUrl).origin;
 const apiVersion = "v1alpha";
@@ -26,7 +30,7 @@ const synthesisResponse = await synthesisClient.models.generateContent({
   model: "gemini-3.1-flash-tts-preview",
   contents: [
     {
-      text: "Say clearly: I need a two-bedroom apartment in Dubai Marina under three million dirhams.",
+      text: "Say clearly: Please prepare my property brief now. I need a two-bedroom apartment in Dubai Marina under three million dirhams.",
     },
   ],
   config: {
@@ -139,6 +143,7 @@ session = await client.live.connect({
       triggerTokens: "25000",
       slidingWindow: { targetTokens: "8000" },
     },
+    tools: geminiLiveTools,
   },
   callbacks: {
     onmessage(message) {
@@ -199,7 +204,14 @@ if (
   || toolResponses !== toolCalls
 ) {
   throw new Error(
-    "Gemini Live completed without the full transcript, governed tool, and native-audio contract.",
+    `Gemini Live completed without the full contract: ${JSON.stringify({
+      inputTranscript: Boolean(inputTranscript.trim()),
+      outputTranscript: Boolean(outputTranscript.trim()),
+      nativeAudioChunks: audioChunks,
+      toolCalls,
+      toolResponses,
+      liveTurnComplete: turnComplete,
+    })}`,
   );
 }
 

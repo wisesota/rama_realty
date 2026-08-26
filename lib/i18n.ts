@@ -1,0 +1,902 @@
+export const publicLocales = ["en", "ar"] as const;
+
+export type PublicLocale = (typeof publicLocales)[number];
+
+export const localeCookieName = "rama-locale";
+export const localeRequestHeader = "x-rama-locale";
+
+export function isPublicLocale(value: string | null | undefined): value is PublicLocale {
+  return publicLocales.includes(value as PublicLocale);
+}
+
+export function localeDirection(locale: PublicLocale) {
+  return locale === "ar" ? "rtl" : "ltr";
+}
+
+export function localizedPath(locale: PublicLocale, path = "") {
+  const suffix = path.startsWith("/") ? path : path ? `/${path}` : "";
+  return `/${locale}${suffix}`;
+}
+
+export function preferredPublicLocale(input: {
+  cookie?: string | null;
+  acceptLanguage?: string | null;
+}): PublicLocale {
+  if (isPublicLocale(input.cookie)) return input.cookie;
+  const firstLanguage = input.acceptLanguage?.split(",", 1)[0]?.trim().toLowerCase();
+  return firstLanguage?.startsWith("ar") ? "ar" : "en";
+}
+
+const arabicCriterionLabels: Record<string, string> = {
+  "Dubai": "دبي", "Dubai Marina": "دبي مارينا", "Palm Jumeirah": "نخلة جميرا",
+  "Downtown Dubai": "وسط مدينة دبي", "Jumeirah": "جميرا", "Apartment": "شقة",
+  "Villa": "فيلا", "Townhouse": "تاون هاوس", "Penthouse": "بنتهاوس", "Balcony": "شرفة",
+  "Sea view": "إطلالة بحرية", "Water view": "إطلالة مائية", "Waterfront": "واجهة مائية",
+  "Terrace": "شرفة واسعة", "Pool": "مسبح", "Garden": "حديقة", "Home office": "مكتب منزلي",
+  "Natural light": "إضاءة طبيعية", "Near the metro": "قريب من المترو", "Walkable": "مناسب للمشي",
+  "Quieter setting": "مكان أكثر هدوءاً", "Flexible Dubai brief": "موجز مرن في دبي",
+};
+
+export function localizedCriterionLabel(locale: PublicLocale, label: string) {
+  if (locale === "en") return label;
+  const bedrooms = label.match(/^(\d+) bedrooms?$/);
+  if (bedrooms) return `${bedrooms[1]} غرف نوم`;
+  const budget = label.match(/^Up to AED ([\d.]+)M$/);
+  if (budget) return `حتى ${budget[1]} مليون درهم`;
+  return arabicCriterionLabels[label] ?? label;
+}
+
+const arabicIllustrativeRecordText: Record<string, string> = {
+  "Balcony · Marina walk": "شرفة · ممشى المارينا",
+  "Natural light · Study nook": "إضاءة طبيعية · ركن للدراسة",
+  "Terrace · Quieter setting": "شرفة واسعة · مكان أكثر هدوءاً",
+  "Strong alignment with the waterfront, walkability, and two-bedroom brief.": "توافق قوي مع الواجهة المائية وسهولة المشي وموجز غرفتي النوم.",
+  "Closest sample for central access, morning light, and flexible work space.": "أقرب نموذج للوصول المركزي وضوء الصباح ومساحة العمل المرنة.",
+  "A calmer lifestyle sample with outdoor space and convenient water access.": "نموذج لنمط حياة أكثر هدوءاً مع مساحة خارجية ووصول مريح إلى الواجهة المائية.",
+  "Illustrative contemporary residence with an open garden-facing living space": "مسكن معاصر توضيحي بمساحة معيشة مفتوحة تطل على حديقة",
+  "Illustrative bright contemporary apartment interior with full-height windows": "تصميم داخلي توضيحي لشقة معاصرة مضيئة بنوافذ كاملة الارتفاع",
+  "Illustrative modern residence with a private terrace and warm stone facade": "مسكن حديث توضيحي بشرفة خاصة وواجهة حجرية دافئة",
+  "Local Rama demonstration catalog": "كتالوج راما التجريبي المحلي",
+  "Rama demonstration catalog": "كتالوج راما التجريبي",
+  "Rama governed catalog": "كتالوج راما المنضبط",
+  ready: "جاهز",
+  available: "متاح",
+  illustrative: "توضيحي",
+};
+
+export function localizedRecordText(locale: PublicLocale, value: string) {
+  return locale === "ar" ? arabicIllustrativeRecordText[value] ?? value : value;
+}
+
+export function localizedMissingField(locale: PublicLocale, field: string) {
+  if (locale === "en") return field;
+  return ({ "preferred area": "المنطقة المفضلة", "maximum budget": "الميزانية القصوى", "service-charge tolerance": "مدى تقبل رسوم الخدمة" } as Record<string, string>)[field] ?? field;
+}
+
+export function localizedClarification(locale: PublicLocale, field: string, fallback: string) {
+  if (locale === "en") return fallback;
+  return ({
+    "resolve property type": "هل تريد شقة أم فيلا؟ عدّل الموجز ليحتوي نوع عقار واحداً.",
+    "resolve delivery state": "هل تريد عقاراً جاهزاً أم على المخطط؟ عدّل الموجز ليحتوي حالة تسليم واحدة.",
+    "maximum budget": "ما الحد الأقصى لميزانيتك بالدرهم الإماراتي؟",
+    "preferred area": "ما المنطقة التي تفضلها في دبي؟",
+  } as Record<string, string>)[field] ?? fallback;
+}
+
+export function localizedAdvisoryBoundary(locale: PublicLocale, boundary: string) {
+  const copy = {
+    legal: ["Legal outcome requires a qualified legal professional.", "تتطلب النتيجة القانونية مختصاً قانونياً مؤهلاً."],
+    tax: ["Tax outcome requires a qualified tax professional.", "تتطلب النتيجة الضريبية مختصاً ضريبياً مؤهلاً."],
+    mortgage: ["Mortgage approval can only come from a regulated lender.", "لا تصدر الموافقة على التمويل العقاري إلا من جهة إقراض منظّمة."],
+    guaranteed_return: ["Rama does not guarantee appreciation, yield, or returns.", "لا تضمن راما ارتفاع القيمة أو العائد أو الأرباح."],
+    live_availability: ["Availability remains illustrative until a licensed live source is connected.", "يبقى التوفر توضيحياً إلى أن يتم ربط مصدر حي مرخّص."],
+  } as Record<string, readonly [string, string]>;
+  const value = copy[boundary];
+  return value?.[locale === "ar" ? 1 : 0] ?? boundary;
+}
+
+export const landingCopy = {
+  en: {
+    skip: "Skip to content",
+    header: {
+      homeLabel: "Rama home",
+      primaryNavigationLabel: "Primary navigation",
+      mobileNavigationLabel: "Mobile navigation",
+      shape: "Shape a brief",
+      method: "Decision method",
+      specimen: "Specimen",
+      boundaries: "Boundaries",
+      begin: "Begin a brief",
+      open: "Open navigation",
+      close: "Close navigation",
+      staff: "Staff login",
+      language: "العربية",
+      languageLabel: "View Rama in Arabic",
+    },
+    badge: "Gemini Live voice discovery",
+    heroAlt: "Contemporary Dubai villa architecture in daylight with skyline views",
+    title: "Describe the life you want in Dubai.",
+    subtitle:
+      "Speak naturally or type a brief. Rama makes every criterion visible before the decision work begins.",
+    inputLabel: "Describe the Dubai property and lifestyle you want",
+    voiceLead: "Start with your voice",
+    placeholder: "Or type criteria: 2-bed in Dubai Marina under 3M...",
+    search: "Review brief",
+    opening: "Opening...",
+    openingLabel: "Opening your Decision Room",
+    shapeLabel: "Shape my brief",
+    shortBriefError: "Add at least three characters so Rama can shape your brief.",
+    boundary:
+      "Rama renders representative residences until a licensed inventory source is connected.",
+    support: "Voice-first decision support",
+    supply: "You confirm every criterion",
+    trustEyebrow: "Three deliberate steps",
+    trustTitle: "From a natural brief to an inspectable decision.",
+    trust: [
+      "Speak or type what matters; Rama turns it into visible criteria for your approval.",
+      "Compare each residence against the same brief, with source and evidence state shown.",
+      "Keep, export, or erase your decision history; an advisor joins only with your consent.",
+    ],
+    footer: {
+      summary: "Property discovery shaped around how you want to live in Dubai.",
+      explore: "Explore",
+      invitation: "Invitation",
+      method: "Decision method",
+      concierge: "Concierge",
+      shape: "Shape a brief",
+      disclaimer:
+        "Illustrative prototype only. Residences, prices, and matches are illustrative records—not live inventory, market data, or real-estate advice.",
+    },
+    architecture: {
+      hero: {
+        context: "Dubai buyer decision support",
+        wordmark: "RAMA",
+        title: "Say what matters.",
+        body: "Rama turns your voice into a clear Dubai home brief.",
+        noScript: "Enable JavaScript to shape an interactive brief.",
+        primaryAction: "Talk to Rama",
+        secondaryAction: "Type instead",
+        dialogTitle: "Shape your Dubai brief.",
+        dialogDescription: "Speak naturally or type what matters. Rama keeps the same brief through review and recovery.",
+        dialogVoiceIntro: "Start speaking when you are ready. Your words stay visible while Rama organizes them.",
+        dialogTextIntro: "Write naturally. The field stays the same size while longer briefs scroll within it.",
+        dialogVoiceAlternative: "Use voice instead",
+        dialogTextAlternative: "Type instead",
+        dialogClose: "Close brief conversation",
+        dialogBoundary: "Illustrative residences only until a licensed inventory source is connected.",
+        characterCount: "characters",
+        composerLabel: "Describe the decision you are making",
+        voiceIdle: "Speak my brief",
+        voiceActive: "Stop voice session",
+        textAction: "Review my brief",
+        statusLabel: "Current status",
+        next: "See the decision architecture",
+      },
+      voice: {
+        panel: {
+          requestingLabel: "Microphone permission",
+          requestingTitle: "Preparing the secure voice session",
+          requestingDetail: "Your browser will ask before Rama can listen.",
+          connectingLabel: "Connecting",
+          connectingTitle: "Opening a protected Gemini Live session",
+          connectingDetail: "The server key stays private; this browser receives a short-lived session token.",
+          listeningRecordedLabel: "Recorded voice",
+          listeningLiveLabel: "Listening live",
+          listeningPlaceholder: "Describe the Dubai home and lifestyle you want…",
+          listeningRecordedDetail: "Speak naturally, then choose stop. Gemini processes this bounded audio turn securely.",
+          listeningLiveDetail: "Speak naturally. Pause when finished, or choose stop to end microphone input.",
+          thinkingLabel: "Understanding",
+          thinkingPlaceholder: "Turning your conversation into a property brief…",
+          thinkingDetail: "Rama is extracting your criteria and preparing a concise response.",
+          speakingLabel: "Rama is responding",
+          speakingPlaceholder: "Preparing the spoken response…",
+          speakingBriefPrefix: "Your brief",
+          speakingDetail: "You can speak again to interrupt or refine the brief.",
+          completeLabel: "Brief captured",
+          completeDetail: "The final transcript used the same property-discovery path as typed input.",
+          errorLabel: "Text mode ready",
+          permissionErrorTitle: "Microphone access is blocked in this browser.",
+          connectionErrorTitle: "The live voice session could not stay connected.",
+          unavailableErrorTitle: "Voice mode is unavailable here.",
+          errorDetail: "Type the same request in the brief field; every discovery feature remains available.",
+          stop: "Stop",
+          close: "Close voice conversation",
+          textFallback: "Text always works",
+        },
+        announcements: {
+          connecting: "Connecting to the secure Gemini Live voice session.",
+          listening: "Rama is listening for your Dubai property brief.",
+          thinking: "Rama is understanding the property brief.",
+          speaking: "Rama is responding to the property brief.",
+          complete: "The voice brief is complete and the decision criteria were updated.",
+          recordingComplete: "The recording is complete. Gemini is understanding the property brief.",
+          noSpeech: "No clear speech was detected. Try again or use the text brief.",
+          understood: "Rama understood the voice brief and is responding.",
+          browserFallbackUsed: "Gemini is unavailable. Browser transcription updated the decision brief instead.",
+          unsupported: "Voice is not supported here. Text input remains available.",
+          requestingPermission: "Checking microphone permission for the Gemini voice session.",
+          permissionBlocked: "Microphone access is blocked. Text input remains available.",
+          browserCapture: "Browser transcription is capturing the property brief as a fallback.",
+          recordedListening: "Gemini voice-turn mode is recording your property brief.",
+          transcribing: "Rama is transcribing the property brief.",
+          fetching: "The voice brief is complete. Preparing its decision criteria.",
+          liveUnavailableRecorded: "Gemini Live is unavailable. Secure recorded voice mode is listening.",
+          secureRecordedListening: "Secure recorded voice mode is listening for your property brief.",
+          liveComplete: "The Gemini Live voice session is complete.",
+          connectionFailed: "The live voice session could not stay connected. Text input remains available.",
+          permissionNotGranted: "Microphone access was not granted. Text input remains available.",
+          unavailableWithText: "Voice understanding is unavailable. Text input remains available.",
+          prepareFailed: "Rama could not prepare the decision criteria. Your transcript is preserved; retry or use text.",
+        },
+        statuses: {
+          noSpeech: "No clear speech was detected. Your typed brief remains available.",
+          browserFallbackUsed: "Gemini is unavailable, so browser transcription was used for this voice brief.",
+          responseStopped: "Voice response stopped. Your decision brief remains available.",
+          sessionEnded: "Voice session ended. Your typed brief remains available.",
+          recordedActive: "Recorded Gemini voice mode is active. Speak, then choose stop.",
+          matching: "Rama is preparing criteria from this brief.",
+          liveActive: "Gemini Live voice mode is active. Speak naturally, then choose stop.",
+        },
+        responses: {
+          browserFallback: "Your request was transcribed in the browser. I’ve updated the illustrative decision brief for you to review.",
+        },
+        errors: {
+          couldNotUnderstand: "Gemini could not understand this voice turn.",
+          invalidResponse: "Gemini returned an invalid voice response.",
+          timeout: "Gemini voice understanding timed out. Please try a shorter request.",
+          startFailed: "Gemini voice could not start.",
+        },
+      },
+      signal: ["Budget", "Lifestyle", "Commute", "Evidence", "Unknowns"],
+      media: {
+        label: "Illustrative architectural context",
+        architecture: [
+          {
+            src: "/images/rama-signal-brise-soleil.webp",
+            alt: "Illustrative pale-limestone Dubai residence concept with deep vertical sun screens and desert planting",
+            caption: "Shade, orientation, and material choices belong in the brief—not only the photograph.",
+          },
+          {
+            src: "/images/rama-signal-courtyard-screen.webp",
+            alt: "Illustrative residential courtyard concept framed by dark timber screens and drought-tolerant planting",
+            caption: "Thresholds can make privacy, shade, and landscape quality visible.",
+          },
+        ],
+        examples: {
+          "waterfront-routine": {
+            src: "/images/rama-waterfront-daylight-interior.webp",
+            alt: "Calm fictional Dubai waterfront apartment with a deeply shaded balcony and open sea horizon",
+            caption: "Waterfront access also raises questions about exposure, operating cost, and evening activity.",
+          },
+          "family-transition": {
+            src: "/images/rama-green-courtyard-community.webp",
+            alt: "Tree-shaded fictional Dubai townhouse lane with benches, bicycles, and private entrances",
+            caption: "Outdoor space is considered together with school access, shade, and daily travel.",
+          },
+          "calm-city-base": {
+            src: "/images/rama-walkable-transit-district.webp",
+            alt: "Shaded fictional Dubai residential promenade with planting, cycle parking, and a distant tram",
+            caption: "A transport label becomes useful only when walking comfort, timing, and noise are defined.",
+          },
+          "long-horizon": {
+            src: "/images/rama-urban-shade-tower.webp",
+            alt: "Fictional Dubai residential tower with shaded balconies beside a landscaped pedestrian route",
+            caption: "Building form is context; delivery state, service charges, and evidence remain separate questions.",
+          },
+        },
+        capability: {
+          src: "/images/rama-inspectable-interior.webp",
+          alt: "Fictional Dubai apartment interior showing daylight, circulation, storage, and balcony depth",
+          caption: "A scene can prompt questions. Only governed facts can answer them.",
+        },
+        closing: {
+          src: "/images/rama-waterfront-blue-hour.webp",
+          alt: "Fictional low-rise Dubai waterfront residences and planted promenade at blue hour",
+          caption: "Illustrative Dubai context—not a listing, availability signal, or investment claim.",
+        },
+      },
+      architecture: {
+        panes: [
+          { label: "Your words", title: "Intent stays visible", body: "The original transcript remains editable through review and recovery." },
+          { label: "Rama’s structure", title: "Criteria are separated", body: "Required and preferred criteria are never flattened into one score." },
+          { label: "Before comparison", title: "Unknowns remain open", body: "Missing information and contradictions are shown instead of silently assumed." },
+        ],
+      },
+      examples: {
+        index: "02 / Example decision patterns",
+        title: "Start from a familiar decision shape.",
+        body: "These are illustrative briefs, not properties, customers, or market recommendations. Choose one to open the same editable brief conversation.",
+        choose: "Use this example",
+        constraintLabel: "Constraint",
+        tradeoffLabel: "Open trade-off",
+        items: [
+          { id: "waterfront-routine", title: "Waterfront routine", brief: "Two bedrooms in Dubai Marina under AED 3M, walkable to the waterfront and within 30 minutes of DIFC.", constraint: "Maximum budget", tradeoff: "Waterfront access or quieter evenings" },
+          { id: "family-transition", title: "Family transition", brief: "A three-bedroom townhouse in Dubai with outdoor space, schools nearby, and a practical move-in timeline.", constraint: "Three bedrooms", tradeoff: "Commute time or more outdoor space" },
+          { id: "calm-city-base", title: "Calm city base", brief: "A bright two-bedroom apartment close to the metro, with a home office and a quieter setting.", constraint: "Metro access", tradeoff: "Central location or lower ambient noise" },
+          { id: "long-horizon", title: "Long-horizon brief", brief: "A Dubai home under AED 4M with natural light and flexible space; keep delivery state and service charges open for review.", constraint: "Maximum budget", tradeoff: "Delivery timing or operating cost" },
+        ],
+      },
+      capabilities: {
+        index: "03 / Inspectable work",
+        title: "What Rama makes inspectable.",
+        body: "Each capability is a view of the same buyer-controlled decision—not a separate funnel.",
+        items: [
+          { title: "Confirmed brief", body: "The exact criteria you approved before search." },
+          { title: "Candidate fit", body: "Confirmed alignment only; missing evaluation remains visibly missing." },
+          { title: "Provenance", body: "Source, observation state, and unavailable facts stay attached." },
+          { title: "Comparison", body: "Up to three eligible candidates against the same brief." },
+          { title: "Decision Ledger", body: "A chronological record of what changed and why." },
+          { title: "Consented handoff", body: "Available only for eligible published records and explicit buyer consent." },
+        ],
+      },
+      specimen: {
+        index: "04 / Inside one Decision Room",
+        title: "Watch a decision become inspectable.",
+        body: "One deliberate scroll sequence follows the brief, a confirmed fit, its evidence state, an open question, and the resulting ledger change.",
+        items: [
+          { stage: "brief", label: "Brief", title: "Two bedrooms and a hard AED 3M ceiling", body: "The buyer’s confirmed words become the reference point for every later view.", evidence: "buyer_confirmed", evidenceLabel: "Buyer confirmed" },
+          { stage: "fit", label: "Confirmed fit", title: "The bedroom and budget criteria align", body: "Rama shows only the alignment supported by the current governed record.", evidence: "source_confirmed", evidenceLabel: "Source confirmed" },
+          { stage: "evidence", label: "Source state", title: "Observed facts retain their source state", body: "Freshness and source version stay visible beside the fact they qualify.", evidence: "source_confirmed", evidenceLabel: "Source confirmed" },
+          { stage: "open_question", label: "Open question", title: "Service-charge tolerance is still unknown", body: "The unknown remains a decision item; Rama does not fill it with an estimate.", evidence: "unknown", evidenceLabel: "Unknown" },
+          { stage: "ledger_change", label: "Ledger change", title: "A new question enters the decision record", body: "The buyer can see when the question appeared and carry it into later review.", evidence: "buyer_confirmed", evidenceLabel: "Buyer controlled" },
+        ],
+      },
+      method: {
+        index: "05 / Decision method",
+        title: "A calm sequence from intent to action.",
+        body: "No wheel hijacking and no hidden shortcut. Each step leaves a visible output.",
+        previous: "Previous decision step",
+        next: "Next decision step",
+        steps: [
+          { title: "Speak or type", body: "Describe the home and life you want in your own words.", output: "Output / transcript" },
+          { title: "Review criteria", body: "Separate required, preferred, unknown, and contradictory details.", output: "Output / confirmed brief" },
+          { title: "Compare", body: "Hold each eligible candidate against the same approved criteria.", output: "Output / comparison plane" },
+          { title: "Inspect evidence", body: "Open the source and observation state behind a decision fact.", output: "Output / evidence dossier" },
+          { title: "Keep or hand off", body: "Save, export, erase, or consent to an eligible advisor handoff.", output: "Output / Decision Ledger" },
+        ],
+      },
+      boundaries: {
+        index: "06 / Boundary Ledger",
+        title: "Trust is a visible system state.",
+        body: "Rama does not replace missing evidence with confidence language.",
+        items: [
+          { title: "Inventory boundary", body: "Current results are illustrative until licensed inventory is connected.", state: "source" },
+          { title: "Source state", body: "Property facts show their source and observation state when available.", state: "source" },
+          { title: "Buyer consent", body: "Illustrative residences cannot be sent to an advisor.", state: "consent" },
+          { title: "Voice privacy", body: "The server credential remains private; typed recovery stays available if voice cannot start.", state: "privacy" },
+          { title: "Data rights", body: "Eligible decision records can be exported or erased from the Decision Room.", state: "privacy" },
+        ],
+      },
+      briefings: {
+        index: "07 / Dubai buyer briefings",
+        title: "Questions worth resolving before a property shortlist.",
+        body: "Evergreen decision prompts only. Future market facts require a source, observed date, expiry, rights state, and claims approval.",
+        items: [
+          { title: "Ready or off-plan?", body: "Frame the delivery-state choice around timing, uncertainty, and evidence you will need." },
+          { title: "What does commute mean?", body: "Turn a vague location preference into destinations, time windows, and acceptable trade-offs." },
+          { title: "Which costs remain open?", body: "Keep service charges, financing, tax, and legal outcomes visibly unresolved until qualified evidence exists." },
+        ],
+      },
+      faq: {
+        index: "08 / Inspectable answers",
+        title: "Before you begin.",
+        items: [
+          { question: "Is voice required?", answer: "No. Voice and text converge into the same written brief review, and text remains available through every voice failure state." },
+          { question: "Are the residences live listings?", answer: "No. Current results are illustrative until a licensed inventory source is connected." },
+          { question: "What does an evidence state mean?", answer: "It identifies whether a fact is source-confirmed, buyer-confirmed, inferred, stale, disputed, or unknown." },
+          { question: "Can an advisor see my illustrative brief?", answer: "Illustrative residences cannot be sent to an advisor. Eligible published records still require explicit consent." },
+          { question: "Can I export or delete my data?", answer: "Yes. The Decision Room provides export and deletion controls for eligible buyer-owned or browser-session records." },
+          { question: "Does Arabic have the same journey?", answer: "Yes. Arabic preserves the same brief, evidence, error, recovery, consent, and data-rights structure in RTL." },
+        ],
+      },
+      closing: {
+        index: "Return to the brief",
+        title: "Start with your voice. Confirm every criterion.",
+        body: "One conversation, one review, and one route into the Decision Room.",
+        action: "Begin my brief",
+      },
+      footer: {
+        summary: "Voice-led Dubai property discovery with explainable criteria.",
+        method: "Decision method",
+        boundaries: "Boundaries",
+        privacy: "Privacy",
+        dataRights: "Data rights",
+        staff: "Staff login",
+        disclosure: "Illustrative prototype. Residences, prices, and matches are not live inventory, market data, or real-estate advice.",
+      },
+    },
+  },
+  ar: {
+    skip: "تخطَّ إلى المحتوى",
+    header: {
+      homeLabel: "صفحة راما الرئيسية",
+      primaryNavigationLabel: "التنقل الرئيسي",
+      mobileNavigationLabel: "التنقل عبر الهاتف",
+      shape: "صِغ موجزك",
+      method: "منهج القرار",
+      specimen: "نموذج القرار",
+      boundaries: "الحدود",
+      begin: "ابدأ الموجز",
+      open: "افتح قائمة التنقل",
+      close: "أغلق قائمة التنقل",
+      staff: "دخول الفريق",
+      language: "English",
+      languageLabel: "اعرض راما بالإنجليزية",
+    },
+    badge: "اكتشاف صوتي عبر Gemini Live",
+    heroAlt: "عمارة فيلا معاصرة في دبي نهاراً مع إطلالة على أفق المدينة",
+    title: "صِف الحياة التي تريدها في دبي.",
+    subtitle:
+      "تحدث بطبيعتك أو اكتب موجزاً. تعرض راما كل معيار بوضوح قبل بدء عمل اتخاذ القرار.",
+    inputLabel: "صِف العقار ونمط الحياة اللذين تريدهما في دبي",
+    voiceLead: "ابدأ بصوتك",
+    placeholder: "أو اكتب المعايير: غرفتان في دبي مارينا بأقل من 3 ملايين...",
+    search: "راجع الموجز",
+    opening: "جارٍ الفتح...",
+    openingLabel: "جارٍ فتح غرفة القرار",
+    shapeLabel: "صِغ موجزي",
+    shortBriefError: "أضف ثلاثة أحرف على الأقل كي تتمكن راما من صياغة موجزك.",
+    boundary:
+      "تعرض راما مساكن تمثيلية إلى أن يتم ربط مصدر مخزون مرخّص.",
+    support: "دعم صوتي لاتخاذ القرار",
+    supply: "أنت تؤكد كل معيار",
+    trustEyebrow: "ثلاث خطوات مدروسة",
+    trustTitle: "من موجز طبيعي إلى قرار قابل للفحص.",
+    trust: [
+      "تحدث أو اكتب ما يهمك؛ وتحوله راما إلى معايير ظاهرة لاعتمادك.",
+      "قارن كل مسكن بالموجز نفسه، مع إظهار المصدر وحالة الدليل.",
+      "احتفظ بسجل قرارك أو صدّره أو امسحه؛ ولا ينضم مستشار إلا بموافقتك.",
+    ],
+    footer: {
+      summary: "اكتشاف عقاري يتشكل حول الطريقة التي تريد أن تعيش بها في دبي.",
+      explore: "استكشف",
+      invitation: "الدعوة",
+      method: "منهج القرار",
+      concierge: "خدمة القرار",
+      shape: "صِغ موجزك",
+      disclaimer:
+        "نموذج توضيحي فقط. المساكن والأسعار ونتائج المطابقة سجلات توضيحية، وليست مخزوناً حياً أو بيانات سوقية أو نصيحة عقارية.",
+    },
+    architecture: {
+      hero: {
+        context: "دعم قرار مشتري العقار في دبي",
+        wordmark: "RAMA",
+        title: "قُل ما يهمّك.",
+        body: "تحوّل راما صوتك إلى موجز واضح للبحث عن منزل في دبي.",
+        noScript: "فعّل JavaScript لصياغة موجز تفاعلي.",
+        primaryAction: "تحدّث إلى راما",
+        secondaryAction: "اكتب بدلاً من ذلك",
+        dialogTitle: "صِغ موجزك في دبي.",
+        dialogDescription: "تحدث بطبيعتك أو اكتب ما يهمك. تحتفظ راما بالموجز نفسه أثناء المراجعة والتعافي.",
+        dialogVoiceIntro: "ابدأ الحديث عندما تكون مستعداً. تبقى كلماتك ظاهرة بينما ترتبها راما.",
+        dialogTextIntro: "اكتب بطبيعتك. يبقى الحقل بالحجم نفسه بينما يمر النص الأطول داخله.",
+        dialogVoiceAlternative: "استخدم الصوت بدلاً من ذلك",
+        dialogTextAlternative: "اكتب بدلاً من ذلك",
+        dialogClose: "أغلق محادثة الموجز",
+        dialogBoundary: "مساكن توضيحية فقط إلى أن يتم ربط مصدر مخزون مرخّص.",
+        characterCount: "حرفاً",
+        composerLabel: "صِف القرار الذي تريد اتخاذه",
+        voiceIdle: "تحدث بموجزي",
+        voiceActive: "أوقف الجلسة الصوتية",
+        textAction: "راجع موجزي",
+        statusLabel: "الحالة الحالية",
+        next: "اكتشف بنية القرار",
+      },
+      voice: {
+        panel: {
+          requestingLabel: "إذن الميكروفون",
+          requestingTitle: "جارٍ إعداد الجلسة الصوتية الآمنة",
+          requestingDetail: "سيطلب المتصفح موافقتك قبل أن تتمكن راما من الاستماع.",
+          connectingLabel: "جارٍ الاتصال",
+          connectingTitle: "جارٍ فتح جلسة Gemini Live محمية",
+          connectingDetail: "يبقى مفتاح الخادم خاصاً؛ ويحصل هذا المتصفح على رمز جلسة قصير الأجل.",
+          listeningRecordedLabel: "صوت مسجل",
+          listeningLiveLabel: "استماع مباشر",
+          listeningPlaceholder: "صِف المنزل ونمط الحياة اللذين تريدهما في دبي…",
+          listeningRecordedDetail: "تحدث بطبيعتك ثم اختر الإيقاف. يعالج Gemini هذا التسجيل المحدود بأمان.",
+          listeningLiveDetail: "تحدث بطبيعتك. توقف عند الانتهاء أو اختر الإيقاف لإنهاء إدخال الميكروفون.",
+          thinkingLabel: "جارٍ الفهم",
+          thinkingPlaceholder: "جارٍ تحويل حديثك إلى موجز عقاري…",
+          thinkingDetail: "تستخرج راما معاييرك وتُعد استجابة موجزة.",
+          speakingLabel: "راما تجيب",
+          speakingPlaceholder: "جارٍ إعداد الرد الصوتي…",
+          speakingBriefPrefix: "موجزك",
+          speakingDetail: "يمكنك التحدث مجدداً للمقاطعة أو تعديل الموجز.",
+          completeLabel: "تم التقاط الموجز",
+          completeDetail: "استخدم النص النهائي مسار اكتشاف العقار نفسه المستخدم للإدخال المكتوب.",
+          errorLabel: "وضع الكتابة جاهز",
+          permissionErrorTitle: "وصول الميكروفون محظور في هذا المتصفح.",
+          connectionErrorTitle: "تعذر استمرار اتصال الجلسة الصوتية المباشرة.",
+          unavailableErrorTitle: "الوضع الصوتي غير متاح هنا.",
+          errorDetail: "اكتب الطلب نفسه في حقل الموجز؛ تبقى كل ميزات الاكتشاف متاحة.",
+          stop: "إيقاف",
+          close: "أغلق المحادثة الصوتية",
+          textFallback: "الكتابة متاحة دائماً",
+        },
+        announcements: {
+          connecting: "جارٍ الاتصال بجلسة Gemini Live الصوتية الآمنة.",
+          listening: "راما تستمع إلى موجزك العقاري في دبي.",
+          thinking: "راما تفهم الموجز العقاري.",
+          speaking: "راما تجيب عن الموجز العقاري.",
+          complete: "اكتمل الموجز الصوتي وتم تحديث معايير القرار.",
+          recordingComplete: "اكتمل التسجيل. يفهم Gemini الموجز العقاري الآن.",
+          noSpeech: "لم يُكتشف كلام واضح. حاول مجدداً أو استخدم الموجز المكتوب.",
+          understood: "فهمت راما الموجز الصوتي وهي تجيب الآن.",
+          browserFallbackUsed: "Gemini غير متاح. حدّث النص المستخرج في المتصفح موجز القرار بدلاً منه.",
+          unsupported: "الصوت غير مدعوم هنا. يبقى الإدخال المكتوب متاحاً.",
+          requestingPermission: "جارٍ التحقق من إذن الميكروفون لجلسة Gemini الصوتية.",
+          permissionBlocked: "وصول الميكروفون محظور. يبقى الإدخال المكتوب متاحاً.",
+          browserCapture: "يلتقط التحويل النصي في المتصفح الموجز العقاري كخيار احتياطي.",
+          recordedListening: "يسجل وضع Gemini الصوتي موجزك العقاري.",
+          transcribing: "تحوّل راما الموجز العقاري إلى نص.",
+          fetching: "اكتمل الموجز الصوتي. جارٍ إعداد معايير القرار.",
+          liveUnavailableRecorded: "Gemini Live غير متاح. يستمع وضع الصوت المسجل الآمن الآن.",
+          secureRecordedListening: "يستمع وضع الصوت المسجل الآمن إلى موجزك العقاري.",
+          liveComplete: "اكتملت جلسة Gemini Live الصوتية.",
+          connectionFailed: "تعذر استمرار جلسة الصوت المباشر. يبقى الإدخال المكتوب متاحاً.",
+          permissionNotGranted: "لم يُمنح إذن الميكروفون. يبقى الإدخال المكتوب متاحاً.",
+          unavailableWithText: "فهم الصوت غير متاح. يبقى الإدخال المكتوب متاحاً.",
+          prepareFailed: "تعذر على راما إعداد معايير القرار. حُفظ النص؛ حاول مجدداً أو استخدم الكتابة.",
+        },
+        statuses: {
+          noSpeech: "لم يُكتشف كلام واضح. يبقى موجزك المكتوب متاحاً.",
+          browserFallbackUsed: "Gemini غير متاح، لذلك استُخدم التحويل النصي في المتصفح لهذا الموجز الصوتي.",
+          responseStopped: "توقف الرد الصوتي. يبقى موجز قرارك متاحاً.",
+          sessionEnded: "انتهت الجلسة الصوتية. يبقى موجزك المكتوب متاحاً.",
+          recordedActive: "وضع Gemini الصوتي المسجل نشط. تحدث ثم اختر الإيقاف.",
+          matching: "تُعد راما المعايير من هذا الموجز.",
+          liveActive: "وضع Gemini Live الصوتي نشط. تحدث بطبيعتك ثم اختر الإيقاف.",
+        },
+        responses: {
+          browserFallback: "حُوّل طلبك إلى نص في المتصفح. حدّثتُ موجز القرار التوضيحي لتراجعه.",
+        },
+        errors: {
+          couldNotUnderstand: "تعذر على Gemini فهم هذا الإدخال الصوتي.",
+          invalidResponse: "أعاد Gemini استجابة صوتية غير صالحة.",
+          timeout: "انتهت مهلة فهم الصوت عبر Gemini. جرّب طلباً أقصر.",
+          startFailed: "تعذر بدء صوت Gemini.",
+        },
+      },
+      signal: ["الميزانية", "نمط الحياة", "التنقل", "الأدلة", "غير المحسوم"],
+      media: {
+        label: "سياق معماري توضيحي",
+        architecture: [
+          {
+            src: "/images/rama-signal-brise-soleil.webp",
+            alt: "مسكن توضيحي في دبي من الحجر الجيري مع كاسرات شمس عمودية وزراعة صحراوية",
+            caption: "الظل والاتجاه واختيار المواد عناصر في الموجز، وليست مجرد تفاصيل في الصورة.",
+          },
+          {
+            src: "/images/rama-signal-courtyard-screen.webp",
+            alt: "فناء سكني هادئ تحيط به شاشات خشبية داكنة ونباتات ملائمة للمناخ الجاف",
+            caption: "يمكن للعتبات أن تجعل الخصوصية والظل وجودة المساحات الخضراء ظاهرة.",
+          },
+        ],
+        examples: {
+          "waterfront-routine": {
+            src: "/images/rama-waterfront-daylight-interior.webp",
+            alt: "شقة توضيحية هادئة على واجهة دبي المائية مع شرفة عميقة مظللة وأفق بحري مفتوح",
+            caption: "يفتح القرب من الماء أيضاً أسئلة عن التعرض والتكلفة التشغيلية ونشاط المساء.",
+          },
+          "family-transition": {
+            src: "/images/rama-green-courtyard-community.webp",
+            alt: "ممر تاون هاوس توضيحي مظلل بالأشجار في دبي مع مقاعد ودراجات ومداخل خاصة",
+            caption: "تُراجع المساحة الخارجية مع الوصول إلى المدارس والظل والتنقل اليومي.",
+          },
+          "calm-city-base": {
+            src: "/images/rama-walkable-transit-district.webp",
+            alt: "ممشى سكني توضيحي مظلل في دبي مع زراعة ومواقف دراجات وترام بعيد",
+            caption: "لا تصبح تسمية النقل مفيدة حتى تُحدد راحة المشي والتوقيت والضوضاء.",
+          },
+          "long-horizon": {
+            src: "/images/rama-urban-shade-tower.webp",
+            alt: "برج سكني توضيحي في دبي بشرفات مظللة إلى جانب مسار مشاة مزروع",
+            caption: "شكل المبنى سياق؛ وتبقى حالة التسليم ورسوم الخدمة والأدلة أسئلة منفصلة.",
+          },
+        },
+        capability: {
+          src: "/images/rama-inspectable-interior.webp",
+          alt: "تصميم داخلي توضيحي لشقة في دبي يظهر ضوء النهار والحركة والتخزين وعمق الشرفة",
+          caption: "يمكن للمشهد أن يفتح أسئلة، لكن الحقائق المنضبطة وحدها تجيب عنها.",
+        },
+        closing: {
+          src: "/images/rama-waterfront-blue-hour.webp",
+          alt: "مساكن توضيحية منخفضة الارتفاع وممشى مزروع على واجهة دبي المائية في الساعة الزرقاء",
+          caption: "سياق توضيحي في دبي، وليس إعلاناً أو إشارة توفر أو ادعاءً استثمارياً.",
+        },
+      },
+      architecture: {
+        panes: [
+          { label: "كلماتك", title: "تبقى النية ظاهرة", body: "يبقى النص الأصلي قابلاً للتعديل أثناء المراجعة والتعافي من الخطأ." },
+          { label: "بنية راما", title: "تُفصل المعايير", body: "لا تُختزل المعايير المطلوبة والمفضلة في نتيجة واحدة." },
+          { label: "قبل المقارنة", title: "يبقى غير المحسوم مفتوحاً", body: "تظهر المعلومات الناقصة والتعارضات بدلاً من افتراضها بصمت." },
+        ],
+      },
+      examples: {
+        index: "02 / أنماط قرار توضيحية",
+        title: "ابدأ من صيغة قرار مألوفة.",
+        body: "هذه موجزات توضيحية وليست عقارات أو عملاء أو توصيات سوقية. اختر أحدها لفتح محادثة الموجز القابلة للتعديل نفسها.",
+        choose: "استخدم هذا المثال",
+        constraintLabel: "قيد أساسي",
+        tradeoffLabel: "مفاضلة مفتوحة",
+        items: [
+          { id: "waterfront-routine", title: "روتين على الواجهة المائية", brief: "غرفتا نوم في دبي مارينا بأقل من 3 ملايين درهم، مناسبة للمشي إلى الواجهة المائية وعلى بُعد 30 دقيقة من مركز دبي المالي.", constraint: "الحد الأقصى للميزانية", tradeoff: "الوصول إلى الماء أو أمسيات أكثر هدوءاً" },
+          { id: "family-transition", title: "انتقال عائلي", brief: "تاون هاوس بثلاث غرف نوم في دبي مع مساحة خارجية ومدارس قريبة وموعد انتقال عملي.", constraint: "ثلاث غرف نوم", tradeoff: "زمن التنقل أو مساحة خارجية أكبر" },
+          { id: "calm-city-base", title: "قاعدة هادئة في المدينة", brief: "شقة مضيئة بغرفتي نوم قريبة من المترو، مع مكتب منزلي ومكان أكثر هدوءاً.", constraint: "الوصول إلى المترو", tradeoff: "الموقع المركزي أو ضوضاء محيطة أقل" },
+          { id: "long-horizon", title: "موجز طويل الأفق", brief: "منزل في دبي بأقل من 4 ملايين درهم مع إضاءة طبيعية ومساحة مرنة؛ أبقِ حالة التسليم ورسوم الخدمة مفتوحتين للمراجعة.", constraint: "الحد الأقصى للميزانية", tradeoff: "توقيت التسليم أو تكلفة التشغيل" },
+        ],
+      },
+      capabilities: {
+        index: "03 / عمل قابل للفحص",
+        title: "ما الذي تجعله راما قابلاً للفحص؟",
+        body: "كل قدرة هي منظور للقرار نفسه الذي يتحكم به المشتري، وليست مسار تحويل منفصلاً.",
+        items: [
+          { title: "موجز مؤكد", body: "المعايير الدقيقة التي اعتمدتها قبل البحث." },
+          { title: "توافق المرشح", body: "التوافق المؤكد فقط؛ ويبقى التقييم الناقص ظاهراً كناقص." },
+          { title: "المصدر", body: "يبقى المصدر وحالة الرصد والحقائق غير المتاحة مرتبطة." },
+          { title: "المقارنة", body: "ما يصل إلى ثلاثة مرشحين مؤهلين مقابل الموجز نفسه." },
+          { title: "سجل القرار", body: "سجل زمني لما تغيّر وسببه." },
+          { title: "تحويل بموافقة", body: "متاح فقط للسجلات المنشورة المؤهلة وبعد موافقة المشتري الصريحة." },
+        ],
+      },
+      specimen: {
+        index: "04 / داخل غرفة قرار واحدة",
+        title: "شاهد القرار وهو يصبح قابلاً للفحص.",
+        body: "يتتبع تسلسل تمرير واحد الموجز والتوافق المؤكد وحالة الدليل وسؤالاً مفتوحاً والتغيير الناتج في السجل.",
+        items: [
+          { stage: "brief", label: "الموجز", title: "غرفتا نوم وسقف صارم قدره 3 ملايين درهم", body: "تصبح كلمات المشتري المؤكدة نقطة المرجع لكل عرض لاحق.", evidence: "buyer_confirmed", evidenceLabel: "مؤكد من المشتري" },
+          { stage: "fit", label: "توافق مؤكد", title: "يتوافق معيارا الغرف والميزانية", body: "تعرض راما فقط التوافق المدعوم بالسجل المنضبط الحالي.", evidence: "source_confirmed", evidenceLabel: "مؤكد من المصدر" },
+          { stage: "evidence", label: "حالة المصدر", title: "تحتفظ الحقائق المرصودة بحالة مصدرها", body: "تبقى حداثة المعلومة ونسخة المصدر ظاهرتين بجانب الحقيقة التي تصفانها.", evidence: "source_confirmed", evidenceLabel: "مؤكد من المصدر" },
+          { stage: "open_question", label: "سؤال مفتوح", title: "مدى تقبل رسوم الخدمة ما زال غير معروف", body: "يبقى غير المحسوم عنصراً في القرار؛ ولا تملؤه راما بتقدير.", evidence: "unknown", evidenceLabel: "غير معروف" },
+          { stage: "ledger_change", label: "تغيير في السجل", title: "دخل سؤال جديد إلى سجل القرار", body: "يمكن للمشتري معرفة متى ظهر السؤال وحمله إلى المراجعة اللاحقة.", evidence: "buyer_confirmed", evidenceLabel: "يتحكم به المشتري" },
+        ],
+      },
+      method: {
+        index: "05 / منهج القرار",
+        title: "تسلسل هادئ من النية إلى الفعل.",
+        body: "لا تحكم في عجلة التمرير ولا اختصاراً مخفياً. تترك كل خطوة مخرجاً ظاهراً.",
+        previous: "خطوة القرار السابقة",
+        next: "خطوة القرار التالية",
+        steps: [
+          { title: "تحدث أو اكتب", body: "صِف المنزل والحياة اللذين تريدهما بكلماتك.", output: "المخرج / النص" },
+          { title: "راجع المعايير", body: "افصل المطلوب والمفضّل وغير المحسوم والمتعارض.", output: "المخرج / موجز مؤكد" },
+          { title: "قارن", body: "قِس كل مرشح مؤهل مقابل المعايير المعتمدة نفسها.", output: "المخرج / سطح المقارنة" },
+          { title: "افحص الأدلة", body: "افتح المصدر وحالة الرصد خلف حقيقة القرار.", output: "المخرج / ملف الأدلة" },
+          { title: "احتفظ أو حوّل", body: "احفظ أو صدّر أو امسح أو وافق على تحويل مؤهل لمستشار.", output: "المخرج / سجل القرار" },
+        ],
+      },
+      boundaries: {
+        index: "06 / سجل الحدود",
+        title: "الثقة حالة ظاهرة في النظام.",
+        body: "لا تستبدل راما الدليل الناقص بلغة واثقة.",
+        items: [
+          { title: "حدود المخزون", body: "النتائج الحالية توضيحية إلى أن يتم ربط مخزون مرخّص.", state: "source" },
+          { title: "حالة المصدر", body: "تعرض حقائق العقار مصدرها وحالة رصدها عندما تتوفر.", state: "source" },
+          { title: "موافقة المشتري", body: "لا يمكن إرسال المساكن التوضيحية إلى مستشار.", state: "consent" },
+          { title: "خصوصية الصوت", body: "يبقى اعتماد الخادم خاصاً؛ ويظل التعافي بالكتابة متاحاً إذا تعذر بدء الصوت.", state: "privacy" },
+          { title: "حقوق البيانات", body: "يمكن تصدير سجلات القرار المؤهلة أو مسحها من غرفة القرار.", state: "privacy" },
+        ],
+      },
+      briefings: {
+        index: "07 / موجزات لمشتري دبي",
+        title: "أسئلة تستحق الحسم قبل إنشاء قائمة عقارات.",
+        body: "أسئلة قرار دائمة فقط. تتطلب حقائق السوق المستقبلية مصدراً وتاريخ رصد وانتهاء صلاحية وحالة حقوق واعتماداً للادعاء.",
+        items: [
+          { title: "جاهز أم على المخطط؟", body: "صِغ اختيار حالة التسليم حول التوقيت وعدم اليقين والأدلة التي ستحتاجها." },
+          { title: "ماذا يعني التنقل؟", body: "حوّل تفضيل الموقع العام إلى وجهات وفترات زمنية ومفاضلات مقبولة." },
+          { title: "أي التكاليف ما زالت مفتوحة؟", body: "أبقِ رسوم الخدمة والتمويل والضرائب والنتائج القانونية غير محسومة حتى يتوفر دليل مؤهل." },
+        ],
+      },
+      faq: {
+        index: "08 / إجابات قابلة للفحص",
+        title: "قبل أن تبدأ.",
+        items: [
+          { question: "هل الصوت مطلوب؟", answer: "لا. يصل الصوت والنص إلى مراجعة الموجز المكتوب نفسها، ويبقى النص متاحاً في كل حالات فشل الصوت." },
+          { question: "هل المساكن إعلانات حية؟", answer: "لا. النتائج الحالية توضيحية إلى أن يتم ربط مصدر مخزون مرخّص." },
+          { question: "ماذا تعني حالة الدليل؟", answer: "تحدد إن كانت الحقيقة مؤكدة من المصدر أو المشتري أو مستنتجة أو قديمة أو متغيرة أو غير معروفة." },
+          { question: "هل يمكن للمستشار رؤية موجزي التوضيحي؟", answer: "لا يمكن إرسال المساكن التوضيحية إلى مستشار. وحتى السجلات المنشورة المؤهلة تتطلب موافقة صريحة." },
+          { question: "هل يمكنني تصدير بياناتي أو حذفها؟", answer: "نعم. توفر غرفة القرار ضوابط التصدير والحذف للسجلات المؤهلة التي يملكها المشتري أو جلسة المتصفح." },
+          { question: "هل تقدم العربية الرحلة نفسها؟", answer: "نعم. تحافظ العربية على بنية الموجز والأدلة والأخطاء والتعافي والموافقة وحقوق البيانات نفسها باتجاه من اليمين إلى اليسار." },
+        ],
+      },
+      closing: {
+        index: "العودة إلى الموجز",
+        title: "ابدأ بصوتك. أكّد كل معيار.",
+        body: "محادثة واحدة ومراجعة واحدة ومسار واحد إلى غرفة القرار.",
+        action: "ابدأ موجزي",
+      },
+      footer: {
+        summary: "اكتشاف عقاري صوتي في دبي بمعايير قابلة للتفسير.",
+        method: "منهج القرار",
+        boundaries: "الحدود",
+        privacy: "الخصوصية",
+        dataRights: "حقوق البيانات",
+        staff: "دخول الفريق",
+        disclosure: "نموذج توضيحي. المساكن والأسعار ونتائج المطابقة ليست مخزوناً حياً أو بيانات سوقية أو نصيحة عقارية.",
+      },
+    },
+  },
+} as const;
+
+export type LandingCopy = (typeof landingCopy)[PublicLocale];
+
+export const decisionRoomCopy = {
+  en: {
+    room: "Rama Buyer Decision Room", openFull: "Open full page", back: "Back to Rama", close: "Close Decision Room",
+    currentBrief: "Current property brief", required: "Required", preferred: "Preferred",
+    briefPreserved: "Brief preserved", noExact: "No exact residence yet.",
+    noExactBody: "Rama found no currently eligible public listing for this brief. Return to the search and relax one preference; no demonstration inventory has been substituted.",
+    refine: "Refine the brief", strongest: "Strongest current match", bedrooms: "Bedrooms", bathrooms: "Bathrooms", interior: "Interior",
+    why: "Why Rama selected it", closeDossier: "Close dossier", learnMore: "Learn more", dossier: "Property dossier",
+    inspect: "Inspect the evidence, then choose the next question.",
+    factsBoundary: "Facts below are fetched through Rama’s governed tool boundary. Missing records remain visibly unavailable rather than being inferred.",
+    source: "Source", status: "Status", sourceVersion: "Source version", observed: "Observed", completion: "Completion", availability: "Availability",
+    illustrative: "Illustrative record", published: "Published record", notSupplied: "Not supplied",
+    evidence: "Evidence state", knows: "What Rama knows, and what changed.", asFirstSeen: "As first seen",
+    secondary: "Secondary residences", alternatives: "Quieter alternatives, held against the same brief.", compare: "Compare", dismiss: "Dismiss",
+    ledger: "Decision Ledger", ledgerTitle: "A written trail you can inspect.", saving: "Saving this decision…", saved: "Decision saved in your ledger.",
+    squareFeet: "sq ft", keyFacts: "key facts", price: "Price",
+    sourceSummary: (published: number, illustrative: number) => published && illustrative ? `${published} published · ${illustrative} illustrative` : published ? `${published} governed ${published === 1 ? "residence" : "residences"}` : `${illustrative} illustrative ${illustrative === 1 ? "residence" : "residences"}`,
+    evidenceStates: { source_confirmed: "Source confirmed", buyer_confirmed: "Buyer confirmed", inferred: "Rama inference", stale: "Stale", disputed: "Changed since first seen", unknown: "Unknown" },
+    toolActions: { details: "Full details", compare: "Compare", payment: "Payment schedule", floor_plan: "Floor plans", documents: "Documents", scenario: "Buyer scenario", development: "Development", area: "Area context" },
+    invalidTool: "Rama returned an invalid property response.", factUnavailable: "This property fact is temporarily unavailable.", toolReady: "The governed property response is ready.",
+    restorationTitle: "Evidence refreshed", restorationBody: "One or more source records changed since this room was first seen. Review the current evidence before deciding.",
+    decisionSaveFailed: "The decision could not be saved.", candidateDismissed: (name: string) => `${name} was removed from consideration by the buyer.`,
+    contactRequired: "Add an email address or phone number so an advisor can respond.", sendingHandoff: "Sending your consented request…", handoffSent: "Your request is in Rama’s advisor queue. We preserved the property and conversation context.", handoffFailed: "The advisor request could not be sent.", handoffUnknown: "We could not confirm the advisor request status. Your request may still be in progress.",
+    askAdvisor: "Ask an advisor", advisorUnavailable: "Advisor handoff unavailable for this illustrative record", advisorHandoff: "Advisor handoff", advisorTitle: "Share only what Rama needs.", fullName: "Full name", emailOrPhone: "Email (or use phone)", phoneOrEmail: "Phone (or use email)", advisorQuestion: "What should the advisor help with?", advisorMessage: (name: string) => `I would like to discuss ${name}.`, advisorConsent: "I consent to Rama sharing these contact details and this property context with an authorized advisor.", sendAdvisor: "Send advisor request",
+    compareProperty: (name: string) => `Compare ${name}`,
+    ledgerBrief: (count: number) => `Brief confirmed with ${count} visible criteria.`, ledgerSeen: (name: string) => `${name} entered the shortlist with an immutable as-seen evidence snapshot.`, ledgerRevised: "A criterion was revised by the buyer.", ledgerQuestion: "An open question was added to this decision.",
+  },
+  ar: {
+    room: "غرفة قرار المشتري من راما", openFull: "افتح الصفحة الكاملة", back: "العودة إلى راما", close: "أغلق غرفة القرار",
+    currentBrief: "موجز العقار الحالي", required: "مطلوب", preferred: "مفضّل",
+    briefPreserved: "تم حفظ الموجز", noExact: "لا يوجد مسكن مطابق تماماً بعد.",
+    noExactBody: "لم تجد راما إعلاناً عاماً مؤهلاً حالياً لهذا الموجز. ارجع إلى البحث وعدّل تفضيلاً واحداً؛ لم تتم إضافة أي مخزون تجريبي بديلاً.",
+    refine: "عدّل الموجز", strongest: "أقوى تطابق حالي", bedrooms: "غرف النوم", bathrooms: "الحمّامات", interior: "المساحة الداخلية",
+    why: "لماذا اختارته راما", closeDossier: "أغلق الملف", learnMore: "اعرف المزيد", dossier: "ملف العقار",
+    inspect: "افحص الأدلة، ثم اختر السؤال التالي.",
+    factsBoundary: "تُجلب الحقائق أدناه عبر حدود أدوات راما المنضبطة. تبقى السجلات المفقودة ظاهرة كغير متاحة بدلاً من استنتاجها.",
+    source: "المصدر", status: "الحالة", sourceVersion: "نسخة المصدر", observed: "تاريخ الرصد", completion: "الإنجاز", availability: "التوفر",
+    illustrative: "سجل توضيحي", published: "سجل منشور", notSupplied: "غير متاح",
+    evidence: "حالة الدليل", knows: "ما تعرفه راما، وما الذي تغيّر.", asFirstSeen: "عند العرض الأول",
+    secondary: "مساكن بديلة", alternatives: "بدائل أهدأ مقابل الموجز نفسه.", compare: "قارن", dismiss: "استبعد",
+    ledger: "سجل القرار", ledgerTitle: "مسار مكتوب يمكنك فحصه.", saving: "جارٍ حفظ القرار…", saved: "تم حفظ القرار في سجلك.",
+    squareFeet: "قدم مربع", keyFacts: "الحقائق الأساسية", price: "السعر",
+    sourceSummary: (published: number, illustrative: number) => published && illustrative ? `${published.toLocaleString("ar-AE")} منشور · ${illustrative.toLocaleString("ar-AE")} توضيحي` : published ? `${published.toLocaleString("ar-AE")} من المساكن المنضبطة` : `${illustrative.toLocaleString("ar-AE")} من المساكن التوضيحية`,
+    evidenceStates: { source_confirmed: "مؤكد من المصدر", buyer_confirmed: "مؤكد من المشتري", inferred: "استنتاج من راما", stale: "قديم", disputed: "تغيّر منذ العرض الأول", unknown: "غير معروف" },
+    toolActions: { details: "التفاصيل الكاملة", compare: "قارن", payment: "جدول الدفعات", floor_plan: "المخططات", documents: "المستندات", scenario: "سيناريو المشتري", development: "المشروع", area: "سياق المنطقة" },
+    invalidTool: "أعادت راما استجابة عقارية غير صالحة.", factUnavailable: "هذه الحقيقة العقارية غير متاحة مؤقتاً.", toolReady: "استجابة العقار المنضبطة جاهزة.",
+    restorationTitle: "تم تحديث الأدلة", restorationBody: "تغيّر سجل مصدر واحد أو أكثر منذ العرض الأول لهذه الغرفة. راجع الأدلة الحالية قبل اتخاذ القرار.",
+    decisionSaveFailed: "تعذر حفظ القرار.", candidateDismissed: (name: string) => `استبعد المشتري ${name} من الاعتبار.`,
+    contactRequired: "أضف بريداً إلكترونياً أو رقم هاتف كي يتمكن المستشار من الرد.", sendingHandoff: "جارٍ إرسال طلبك بعد موافقتك…", handoffSent: "أُضيف طلبك إلى قائمة مستشاري راما مع حفظ سياق العقار والمحادثة.", handoffFailed: "تعذر إرسال طلب المستشار.", handoffUnknown: "تعذر تأكيد حالة طلب المستشار. قد يكون الطلب قيد التنفيذ.",
+    askAdvisor: "اسأل مستشاراً", advisorUnavailable: "تحويل المستشار غير متاح لهذا السجل التوضيحي", advisorHandoff: "التحويل إلى مستشار", advisorTitle: "شارك فقط ما تحتاجه راما.", fullName: "الاسم الكامل", emailOrPhone: "البريد الإلكتروني (أو استخدم الهاتف)", phoneOrEmail: "الهاتف (أو استخدم البريد)", advisorQuestion: "بماذا تريد من المستشار أن يساعدك؟", advisorMessage: (name: string) => `أود مناقشة ${name}.`, advisorConsent: "أوافق على مشاركة راما لبيانات الاتصال هذه وسياق العقار مع مستشار معتمد.", sendAdvisor: "أرسل طلب المستشار",
+    compareProperty: (name: string) => `قارن ${name}`,
+    ledgerBrief: (count: number) => `تم تأكيد الموجز مع ${count.toLocaleString("ar-AE")} من المعايير الظاهرة.`, ledgerSeen: (name: string) => `أُضيف ${name} إلى القائمة المختصرة مع لقطة أدلة ثابتة كما ظهرت أول مرة.`, ledgerRevised: "عدّل المشتري أحد المعايير.", ledgerQuestion: "أُضيف سؤال مفتوح إلى هذا القرار.",
+  },
+} as const;
+
+export type DecisionRoomCopy = (typeof decisionRoomCopy)[PublicLocale];
+
+export const decisionHistoryCopy = {
+  en: {
+    eyebrow: "Saved decision runs",
+    title: "Carry your criteria across searches.",
+    body: "Save this confirmed brief, then select earlier runs to compare their currently governed residences.",
+    saveCurrent: "Save current brief",
+    savingCurrent: "Saving…",
+    savedCurrent: "Brief saved. You control this history.",
+    signIn: "Sign in to save and compare briefs",
+    emailLabel: "Email for a secure sign-in link",
+    emailPlaceholder: "you@example.com",
+    invalidEmail: "Enter a valid email address.",
+    sendLink: "Send secure link",
+    sendingLink: "Sending…",
+    checkEmail: "Check your email to finish signing in, then return to this Decision Room.",
+    signInFailed: "The sign-in link could not be sent.",
+    signOut: "Sign out of saved decisions",
+    signedOut: "Signed out. This browser still retains only the current anonymous Decision Room session.",
+    retry: "Retry saved decisions",
+    loading: "Checking saved-decision access…",
+    unavailable: "Saved decisions are temporarily unavailable.",
+    empty: "No saved runs yet. Save this brief to start a buyer-controlled history.",
+    selectRun: "Select saved run",
+    compare: "Compare selected runs",
+    compareHint: "Select at least two runs with two currently available residences.",
+    sourceText: "Text brief",
+    sourceVoice: "Voice brief",
+    lastChange: "Last change",
+    unresolved: "Unresolved questions",
+    unresolvedValue: "Not stored in this saved snapshot",
+    freshness: "Freshness",
+    freshnessValue: "Candidate records are rechecked when compared",
+  },
+  ar: {
+    eyebrow: "عمليات القرار المحفوظة",
+    title: "احتفظ بمعاييرك بين عمليات البحث.",
+    body: "احفظ هذا الموجز المؤكد، ثم اختر عمليات سابقة لمقارنة المساكن المتاحة حالياً ضمن حدود راما المنضبطة.",
+    saveCurrent: "احفظ الموجز الحالي",
+    savingCurrent: "جارٍ الحفظ…",
+    savedCurrent: "تم حفظ الموجز. أنت تتحكم في هذا السجل.",
+    signIn: "سجّل الدخول لحفظ الموجزات ومقارنتها",
+    emailLabel: "البريد الإلكتروني لرابط دخول آمن",
+    emailPlaceholder: "you@example.com",
+    invalidEmail: "أدخل عنوان بريد إلكتروني صالحاً.",
+    sendLink: "أرسل الرابط الآمن",
+    sendingLink: "جارٍ الإرسال…",
+    checkEmail: "تحقق من بريدك لإكمال تسجيل الدخول، ثم عُد إلى غرفة القرار هذه.",
+    signInFailed: "تعذر إرسال رابط تسجيل الدخول.",
+    signOut: "تسجيل الخروج من القرارات المحفوظة",
+    signedOut: "تم تسجيل الخروج. يحتفظ هذا المتصفح بجلسة غرفة القرار المجهولة الحالية فقط.",
+    retry: "أعد محاولة تحميل القرارات المحفوظة",
+    loading: "جارٍ التحقق من صلاحية الوصول إلى القرارات المحفوظة…",
+    unavailable: "القرارات المحفوظة غير متاحة مؤقتاً.",
+    empty: "لا توجد عمليات محفوظة بعد. احفظ هذا الموجز لبدء سجل تتحكم فيه.",
+    selectRun: "اختر عملية محفوظة",
+    compare: "قارن العمليات المختارة",
+    compareHint: "اختر عمليتين على الأقل تتضمنان مسكنين متاحين حالياً.",
+    sourceText: "موجز نصي",
+    sourceVoice: "موجز صوتي",
+    lastChange: "آخر تغيير",
+    unresolved: "الأسئلة غير المحسومة",
+    unresolvedValue: "غير محفوظة في لقطة الموجز هذه",
+    freshness: "حداثة البيانات",
+    freshnessValue: "تُفحص سجلات المرشحين مجدداً عند المقارنة",
+  },
+} as const;
+
+export type DecisionHistoryCopy = (typeof decisionHistoryCopy)[PublicLocale];
+
+export const buyerDataRightsCopy = {
+  en: {
+    eyebrow: "Your data",
+    title: "Export or erase your Rama record.",
+    bodyAuthenticated: "Download a versioned copy of your account-owned briefs, decisions, evidence, shortlist, inquiries, and consent record.",
+    bodyAnonymous: "Download the decision data owned by this browser session. No other browser or account is included.",
+    exportAction: "Download my data",
+    exporting: "Preparing export…",
+    exportComplete: "Your data export download has started.",
+    exportFailed: "Your data export is temporarily unavailable.",
+    deleteTitle: "Permanent deletion",
+    deleteAuthenticated: "This erases eligible buyer data, revokes every login session, and deletes your non-staff Rama account. Processor follow-up and minimized audit exceptions are reported after deletion.",
+    deleteAnonymous: "This erases the anonymous Decision Room history owned by this browser. Processor follow-up and minimized audit exceptions are reported after deletion.",
+    verificationAction: "Email me a one-time deletion link",
+    verificationSending: "Sending verification…",
+    verificationSent: "Check the email attached to this account. Open the one-time link in this browser within ten minutes.",
+    verificationComplete: "Email verification complete",
+    verificationFailed: "Deletion verification failed or expired. Request a new one-time link.",
+    confirmationLabel: "Type DELETE MY RAMA DATA to confirm",
+    confirmationPlaceholder: "DELETE MY RAMA DATA",
+    deleteAction: "Permanently delete my Rama data",
+    deleting: "Deleting atomically…",
+    deleteFailed: "Rama could not complete deletion. No partial success is hidden; review the message and retry.",
+    deleted: "Deletion completed. This browser now has a new, empty anonymous session.",
+    queued: "External processor deletion was queued for operational follow-up.",
+  },
+  ar: {
+    eyebrow: "بياناتك",
+    title: "صدّر سجل راما أو امسحه.",
+    bodyAuthenticated: "نزّل نسخة محددة الإصدار من الموجزات والقرارات والأدلة والقائمة المختصرة والاستفسارات وسجل الموافقات المملوكة لحسابك.",
+    bodyAnonymous: "نزّل بيانات القرار التي تملكها جلسة هذا المتصفح فقط. لن يتضمن التصدير أي متصفح أو حساب آخر.",
+    exportAction: "نزّل بياناتي",
+    exporting: "جارٍ إعداد التصدير…",
+    exportComplete: "بدأ تنزيل ملف تصدير بياناتك.",
+    exportFailed: "تصدير بياناتك غير متاح مؤقتاً.",
+    deleteTitle: "حذف نهائي",
+    deleteAuthenticated: "يمسح هذا الإجراء بيانات المشتري المؤهلة، ويلغي جميع جلسات الدخول، ويحذف حساب راما غير المخصص للموظفين. ستظهر أي متابعة لدى معالج خارجي أو استثناء تدقيق محدود بعد الحذف.",
+    deleteAnonymous: "يمسح هذا الإجراء سجل غرفة القرار المجهول الذي تملكه جلسة هذا المتصفح. ستظهر أي متابعة لدى معالج خارجي أو استثناء تدقيق محدود بعد الحذف.",
+    verificationAction: "أرسل إليّ رابط حذف لمرة واحدة",
+    verificationSending: "جارٍ إرسال التحقق…",
+    verificationSent: "تحقق من البريد المرتبط بهذا الحساب. افتح الرابط لمرة واحدة في هذا المتصفح خلال عشر دقائق.",
+    verificationComplete: "اكتمل التحقق عبر البريد",
+    verificationFailed: "فشل تحقق الحذف أو انتهت صلاحيته. اطلب رابطاً جديداً لمرة واحدة.",
+    confirmationLabel: "اكتب DELETE MY RAMA DATA للتأكيد",
+    confirmationPlaceholder: "DELETE MY RAMA DATA",
+    deleteAction: "احذف بياناتي من راما نهائياً",
+    deleting: "جارٍ الحذف ضمن معاملة واحدة…",
+    deleteFailed: "تعذر على راما إكمال الحذف. لن نخفي نجاحاً جزئياً؛ راجع الرسالة ثم أعد المحاولة.",
+    deleted: "اكتمل الحذف. يملك هذا المتصفح الآن جلسة مجهولة جديدة وفارغة.",
+    queued: "تمت جدولة حذف البيانات لدى المعالج الخارجي للمتابعة التشغيلية.",
+  },
+} as const;
+
+export type BuyerDataRightsCopy = (typeof buyerDataRightsCopy)[PublicLocale];

@@ -25,7 +25,7 @@ export class RateLimitBackendUnavailableError extends Error {
 }
 
 function getRateLimitSecret() {
-  return process.env.RATE_LIMIT_SECRET || process.env.GEMINI_API_KEY || "";
+  return process.env.RATE_LIMIT_SECRET || "";
 }
 
 function consumeDevelopmentBucket(

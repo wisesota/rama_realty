@@ -3,27 +3,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { decisionRoomCopy, localizedCriterionLabel, localizedPath, localizedRecordText, type DecisionRoomCopy, type PublicLocale } from "@/lib/i18n";
 import { ArrowLeft, ArrowRight, Bath, BedDouble, Check, ChevronDown, LoaderCircle, MapPin, Ruler, ShieldCheck, X } from "lucide-react";
 import { Dialog, Modal, ModalOverlay } from "react-aria-components";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AgentResponseBlocks } from "@/components/agent-response-blocks";
 import { DecisionRoomVoiceComposer } from "@/components/decision-room-voice-composer";
+import { SavedBriefControl } from "@/components/saved-brief-control";
 import { Button } from "@/components/ui/button";
-import type { BuyerDecisionEnvelopeV1, BuyerPropertySummary } from "@/lib/agent/buyer-contracts";
+import { ConsentHandoff } from "@/components/rama/consent-handoff";
+import { DecisionLedgerTimeline } from "@/components/rama/decision-ledger-timeline";
+import { EvidenceState } from "@/components/rama/evidence-state";
+import type { BuyerDecisionEnvelope, BuyerPropertySummary, DecisionLedgerEvent, EvidenceAssertion, EvidenceState as EvidenceStateValue } from "@/lib/agent/buyer-contracts";
 import { isAgentToolResponse, type AgentBlock, type AgentToolName } from "@/lib/agent/contracts";
 import { criterionCategoriesFromKeys, emitProductEvent } from "@/lib/product-events";
 
 type ToolAction = "details" | "compare" | "payment" | "floor_plan" | "documents" | "scenario" | "development" | "area";
 
-const toolActions: Array<[ToolAction, string]> = [
-  ["details", "Full details"], ["payment", "Payment schedule"],
-  ["floor_plan", "Floor plans"], ["documents", "Documents"],
-  ["scenario", "Buyer scenario"], ["development", "Development"],
-  ["area", "Area context"],
-];
+const toolActions: ToolAction[] = ["details", "payment", "floor_plan", "documents", "scenario", "development", "area"];
 
-function formatAed(value: number) {
-  return new Intl.NumberFormat("en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 0 }).format(value);
+function formatAed(value: number, locale: PublicLocale) {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-AE" : "en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 0 }).format(value);
 }
 
 function publicPropertyId(property: BuyerPropertySummary) {
@@ -34,20 +34,26 @@ function sourceVersion(property: BuyerPropertySummary) {
   return `v${property.provenance.version}`;
 }
 
-function PropertyFacts({ property }: { property: BuyerPropertySummary }) {
+function evidenceStateLabel(state: EvidenceStateValue, copy: DecisionRoomCopy) {
+  return copy.evidenceStates[state];
+}
+
+function PropertyFacts({ property, locale, copy }: { property: BuyerPropertySummary; locale: PublicLocale; copy: DecisionRoomCopy }) {
   return (
-    <dl className="decision-room__facts" aria-label={`${property.name} key facts`}>
-      <div><dt><BedDouble aria-hidden="true" /> Bedrooms</dt><dd>{property.beds}</dd></div>
-      <div><dt><Bath aria-hidden="true" /> Bathrooms</dt><dd>{property.baths}</dd></div>
-      <div><dt><Ruler aria-hidden="true" /> Interior</dt><dd>{property.area.value.toLocaleString("en-AE")} sq ft</dd></div>
+    <dl className="decision-room__facts" aria-label={`${property.name} ${copy.keyFacts}`}>
+      <div><dt><BedDouble aria-hidden="true" /> {copy.bedrooms}</dt><dd>{property.beds}</dd></div>
+      <div><dt><Bath aria-hidden="true" /> {copy.bathrooms}</dt><dd>{property.baths}</dd></div>
+      <div><dt><Ruler aria-hidden="true" /> {copy.interior}</dt><dd><bdi>{property.area.value.toLocaleString(locale === "ar" ? "ar-AE" : "en-AE")} {copy.squareFeet}</bdi></dd></div>
     </dl>
   );
 }
 
-export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: BuyerDecisionEnvelopeV1; modal?: boolean }) {
+export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { envelope: BuyerDecisionEnvelope; modal?: boolean; locale?: PublicLocale }) {
+  const copy = decisionRoomCopy[locale];
   const router = useRouter();
   const handoffKeysRef = useRef(new Map<string, string>());
-  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const dismissalKeysRef = useRef(new Map<string, string>());
+  const returnFocusSourceRef = useRef<"voice" | "text">("text");
   const dossierTitleRef = useRef<HTMLHeadingElement | null>(null);
   const focusDossierRef = useRef(false);
   const emittedOutcomeRef = useRef<string | null>(null);
@@ -66,19 +72,23 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
   const selected = properties.find((property) => property.id === selectedId) ?? properties[0];
   const selectedIdRef = useRef(selected?.id ?? "");
   const restorationNotices = envelope.blocks.filter((block) => block.type === "recoverable_error");
+  const evidence = envelope.schemaVersion === "2" ? envelope.evidence.assertions : [];
+  const initialLedger = envelope.schemaVersion === "2" ? envelope.decisionLedger.events : [];
+  const [ledger, setLedger] = useState(initialLedger);
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+  const [ledgerStatus, setLedgerStatus] = useState("");
 
   useEffect(() => {
     if (!modal) return;
     const returnSource = sessionStorage.getItem("rama:decision-room-return-focus");
     sessionStorage.removeItem("rama:decision-room-return-focus");
-    returnFocusRef.current = document.querySelector<HTMLElement>(returnSource === "voice"
-      ? ".voice-signal"
-      : "#guided-search button[type='submit']");
-    return () => {
-      const returnTarget = returnFocusRef.current;
-      window.requestAnimationFrame(() => returnTarget?.focus());
-    };
+    returnFocusSourceRef.current = returnSource === "voice" ? "voice" : "text";
   }, [modal]);
+
+  function closeModal() {
+    sessionStorage.setItem("rama:decision-room-restore-focus", returnFocusSourceRef.current);
+    router.back();
+  }
 
   useEffect(() => {
     selectedIdRef.current = selected?.id ?? "";
@@ -137,7 +147,7 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
   function expandProperty(fromView: "lead" | "shortlist", property = selected) {
     if (!property) return;
     if (property.id !== selected?.id) selectProperty(property);
-    focusDossierRef.current = fromView === "shortlist";
+    focusDossierRef.current = true;
     setDetailsExpanded(true);
     emitProductEvent({ event: "room.property_expand", searchRunId: envelope.searchRunId, propertyId: publicPropertyId(property), sourceVersion: sourceVersion(property), fromView, timestamp: new Date().toISOString() });
   }
@@ -165,14 +175,14 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
     try {
       const response = await fetch("/api/agent/tools", { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(request[action]), signal: controller.signal });
       const payload: unknown = await response.json();
-      if (!isAgentToolResponse(payload)) throw new Error("Rama returned an invalid property response.");
+      if (!isAgentToolResponse(payload)) throw new Error(copy.invalidTool);
       if (toolRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
       setBlocks(payload.blocks);
-      setToolStatus(payload.summary);
+      setToolStatus(locale === "ar" ? copy.toolReady : payload.summary);
     } catch (error) {
       if (controller.signal.aborted || toolRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
       setBlocks([]);
-      setToolStatus(error instanceof Error ? error.message : "This property fact is temporarily unavailable.");
+      setToolStatus(locale === "ar" ? copy.factUnavailable : error instanceof Error ? error.message : copy.factUnavailable);
     } finally {
       if (toolRequestRef.current?.id === requestId) {
         toolRequestRef.current = null;
@@ -185,6 +195,47 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
     setCompareIds((current) => current.includes(propertyId) ? current.filter((id) => id !== propertyId) : current.length < 3 ? [...current, propertyId] : current);
   }
 
+  async function dismissCandidate(property: BuyerPropertySummary) {
+    let idempotencyKey = dismissalKeysRef.current.get(property.id);
+    if (!idempotencyKey) {
+      idempotencyKey = crypto.randomUUID();
+      dismissalKeysRef.current.set(property.id, idempotencyKey);
+    }
+    const wasCompared = compareIds.includes(property.id);
+    setDismissedIds((current) => [...new Set([...current, property.id])]);
+    setCompareIds((current) => current.filter((id) => id !== property.id));
+    setLedgerStatus(copy.saving);
+    try {
+      const response = await fetch("/api/decision-ledger", {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({
+          searchRunId: envelope.searchRunId,
+          eventType: "candidate_dismissed",
+          propertyId: property.id,
+          summary: copy.candidateDismissed(property.name),
+          idempotencyKey,
+        }),
+      });
+      const payload = await response.json() as { eventId?: string; error?: string };
+      if (!response.ok || typeof payload.eventId !== "string") throw new Error(locale === "ar" ? copy.decisionSaveFailed : payload.error ?? copy.decisionSaveFailed);
+      const occurredAt = new Date().toISOString();
+      setLedger((current) => [...current, {
+        id: payload.eventId as string,
+        type: "candidate_dismissed",
+        occurredAt,
+        summary: copy.candidateDismissed(property.name),
+        assertionIds: [],
+      }]);
+      setLedgerStatus(copy.saved);
+      dismissalKeysRef.current.delete(property.id);
+    } catch (error) {
+      setDismissedIds((current) => current.filter((id) => id !== property.id));
+      if (wasCompared) setCompareIds((current) => current.includes(property.id) ? current : [...current, property.id].slice(0, 3));
+      setLedgerStatus(locale === "ar" ? copy.decisionSaveFailed : error instanceof Error ? error.message : copy.decisionSaveFailed);
+    }
+  }
+
   async function submitHandoff(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selected || handoffSubmitting) return;
@@ -192,7 +243,7 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
     const email = String(data.get("email") ?? "").trim();
     const phone = String(data.get("phone") ?? "").trim();
     if (!email && !phone) {
-      setHandoffStatus("Add an email address or phone number so an advisor can respond.");
+      setHandoffStatus(copy.contactRequired);
       return;
     }
     let idempotencyKey = handoffKeysRef.current.get(selected.id);
@@ -207,7 +258,7 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
     handoffRequestRef.current?.controller.abort();
     handoffRequestRef.current = { id: requestId, propertyId, controller };
     setHandoffSubmitting(true);
-    setHandoffStatus("Sending your consented request…");
+    setHandoffStatus(copy.sendingHandoff);
     try {
       const response = await fetch("/api/inquiries", {
         method: "POST",
@@ -217,10 +268,10 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
       });
       const payload = (await response.json()) as { error?: string };
       if (handoffRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
-      setHandoffStatus(response.ok ? "Your request is in Rama’s advisor queue. We preserved the property and conversation context." : payload.error ?? "The advisor request could not be sent.");
+      setHandoffStatus(response.ok ? copy.handoffSent : locale === "ar" ? copy.handoffFailed : payload.error ?? copy.handoffFailed);
     } catch {
       if (controller.signal.aborted || handoffRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
-      setHandoffStatus("We could not confirm the advisor request status. Your request may still be in progress.");
+      setHandoffStatus(copy.handoffUnknown);
     } finally {
       if (handoffRequestRef.current?.id === requestId) {
         handoffRequestRef.current = null;
@@ -229,46 +280,73 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
     }
   }
 
+  function evidenceLabel(assertion: EvidenceAssertion) {
+    if (assertion.field === "price") return copy.price;
+    if (assertion.field === "availability") return copy.availability;
+    if (assertion.field === "bedrooms") return copy.bedrooms;
+    if (assertion.field === "bathrooms") return copy.bathrooms;
+    if (assertion.field === "area") return `${copy.interior} (${copy.squareFeet})`;
+    return localizedCriterionLabel(locale, assertion.label);
+  }
+
+  function evidenceValue(assertion: EvidenceAssertion, value: string | number | null) {
+    if (value === null) return copy.notSupplied;
+    if (assertion.field === "price" && typeof value === "number") return formatAed(value, locale);
+    if (typeof value === "number") return value.toLocaleString(locale === "ar" ? "ar-AE" : "en-AE");
+    return localizedRecordText(locale, value);
+  }
+
+  function ledgerSummary(event: DecisionLedgerEvent) {
+    if (locale === "en") return event.summary;
+    if (event.type === "brief_confirmed") return copy.ledgerBrief(event.assertionIds.length);
+    const property = properties.find((candidate) => event.assertionIds.some((id) => evidence.find((assertion) => assertion.id === id)?.propertyId === candidate.id))
+      ?? properties.find((candidate) => event.summary.includes(candidate.name));
+    if (event.type === "candidate_seen") return copy.ledgerSeen(property?.name ?? "العقار");
+    if (event.type === "candidate_dismissed") return copy.candidateDismissed(property?.name ?? "العقار");
+    if (event.type === "criterion_revised") return copy.ledgerRevised;
+    return copy.ledgerQuestion;
+  }
+
   const room = (
     <main className="decision-room">
       <header className="decision-room__header">
-        <div className="decision-room__identity"><p>Rama Buyer Decision Room</p><span>{envelope.brief.normalized}</span></div>
+        <div className="decision-room__identity"><p>{copy.room}</p><span>{envelope.brief.criteria.map((criterion) => localizedCriterionLabel(locale, criterion.label)).join(" · ") || envelope.brief.normalized}</span></div>
         <div className="decision-room__header-actions">
-          {modal ? <a href={`/discover/${envelope.searchRunId}`}>Open full page</a> : <Link href="/"><ArrowLeft aria-hidden="true" /> Back to Rama</Link>}
-          {modal ? <Button variant="ghost" size="icon-sm" aria-label="Close Decision Room" onPress={() => router.back()}><X aria-hidden="true" /></Button> : null}
+          {modal ? <a href={localizedPath(locale, `/discover/${envelope.searchRunId}`)}>{copy.openFull}</a> : <Link href={localizedPath(locale)}><ArrowLeft aria-hidden="true" /> {copy.back}</Link>}
+          {modal ? <Button variant="ghost" size="icon-sm" aria-label={copy.close} onPress={closeModal}><X aria-hidden="true" /></Button> : null}
         </div>
       </header>
 
       <div className="decision-room__body">
-        <section className="decision-room__brief" aria-label="Current property brief">
+        <section className="decision-room__brief" aria-label={copy.currentBrief}>
           <div className="decision-room__criteria">
-            {envelope.brief.criteria.map((criterion) => <p key={criterion.key}><span>{criterion.kind === "hard" ? "Required" : "Preferred"}</span>{criterion.label}</p>)}
+            {envelope.brief.criteria.map((criterion) => <p key={criterion.key}><span>{criterion.kind === "hard" ? copy.required : copy.preferred}</span>{localizedCriterionLabel(locale, criterion.label)}</p>)}
           </div>
-          <p className="decision-room__source-summary"><ShieldCheck aria-hidden="true" />{envelope.sourceSummary.label}</p>
+          <p className="decision-room__source-summary"><ShieldCheck aria-hidden="true" />{copy.sourceSummary(envelope.sourceSummary.publishedCount, envelope.sourceSummary.illustrativeCount)}</p>
         </section>
 
-        {restorationNotices.map((notice) => <div key={`${notice.title}:${notice.message}`} role="status" className="room-notice"><strong>{notice.title}.</strong> {notice.message}</div>)}
+        {restorationNotices.map((notice) => <div key={`${notice.title}:${notice.message}`} role="status" className="room-notice"><strong>{locale === "ar" ? copy.restorationTitle : notice.title}.</strong> {locale === "ar" ? copy.restorationBody : notice.message}</div>)}
 
         {!selected ? (
           <section className="decision-room__empty">
-            <p className="eyebrow">Brief preserved</p><h1>No exact residence yet.</h1>
-            <p>Rama found no currently eligible public listing for this brief. Return to the search and relax one preference; no demonstration inventory has been substituted.</p>
-            <Button onPress={() => modal ? router.back() : router.push("/#guided-search")}>Refine the brief</Button>
+            <p className="eyebrow">{copy.briefPreserved}</p><h1>{copy.noExact}</h1>
+            <p>{copy.noExactBody}</p>
+            <Button onPress={() => modal ? router.back() : router.push(`${localizedPath(locale)}#guided-search`)}>{copy.refine}</Button>
           </section>
         ) : (
           <>
             <article className="decision-room__lead" aria-labelledby="lead-property-title">
               <div className="decision-room__lead-media">
-                <Image src={selected.image.url} alt={selected.image.alt} fill loading="eager" fetchPriority="high" sizes="(max-width: 1024px) 100vw, 900px" className="object-cover" />
-                <div className="decision-room__lead-caption"><p>Strongest current match</p><h1 id="lead-property-title">{selected.name}</h1></div>
+                <Image src={selected.image.url} alt={localizedRecordText(locale, selected.image.alt)} fill loading="eager" fetchPriority="high" sizes="(max-width: 1024px) 100vw, 900px" className="object-cover" />
+                <div className="decision-room__lead-caption"><p>{copy.strongest}</p><h1 id="lead-property-title">{selected.name}</h1></div>
               </div>
               <div className="decision-room__lead-summary">
-                <div className="decision-room__location-price"><p><MapPin aria-hidden="true" /> {selected.location}</p><strong>{formatAed(selected.price.amount)}</strong></div>
-                <PropertyFacts property={selected} />
-                <p className="decision-room__description">{selected.description ?? selected.feature}</p>
-                <div className="decision-room__match"><Check aria-hidden="true" /><div><span>Why Rama selected it</span><p>{selected.matchReason}</p></div></div>
+                <div className="decision-room__location-price"><p><MapPin aria-hidden="true" /> {localizedCriterionLabel(locale, selected.location)}</p><strong><bdi>{formatAed(selected.price.amount, locale)}</bdi></strong></div>
+                <PropertyFacts property={selected} locale={locale} copy={copy} />
+                <p className="decision-room__description">{localizedRecordText(locale, selected.description ?? selected.feature)}</p>
+                <div className="decision-room__match"><Check aria-hidden="true" /><div><span>{copy.why}</span><p>{localizedRecordText(locale, selected.matchReason)}</p></div></div>
                 <Button className="decision-room__learn-more" variant="outline" aria-expanded={detailsExpanded} aria-controls="property-dossier" onPress={() => detailsExpanded ? setDetailsExpanded(false) : expandProperty("lead")}>
-                  {detailsExpanded ? "Close dossier" : "Learn more"}<ChevronDown aria-hidden="true" data-expanded={detailsExpanded} />
+                  {detailsExpanded ? copy.closeDossier : copy.learnMore}<ChevronDown aria-hidden="true" data-expanded={detailsExpanded} />
                 </Button>
               </div>
             </article>
@@ -276,34 +354,54 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
             {detailsExpanded ? (
               <section id="property-dossier" className="property-dossier" aria-labelledby="dossier-title">
                 <div className="property-dossier__heading">
-                  <p className="eyebrow">Property dossier</p><h2 ref={dossierTitleRef} id="dossier-title" tabIndex={-1}>Inspect the evidence, then choose the next question.</h2>
-                  <p>Facts below are fetched through Rama’s governed tool boundary. Missing records remain visibly unavailable rather than being inferred.</p>
+                  <p className="eyebrow">{copy.dossier}</p><h2 ref={dossierTitleRef} id="dossier-title" tabIndex={-1}>{copy.inspect}</h2>
+                  <p>{copy.factsBoundary}</p>
                 </div>
                 <dl className="property-dossier__ledger">
-                  <div><dt>Source</dt><dd>{selected.provenance.sourceName}</dd></div>
-                  <div><dt>Status</dt><dd>{selected.provenance.kind === "illustrative" ? "Illustrative record" : "Published record"}</dd></div>
-                  <div><dt>Source version</dt><dd>{sourceVersion(selected)}</dd></div>
-                  <div><dt>Observed</dt><dd>{selected.provenance.observedAt ? new Date(selected.provenance.observedAt).toLocaleDateString("en-AE") : "Not supplied"}</dd></div>
-                  <div><dt>Completion</dt><dd>{selected.completionStatus}</dd></div>
-                  <div><dt>Availability</dt><dd>{selected.availabilityStatus}</dd></div>
+                  <div><dt>{copy.source}</dt><dd>{localizedRecordText(locale, selected.provenance.sourceName)}</dd></div>
+                  <div><dt>{copy.status}</dt><dd>{selected.provenance.kind === "illustrative" ? copy.illustrative : copy.published}</dd></div>
+                  <div><dt>{copy.sourceVersion}</dt><dd>{sourceVersion(selected)}</dd></div>
+                  <div><dt>{copy.observed}</dt><dd><bdi>{selected.provenance.observedAt ? new Date(selected.provenance.observedAt).toLocaleDateString(locale === "ar" ? "ar-AE" : "en-AE") : copy.notSupplied}</bdi></dd></div>
+                  <div><dt>{copy.completion}</dt><dd>{localizedRecordText(locale, selected.completionStatus)}</dd></div>
+                  <div><dt>{copy.availability}</dt><dd>{localizedRecordText(locale, selected.availabilityStatus)}</dd></div>
                 </dl>
+                {evidence.length ? (
+                  <div className="property-evidence" aria-labelledby="property-evidence-title">
+                    <div><p className="eyebrow">{copy.evidence}</p><h3 id="property-evidence-title">{copy.knows}</h3></div>
+                    <ul>
+                      {evidence.filter((assertion) => assertion.propertyId === selected.id).map((assertion) => (
+                        <li key={assertion.id}>
+                          <EvidenceState state={assertion.state} label={evidenceStateLabel(assertion.state, copy)} />
+                          <strong>{evidenceLabel(assertion)}</strong>
+                          <p><bdi>{evidenceValue(assertion, assertion.currentValue)}</bdi></p>
+                          {assertion.asSeenValue !== assertion.currentValue ? <small>{copy.asFirstSeen}: <bdi>{evidenceValue(assertion, assertion.asSeenValue)}</bdi></small> : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                <ConsentHandoff
+                  eligible={Boolean(selected.organizationId)}
+                  title={selected.organizationId ? copy.advisorHandoff : copy.illustrative}
+                  body={selected.organizationId ? copy.advisorTitle : copy.advisorUnavailable}
+                />
                 <div className="property-dossier__actions">
-                  {toolActions.map(([action, label]) => <Button key={action} variant="outline" size="sm" isDisabled={loadingTool !== null} onPress={() => void runTool(action)}>{loadingTool === action ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : null}{label}</Button>)}
-                  {selected.organizationId ? <Button size="sm" onPress={() => setHandoffOpen((current) => !current)}>Ask an advisor</Button> : <Button variant="outline" size="sm" isDisabled>Advisor handoff unavailable for this illustrative record</Button>}
+                  {toolActions.map((action) => <Button key={action} variant="outline" size="sm" isDisabled={loadingTool !== null} onPress={() => void runTool(action)}>{loadingTool === action ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : null}{copy.toolActions[action]}</Button>)}
+                  {selected.organizationId ? <Button size="sm" onPress={() => setHandoffOpen((current) => !current)}>{copy.askAdvisor}</Button> : <Button variant="outline" size="sm" isDisabled>{copy.advisorUnavailable}</Button>}
                 </div>
                 {toolStatus ? <p role="status" className="property-dossier__status">{toolStatus}</p> : null}
-                <AgentResponseBlocks blocks={blocks} />
+                <AgentResponseBlocks blocks={blocks} locale={locale} />
                 {handoffOpen && selected.organizationId ? (
                   <form className="advisor-handoff" onSubmit={submitHandoff}>
-                    <div><p className="eyebrow">Advisor handoff</p><h3>Share only what Rama needs.</h3></div>
+                    <div><p className="eyebrow">{copy.advisorHandoff}</p><h3>{copy.advisorTitle}</h3></div>
                     <div className="advisor-handoff__fields">
-                      <label>Full name<input required name="fullName" minLength={2} maxLength={120} /></label>
-                      <label>Email (or use phone)<input name="email" type="email" maxLength={254} /></label>
-                      <label>Phone (or use email)<input name="phone" maxLength={40} /></label>
-                      <label className="advisor-handoff__message">What should the advisor help with?<textarea name="message" maxLength={1000} defaultValue={`I would like to discuss ${selected.name}.`} /></label>
+                      <label>{copy.fullName}<input required name="fullName" minLength={2} maxLength={120} /></label>
+                      <label>{copy.emailOrPhone}<input name="email" type="email" maxLength={254} /></label>
+                      <label>{copy.phoneOrEmail}<input name="phone" maxLength={40} /></label>
+                      <label className="advisor-handoff__message">{copy.advisorQuestion}<textarea name="message" maxLength={1000} defaultValue={copy.advisorMessage(selected.name)} /></label>
                     </div>
-                    <label className="advisor-handoff__consent"><input required name="consent" type="checkbox" />I consent to Rama sharing these contact details and this property context with an authorized advisor.</label>
-                    <div className="advisor-handoff__submit"><Button type="submit" size="sm" isDisabled={handoffSubmitting}>{handoffSubmitting ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : null}Send advisor request <ArrowRight aria-hidden="true" /></Button>{handoffStatus ? <p role="status">{handoffStatus}</p> : null}</div>
+                    <label className="advisor-handoff__consent"><input required name="consent" type="checkbox" />{copy.advisorConsent}</label>
+                    <div className="advisor-handoff__submit"><Button type="submit" size="sm" isDisabled={handoffSubmitting}>{handoffSubmitting ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : null}{copy.sendAdvisor} <ArrowRight aria-hidden="true" /></Button>{handoffStatus ? <p role="status">{handoffStatus}</p> : null}</div>
                   </form>
                 ) : null}
               </section>
@@ -311,25 +409,41 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
 
             <section className="decision-room__shortlist" aria-labelledby="shortlist-title">
               <div className="decision-room__section-heading">
-                <div><p className="eyebrow">Secondary residences</p><h2 id="shortlist-title">Quieter alternatives, held against the same brief.</h2></div>
-                {properties.length >= 2 ? <Button variant="outline" size="sm" isDisabled={compareIds.length < 2 || loadingTool !== null} onPress={() => void runTool("compare")}>Compare {compareIds.length}</Button> : null}
+                <div><p className="eyebrow">{copy.secondary}</p><h2 id="shortlist-title">{copy.alternatives}</h2></div>
+                {properties.length >= 2 ? <Button variant="outline" size="sm" isDisabled={compareIds.length < 2 || loadingTool !== null} onPress={() => void runTool("compare")}>{copy.compare} {compareIds.length}</Button> : null}
               </div>
               <ol className="decision-room__shortlist-list">
-                {properties.map((property, index) => (
+                {properties.filter((property) => !dismissedIds.includes(property.id)).map((property, index) => (
                   <li key={property.id} data-selected={property.id === selected.id}>
-                    <button type="button" onClick={() => selectProperty(property)}><span aria-hidden="true" className="decision-room__shortlist-number">{String(index + 1).padStart(2, "0")}</span><span><strong>{property.name}</strong><small>{property.location} · {formatAed(property.price.amount)}</small></span></button>
-                    <Button variant="ghost" size="sm" onPress={() => expandProperty("shortlist", property)}>Learn more</Button>
-                    <label><input aria-label={`Compare ${property.name}`} type="checkbox" disabled={loadingTool === "compare"} checked={compareIds.includes(property.id)} onChange={() => toggleCompare(property.id)} />Compare</label>
+                    <button type="button" onClick={() => selectProperty(property)}><span aria-hidden="true" className="decision-room__shortlist-number">{String(index + 1).padStart(2, "0")}</span><span><strong>{property.name}</strong><small>{localizedCriterionLabel(locale, property.location)} · <bdi>{formatAed(property.price.amount, locale)}</bdi></small></span></button>
+                    <Button variant="ghost" size="sm" onPress={() => expandProperty("shortlist", property)}>{copy.learnMore}</Button>
+                    {property.id !== selected.id ? <Button variant="ghost" size="sm" onPress={() => void dismissCandidate(property)}>{copy.dismiss}</Button> : null}
+                    <label><input aria-label={copy.compareProperty(property.name)} type="checkbox" disabled={loadingTool === "compare"} checked={compareIds.includes(property.id)} onChange={() => toggleCompare(property.id)} />{copy.compare}</label>
                   </li>
                 ))}
               </ol>
+              {ledgerStatus ? <p className="property-dossier__status" role="status">{ledgerStatus}</p> : null}
             </section>
+
+            <SavedBriefControl envelope={envelope} locale={locale} />
 
             <DecisionRoomVoiceComposer
               key={selected.id}
               context={`You are continuing inside Decision Room ${envelope.searchRunId}. The selected property is ${selected.name}, property ID ${selected.id}, in ${selected.location}. The visible brief criteria are ${envelope.brief.criteria.map((criterion) => criterion.label).join(", ")}. Use governed tools for every property fact and keep responses concise.`}
-              onToolResult={(result) => { setBlocks(result.blocks); setToolStatus(result.summary); }}
+              locale={locale}
+              onToolResult={(result) => { setBlocks(result.blocks); setToolStatus(locale === "ar" ? copy.toolReady : result.summary); }}
             />
+            {ledger.length ? (
+              <section className="decision-ledger" aria-labelledby="decision-ledger-title">
+                <div><p className="eyebrow">{copy.ledger}</p><h2 id="decision-ledger-title">{copy.ledgerTitle}</h2></div>
+                <DecisionLedgerTimeline items={ledger.map((event) => ({
+                  id: event.id,
+                  label: ledgerSummary(event),
+                  detail: event.type.replaceAll("_", " "),
+                  time: new Date(event.occurredAt).toLocaleString(locale === "ar" ? "ar-AE" : "en-AE"),
+                }))} />
+              </section>
+            ) : null}
           </>
         )}
       </div>
@@ -338,8 +452,8 @@ export function BuyerDecisionRoom({ envelope, modal = false }: { envelope: Buyer
 
   if (!modal) return <div className="decision-room-page">{room}</div>;
   return (
-    <ModalOverlay isOpen isDismissable onOpenChange={(open) => { if (!open) router.back(); }} className="decision-room-overlay">
-      <Modal className="decision-room-modal"><Dialog aria-label="Rama Buyer Decision Room" className="decision-room-dialog">{room}</Dialog></Modal>
+    <ModalOverlay isOpen isDismissable onOpenChange={(open) => { if (!open) closeModal(); }} className="decision-room-overlay">
+      <Modal className="decision-room-modal"><Dialog aria-label={copy.room} className="decision-room-dialog">{room}</Dialog></Modal>
     </ModalOverlay>
   );
 }

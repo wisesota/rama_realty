@@ -1,68 +1,130 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { usePostHog } from '@posthog/react'
+import { usePathname } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { PostHog } from 'posthog-js'
+import type { PublicLocale } from '@/lib/i18n'
 
-export function CookieConsentBanner() {
+const copy = {
+  en: {
+    title: 'Respecting your space',
+    body: 'With your permission, Rama uses PostHog analytics to measure aggregate product behavior. We exclude property briefs, voice transcripts, model content, contact details, and tokens.',
+    accept: 'Accept',
+    decline: 'Decline',
+  },
+  ar: {
+    title: 'نحترم خصوصيتك',
+    body: 'بإذنك، تستخدم راما تحليلات PostHog لقياس سلوك المنتج بشكل مجمّع. نستبعد موجزات العقارات والنصوص الصوتية ومحتوى النموذج وبيانات الاتصال والرموز.',
+    accept: 'أوافق',
+    decline: 'أرفض',
+  },
+} as const
+
+export function CookieConsentBanner({ locale }: { locale: PublicLocale }) {
   const [showBanner, setShowBanner] = useState(false)
-  const posthog = usePostHog()
+  const [posthog, setPosthog] = useState<PostHog | null>(null)
+  const initialization = useRef<Promise<PostHog | null> | null>(null)
+  const pathname = usePathname()
+  const content = copy[locale]
+
+  const initializePostHog = useCallback(() => {
+    if (initialization.current) return initialization.current
+    if (!process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN) return Promise.resolve(null)
+
+    initialization.current = import('posthog-js').then(({ default: client }) => {
+      if (!client.__loaded) {
+        client.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN as string, {
+          api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+          defaults: '2026-05-30',
+          opt_out_capturing_by_default: true,
+        })
+      }
+      client.opt_in_capturing()
+      setPosthog(client)
+      return client
+    })
+    return initialization.current
+  }, [])
 
   useEffect(() => {
-    let mounted = true
-    if (posthog) {
-      const timer = setTimeout(() => {
-        if (!mounted) return
-        
-        // We use our own localStorage key to track if they have made a choice,
-        // because PostHog's `has_opted_out_capturing()` returns true if
-        // `opt_out_capturing_by_default: true` is set, making it hard to distinguish
-        // between "default opt-out" and "explicitly rejected".
-        const hasMadeChoice = localStorage.getItem('rama_cookie_consent')
-        
-        if (!hasMadeChoice) {
-          setShowBanner(true)
-        }
-      }, 50)
-      
-      return () => {
-        mounted = false
-        clearTimeout(timer)
-      }
+    const choice = localStorage.getItem('rama_cookie_consent')
+    if (choice === 'accepted') {
+      void initializePostHog()
+      return
+    }
+    if (choice === 'declined') return
+
+    const timer = window.setTimeout(() => setShowBanner(true), 50)
+    return () => window.clearTimeout(timer)
+  }, [initializePostHog])
+
+  useEffect(() => {
+    if (!posthog || !pathname) return
+    posthog.capture('$pageview', {
+      $current_url: `${window.origin}${pathname}`,
+    })
+  }, [pathname, posthog])
+
+  useEffect(() => {
+    if (!posthog) return
+    let disposed = false
+    let unsubscribe: (() => void) | undefined
+
+    void import('@/lib/supabase/client').then(({ createClient }) => {
+      if (disposed) return
+      const supabase = createClient()
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (session?.user) posthog.identify(session.user.id)
+        else if (event === 'SIGNED_OUT') posthog.reset()
+      })
+      unsubscribe = () => subscription.unsubscribe()
+      void supabase.auth.getUser().then(({ data: { user } }) => {
+        if (!disposed && user) posthog.identify(user.id)
+      })
+    })
+
+    return () => {
+      disposed = true
+      unsubscribe?.()
     }
   }, [posthog])
 
   const acceptCookies = () => {
     localStorage.setItem('rama_cookie_consent', 'accepted')
-    posthog?.opt_in_capturing()
     setShowBanner(false)
+    void initializePostHog()
   }
 
   const declineCookies = () => {
     localStorage.setItem('rama_cookie_consent', 'declined')
-    posthog?.opt_out_capturing()
     setShowBanner(false)
   }
 
   if (!showBanner) return null
 
   return (
-    <div className="fixed bottom-8 left-8 z-50 max-w-sm rounded-[16px] border border-stone-200 bg-[#fbfbf8] p-6 shadow-sm">
-      <h3 className="font-source-serif text-lg text-stone-900 mb-2">Respecting your space</h3>
-      <p className="font-instrument-sans text-sm text-stone-600 mb-6 leading-relaxed">
-        We use telemetry to understand how you explore properties, so we can refine our experience. We never sell your data or deploy third-party trackers.
-      </p>
-      <div className="flex gap-4">
+    <div
+      aria-describedby="rama-cookie-consent-description"
+      aria-labelledby="rama-cookie-consent-title"
+      className="cookie-consent-banner"
+      role="dialog"
+    >
+      <div className="cookie-consent-banner__copy">
+        <h3 id="rama-cookie-consent-title">{content.title}</h3>
+        <p id="rama-cookie-consent-description">{content.body}</p>
+      </div>
+      <div className="cookie-consent-banner__actions">
         <button
           onClick={acceptCookies}
-          className="flex-1 bg-stone-900 text-stone-50 font-instrument-sans text-sm py-2 px-4 rounded-[6px] transition-colors hover:bg-stone-800"
+          data-action="accept"
         >
-          Accept
+          {content.accept}
         </button>
         <button
           onClick={declineCookies}
-          className="flex-1 border border-stone-200 text-stone-600 font-instrument-sans text-sm py-2 px-4 rounded-[6px] transition-colors hover:bg-stone-100"
+          data-action="decline"
         >
-          Decline
+          {content.decline}
         </button>
       </div>
     </div>

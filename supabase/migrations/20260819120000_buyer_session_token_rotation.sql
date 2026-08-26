@@ -298,6 +298,10 @@ declare
   organization_id uuid;
   inquiry_id uuid;
 begin
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('buyer-data-erasure-global', 0)
+  );
+
   select id into buyer_id from public.buyer_sessions
   where token_hash = p_token_hash and revoked_at is null and expires_at > now()
   for update;

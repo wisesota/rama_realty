@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowRight,
   Database,
@@ -10,16 +10,20 @@ import {
   Search,
   ShieldCheck,
 } from "lucide-react";
-import { type FormEvent, useEffect, useRef } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useLandingStore } from "@/components/providers/landing-store-provider";
 import { Button } from "@/components/ui/button";
-import { MediaFrame } from "@/components/rama/media-frame";
 import { SectionShell } from "@/components/rama/section-shell";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { VoiceConversation } from "@/components/voice-conversation";
 import { VoiceSignal } from "@/components/voice-signal";
-import { emitProductEvent } from "@/lib/product-events";
+import { BriefConfirmation } from "@/components/brief-confirmation";
+import { DecisionAperture } from "@/components/rama/decision-aperture";
+import type { GeminiLiveSignalState } from "@/components/rama/gemini-live-signal";
+import { VoiceAction } from "@/components/rama/voice-action";
+import { VoiceDiscoveryDialog } from "@/components/rama/voice-discovery-dialog";
+import { elapsedBucket, emitProductEvent } from "@/lib/product-events";
 import type {
   GeminiLiveVoiceSession,
   GeminiVoiceStatus,
@@ -30,6 +34,8 @@ import type {
 } from "@/lib/voice/gemini-live-contracts";
 import type { RecordedVoiceSession } from "@/lib/voice/recorded-voice-session";
 import type { BrowserSpeechSession } from "@/lib/voice/browser-speech-session";
+import { localizedPath, type PublicLocale } from "@/lib/i18n";
+import type { LandingRuntimeCopy } from "@/lib/discovery-composer-contract";
 
 function stopMediaStream(stream: MediaStream | null) {
   stream?.getTracks().forEach((track) => track.stop());
@@ -58,7 +64,15 @@ function isRecordedVoiceResponse(value: unknown): value is GeminiRecordedVoiceRe
   );
 }
 
-export function LandingPage() {
+export function LandingPage({
+  locale,
+  copy,
+  mode = "legacy",
+}: {
+  locale: PublicLocale;
+  copy: LandingRuntimeCopy;
+  mode?: "legacy" | "composer";
+}) {
   const brief = useLandingStore((state) => state.brief);
   const searchPhase = useLandingStore((state) => state.searchPhase);
   const searchStatus = useLandingStore((state) => state.searchStatus);
@@ -69,10 +83,19 @@ export function LandingPage() {
   const setBrief = useLandingStore((state) => state.setBrief);
   const setVoiceState = useLandingStore((state) => state.setVoiceState);
   const setSearchStatus = useLandingStore((state) => state.setSearchStatus);
+  const reportBriefError = useLandingStore((state) => state.reportBriefError);
   const setAgentBlocks = useLandingStore((state) => state.setAgentBlocks);
-  const setDecisionEnvelope = useLandingStore((state) => state.setDecisionEnvelope);
-  const searchProperties = useLandingStore((state) => state.searchProperties);
+  const preparedBrief = useLandingStore((state) => state.preparedBrief);
+  const briefRecalculating = useLandingStore((state) => state.briefRecalculating);
+  const prepareBrief = useLandingStore((state) => state.prepareBrief);
+  const updatePreparedBrief = useLandingStore((state) => state.updatePreparedBrief);
+  const cancelPreparedBrief = useLandingStore((state) => state.cancelPreparedBrief);
+  const confirmPreparedBrief = useLandingStore((state) => state.confirmPreparedBrief);
   const router = useRouter();
+  const pathname = usePathname();
+  const voiceCopy = copy.architecture.voice;
+  const [discoveryDialogOpen, setDiscoveryDialogOpen] = useState(false);
+  const [discoveryInputMode, setDiscoveryInputMode] = useState<"voice" | "text">("voice");
 
   const mediaStream = useRef<MediaStream | null>(null);
   const voiceSession = useRef<GeminiLiveVoiceSession | null>(null);
@@ -84,6 +107,70 @@ export function LandingPage() {
   const voiceTranscript = useRef("");
   const agentTranscript = useRef("");
   const propertyBriefInput = useRef<HTMLInputElement | null>(null);
+  const propertyBriefTextarea = useRef<HTMLTextAreaElement | null>(null);
+  const voiceStartedAt = useRef<number | null>(null);
+  const lastVoicePhase = useRef<string>("");
+
+  useEffect(() => {
+    if (mode !== "composer") return;
+
+    const openFromEvent = (event: Event) => {
+      const requestedMode = event instanceof CustomEvent && event.detail?.mode === "text" ? "text" : "voice";
+      if (event instanceof CustomEvent && typeof event.detail?.brief === "string") {
+        setBrief(event.detail.brief);
+      }
+      setDiscoveryInputMode(requestedMode);
+      setDiscoveryDialogOpen(true);
+    };
+    const openFromHash = () => {
+      if (window.location.hash !== "#guided-search") return;
+      setDiscoveryInputMode("text");
+      setDiscoveryDialogOpen(true);
+    };
+    const openFromQuery = () => {
+      const requestedMode = new URLSearchParams(window.location.search).get("briefMode");
+      if (requestedMode !== "voice" && requestedMode !== "text") return;
+      setDiscoveryInputMode(requestedMode);
+      setDiscoveryDialogOpen(true);
+      window.history.replaceState(window.history.state, "", `${window.location.pathname}${window.location.hash}`);
+    };
+
+    window.addEventListener("rama:open-discovery", openFromEvent);
+    window.addEventListener("hashchange", openFromHash);
+    openFromQuery();
+    openFromHash();
+    return () => {
+      window.removeEventListener("rama:open-discovery", openFromEvent);
+      window.removeEventListener("hashchange", openFromHash);
+    };
+  }, [mode, setBrief]);
+
+  useEffect(() => {
+    if (mode !== "composer" || pathname !== localizedPath(locale)) return;
+    const returnSource = sessionStorage.getItem("rama:decision-room-restore-focus");
+    if (returnSource !== "voice" && returnSource !== "text") return;
+    sessionStorage.removeItem("rama:decision-room-restore-focus");
+    const frame = window.requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>(`[data-discovery-trigger='${returnSource}']`)?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [locale, mode, pathname]);
+
+  useEffect(() => {
+    if (lastVoicePhase.current === voiceState.phase) return;
+    lastVoicePhase.current = voiceState.phase;
+    if (voiceState.phase === "requesting" || (voiceState.phase !== "idle" && voiceStartedAt.current === null)) voiceStartedAt.current = performance.now();
+    const startedAt = voiceStartedAt.current ?? performance.now();
+    emitProductEvent({
+      event: "voice.lifecycle",
+      state: voiceState.phase,
+      mode: "mode" in voiceState && voiceState.mode ? voiceState.mode : voiceMode === "recorded" ? "recorded" : "live",
+      locale,
+      elapsed: elapsedBucket(performance.now() - startedAt),
+      timestamp: new Date().toISOString(),
+    });
+    if (["complete", "error", "idle"].includes(voiceState.phase)) voiceStartedAt.current = null;
+  }, [locale, voiceMode, voiceState]);
 
   useEffect(() => {
     return () => {
@@ -104,27 +191,26 @@ export function LandingPage() {
     };
   }, []);
 
-  async function openDecisionRoom(searchBrief: string, source: "text" | "voice") {
-    const searchRunId = await searchProperties(searchBrief, source);
-    if (searchRunId) {
-      emitProductEvent({
-        event: "landing.brief_submit",
-        searchRunId,
-        source,
-        timestamp: new Date().toISOString(),
-      });
-      sessionStorage.setItem("rama:decision-room-return-focus", source);
-      router.push(`/discover/${searchRunId}`);
-    }
+  async function confirmAndOpenDecisionRoom() {
+    if (voiceState.phase !== "idle") resetVoiceExperience();
+    const source = preparedBrief?.source ?? "text";
+    const searchRunId = await confirmPreparedBrief();
+    if (!searchRunId) return;
+    emitProductEvent({ event: "landing.brief_submit", searchRunId, source, timestamp: new Date().toISOString() });
+    sessionStorage.setItem("rama:decision-room-return-focus", source);
+    setDiscoveryDialogOpen(false);
+    document.querySelector<HTMLDialogElement>(".voice-discovery-dialog[open]")?.close();
+    router.push(localizedPath(locale, `/discover/${searchRunId}`));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (brief.trim().length < 3) {
-      requestAnimationFrame(() => propertyBriefInput.current?.focus());
+      reportBriefError(copy.shortBriefError);
+      requestAnimationFrame(() => (propertyBriefTextarea.current ?? propertyBriefInput.current)?.focus());
       return;
     }
-    void openDecisionRoom(brief, "text");
+    void prepareBrief(brief, "text");
   }
 
   function resetVoiceExperience(message?: string) {
@@ -155,25 +241,25 @@ export function LandingPage() {
     if (status === "connecting") {
       setVoiceState({
         phase: "connecting",
-        announcement: "Connecting to the secure Gemini Live voice session.",
+        announcement: voiceCopy.announcements.connecting,
       });
     } else if (status === "listening") {
       setVoiceState({
         phase: "listening",
-        announcement: "Rama is listening for your Dubai property brief.",
+        announcement: voiceCopy.announcements.listening,
         transcript: voiceTranscript.current,
         mode: "live",
       });
     } else if (status === "thinking") {
       setVoiceState({
         phase: "thinking",
-        announcement: "Rama is understanding the property brief.",
+        announcement: voiceCopy.announcements.thinking,
         transcript: voiceTranscript.current,
       });
     } else {
       setVoiceState({
         phase: "speaking",
-        announcement: "Rama is responding to the property brief.",
+        announcement: voiceCopy.announcements.speaking,
         transcript: voiceTranscript.current,
         agentTranscript: agentTranscript.current,
       });
@@ -190,7 +276,7 @@ export function LandingPage() {
     speechTimer.current = null;
     setVoiceState({
       phase: "complete",
-      announcement: "The voice brief is complete and the property results were updated.",
+      announcement: voiceCopy.announcements.complete,
       transcript,
       agentTranscript: agentResponse,
     });
@@ -227,7 +313,7 @@ export function LandingPage() {
     browserSpeechSession.current = null;
     setVoiceState({
       phase: "thinking",
-      announcement: "The recording is complete. Gemini is understanding the property brief.",
+      announcement: voiceCopy.announcements.recordingComplete,
       transcript: "",
     });
 
@@ -237,20 +323,20 @@ export function LandingPage() {
         recorder.stop(),
         browserSpeech?.stop() ?? Promise.resolve(""),
       ]);
+      stopMediaStream(mediaStream.current);
+      mediaStream.current = null;
       if (results[0].status === "rejected") throw results[0].reason;
       const result = results[0].value;
       const browserResult = results[1].status === "fulfilled" ? results[1].value : "";
       browserTranscript = browserResult.trim().slice(0, 500);
-      stopMediaStream(mediaStream.current);
-      mediaStream.current = null;
       if (attempt !== voiceAttempt.current) return;
       if ((!result.hasSpeech || result.durationMs < 300) && browserTranscript.length < 3) {
         setVoiceState({
           phase: "error",
           code: "unavailable",
-          announcement: "No clear speech was detected. Try again or use the text search.",
+          announcement: voiceCopy.announcements.noSpeech,
         });
-        setSearchStatus("No clear speech was detected. Your typed brief remains available.");
+        setSearchStatus(voiceCopy.statuses.noSpeech);
         return;
       }
 
@@ -276,22 +362,32 @@ export function LandingPage() {
       const payload: unknown = await response.json();
       if (!response.ok) {
         const message = (payload as Partial<GeminiRecordedVoiceError>).error;
-        throw new Error(message || "Gemini could not understand this voice turn.");
+        throw new Error(message || voiceCopy.errors.couldNotUnderstand);
       }
       if (!isRecordedVoiceResponse(payload)) {
-        throw new Error("Gemini returned an invalid voice response.");
+        throw new Error(voiceCopy.errors.invalidResponse);
       }
       if (attempt !== voiceAttempt.current) return;
 
       voiceTranscript.current = payload.transcript;
       agentTranscript.current = payload.agentResponse;
+      setBrief(payload.transcript);
       setVoiceState({
         phase: "speaking",
-        announcement: "Rama understood the voice brief and is responding.",
+        announcement: voiceCopy.announcements.understood,
         transcript: payload.transcript,
         agentTranscript: payload.agentResponse,
       });
-      void openDecisionRoom(payload.transcript, "voice");
+      const prepared = await prepareBrief(payload.transcript, "voice");
+      if (attempt !== voiceAttempt.current) return;
+      if (!prepared) {
+        setVoiceState({
+          phase: "error",
+          code: "unavailable",
+          announcement: voiceCopy.announcements.prepareFailed,
+        });
+        return;
+      }
       speakRecordedResponse(
         attempt,
         payload.transcript,
@@ -301,21 +397,27 @@ export function LandingPage() {
     } catch (error) {
       if (attempt !== voiceAttempt.current) return;
       if (browserTranscript.length >= 3) {
-        const agentResponse =
-          "Your request was transcribed in the browser. I’ve updated the illustrative results for you to review.";
+        const agentResponse = voiceCopy.responses.browserFallback;
         voiceTranscript.current = browserTranscript;
         agentTranscript.current = agentResponse;
+        setBrief(browserTranscript);
         setVoiceState({
           phase: "speaking",
-          announcement:
-            "Gemini is unavailable. Browser transcription updated the property results instead.",
+          announcement: voiceCopy.announcements.browserFallbackUsed,
           transcript: browserTranscript,
           agentTranscript: agentResponse,
         });
-        setSearchStatus(
-          "Gemini is unavailable, so browser transcription was used for this voice search.",
-        );
-        void openDecisionRoom(browserTranscript, "voice");
+        setSearchStatus(voiceCopy.statuses.browserFallbackUsed);
+        const prepared = await prepareBrief(browserTranscript, "voice");
+        if (attempt !== voiceAttempt.current) return;
+        if (!prepared) {
+          setVoiceState({
+            phase: "error",
+            code: "unavailable",
+            announcement: voiceCopy.announcements.prepareFailed,
+          });
+          return;
+        }
         speakRecordedResponse(
           attempt,
           browserTranscript,
@@ -327,22 +429,24 @@ export function LandingPage() {
 
       const message =
         error instanceof DOMException && error.name === "AbortError"
-          ? "Gemini voice understanding timed out. Please try a shorter request."
-          : error instanceof Error
-            ? error.message
-            : "Gemini could not understand this voice turn.";
+          ? voiceCopy.errors.timeout
+          : voiceCopy.errors.couldNotUnderstand;
       setVoiceState({
         phase: "error",
         code: "unavailable",
-        announcement: `${message} Text search remains available.`,
+        announcement: `${message} ${voiceCopy.announcements.unavailableWithText}`,
       });
-      setSearchStatus(`${message} Your typed brief and existing results remain available.`);
+      setSearchStatus(`${message} ${voiceCopy.statuses.sessionEnded}`);
     }
   }
 
   async function endVoiceInput() {
     if (recordedSession.current) {
       await finishRecordedVoice(voiceAttempt.current);
+      return;
+    }
+    if (["requesting", "connecting", "thinking"].includes(voiceState.phase)) {
+      resetVoiceExperience(voiceCopy.statuses.sessionEnded);
       return;
     }
     if (voiceSession.current) {
@@ -352,17 +456,17 @@ export function LandingPage() {
       return;
     }
     if (voiceState.phase === "speaking") {
-      resetVoiceExperience("Voice response stopped. Your property results remain available.");
+      resetVoiceExperience(voiceCopy.statuses.responseStopped);
     }
   }
 
-  async function handleVoiceAgent() {
+  async function handleVoiceAgent(forceStart = false) {
     const activePhases = ["requesting", "connecting", "listening", "thinking", "speaking"];
-    if (activePhases.includes(voiceState.phase)) {
+    if (!forceStart && activePhases.includes(voiceState.phase)) {
       if (voiceState.phase === "listening") {
         await endVoiceInput();
       } else {
-        resetVoiceExperience("Voice session ended. Your typed brief remains available.");
+        resetVoiceExperience(voiceCopy.statuses.sessionEnded);
       }
       return;
     }
@@ -377,22 +481,23 @@ export function LandingPage() {
       setVoiceState({
         phase: "error",
         code: "unsupported",
-        announcement: "Voice is not supported here. Text search remains available.",
+        announcement: voiceCopy.announcements.unsupported,
       });
       return;
     }
 
     setVoiceState({
       phase: "requesting",
-      announcement: "Checking microphone permission for the Gemini voice session.",
+      announcement: voiceCopy.announcements.requestingPermission,
     });
 
-    if (await microphonePermissionIsDenied()) {
-      if (attempt !== voiceAttempt.current) return;
+    const permissionDeniedBeforePrompt = await microphonePermissionIsDenied();
+    if (attempt !== voiceAttempt.current) return;
+    if (permissionDeniedBeforePrompt) {
       setVoiceState({
         phase: "error",
         code: "permission-denied",
-        announcement: "Microphone access is blocked. Text search remains available.",
+        announcement: voiceCopy.announcements.permissionBlocked,
       });
       return;
     }
@@ -450,7 +555,7 @@ export function LandingPage() {
             voiceTranscript.current = transcript;
             setVoiceState({
               phase: "listening",
-              announcement: "Browser transcription is capturing the property brief as a fallback.",
+              announcement: voiceCopy.announcements.browserCapture,
               transcript,
               mode: "recorded",
             });
@@ -462,11 +567,11 @@ export function LandingPage() {
       if (voiceMode === "recorded") {
         setVoiceState({
           phase: "listening",
-          announcement: "Gemini voice-turn mode is recording your property brief.",
+          announcement: voiceCopy.announcements.recordedListening,
           transcript: "",
           mode: "recorded",
         });
-        setSearchStatus("Gemini voice-turn mode is active. Speak, then choose stop.");
+        setSearchStatus(voiceCopy.statuses.recordedActive);
         return;
       }
 
@@ -479,7 +584,7 @@ export function LandingPage() {
           voiceTranscript.current = transcript;
           setVoiceState({
             phase: "listening",
-            announcement: "Rama is transcribing the property brief.",
+            announcement: voiceCopy.announcements.transcribing,
             transcript,
             mode: "live",
           });
@@ -489,7 +594,7 @@ export function LandingPage() {
           agentTranscript.current = transcript;
           setVoiceState({
             phase: "speaking",
-            announcement: "Rama is responding to the property brief.",
+            announcement: voiceCopy.announcements.speaking,
             transcript: voiceTranscript.current,
             agentTranscript: transcript,
           });
@@ -499,38 +604,91 @@ export function LandingPage() {
           voiceTranscript.current = transcript;
           setVoiceState({
             phase: "thinking",
-            announcement: "The voice brief is complete. Fetching matching property content.",
+            announcement: voiceCopy.announcements.fetching,
             transcript,
           });
-          setSearchStatus("Rama is matching this brief against the governed catalog.");
+          setSearchStatus(voiceCopy.statuses.matching);
         },
         onToolResult: (result) => {
           if (attempt !== voiceAttempt.current) return;
           setAgentBlocks(result.blocks);
           setSearchStatus(result.summary);
-          if (result.decisionEnvelope) {
-            setDecisionEnvelope(result.decisionEnvelope);
-            emitProductEvent({
-              event: "landing.brief_submit",
-              searchRunId: result.decisionEnvelope.searchRunId,
-              source: "voice",
-              timestamp: new Date().toISOString(),
+          if (result.preparedBrief) {
+            const draft = result.preparedBrief;
+            setBrief(draft.transcript);
+            void prepareBrief(draft.transcript, "voice", draft.draftId).then((prepared) => {
+              if (attempt !== voiceAttempt.current) return;
+              if (!prepared) {
+                setVoiceState({
+                  phase: "error",
+                  code: "unavailable",
+                  announcement: voiceCopy.announcements.prepareFailed,
+                });
+                return;
+              }
+              resetVoiceExperience();
             });
-            sessionStorage.setItem("rama:decision-room-return-focus", "voice");
-            router.push(`/discover/${result.decisionEnvelope.searchRunId}`);
           }
         },
-        onError: (message) => {
+        onError: () => {
           if (attempt !== voiceAttempt.current) return;
           voiceSession.current = null;
           if (recordedSession.current && mediaStream.current?.active) {
             setVoiceState({
               phase: "listening",
-              announcement: "Gemini Live is unavailable. Secure recorded voice mode is listening.",
+              announcement: voiceCopy.announcements.liveUnavailableRecorded,
               transcript: "",
               mode: "recorded",
             });
-            setSearchStatus("Recorded Gemini voice mode is active. Speak, then choose stop.");
+            setSearchStatus(voiceCopy.statuses.recordedActive);
+            return;
+          }
+
+          const fallbackStream = mediaStream.current;
+          if (fallbackStream?.active) {
+            const fallbackRecorder = new Recorder({
+              onLimit: () => void finishRecordedVoice(attempt),
+            });
+            recordedSession.current = fallbackRecorder;
+            void fallbackRecorder.start(fallbackStream).then(() => {
+              if (attempt !== voiceAttempt.current || recordedSession.current !== fallbackRecorder) {
+                void fallbackRecorder.dispose();
+                return;
+              }
+              if (BrowserSpeech.isSupported()) {
+                const browserSpeech = new BrowserSpeech({
+                  onTranscript: (transcript) => {
+                    if (attempt !== voiceAttempt.current || recordedSession.current !== fallbackRecorder) return;
+                    voiceTranscript.current = transcript;
+                    setVoiceState({
+                      phase: "listening",
+                      announcement: voiceCopy.announcements.browserCapture,
+                      transcript,
+                      mode: "recorded",
+                    });
+                  },
+                });
+                if (browserSpeech.start()) browserSpeechSession.current = browserSpeech;
+              }
+              setVoiceState({
+                phase: "listening",
+                announcement: voiceCopy.announcements.liveUnavailableRecorded,
+                transcript: "",
+                mode: "recorded",
+              });
+              setSearchStatus(voiceCopy.statuses.recordedActive);
+            }).catch(() => {
+              if (attempt !== voiceAttempt.current) return;
+              if (recordedSession.current === fallbackRecorder) recordedSession.current = null;
+              stopMediaStream(mediaStream.current);
+              mediaStream.current = null;
+              setVoiceState({
+                phase: "error",
+                code: "connection-failed",
+                announcement: voiceCopy.announcements.connectionFailed,
+              });
+              setSearchStatus(voiceCopy.statuses.sessionEnded);
+            });
             return;
           }
 
@@ -539,9 +697,9 @@ export function LandingPage() {
           setVoiceState({
             phase: "error",
             code: "connection-failed",
-            announcement: `${message} Text search remains available.`,
+            announcement: voiceCopy.announcements.connectionFailed,
           });
-          setSearchStatus(`${message} Your typed brief and existing results remain available.`);
+          setSearchStatus(voiceCopy.statuses.sessionEnded);
         },
         onComplete: () => {
           if (attempt !== voiceAttempt.current) return;
@@ -549,7 +707,7 @@ export function LandingPage() {
           mediaStream.current = null;
           setVoiceState({
             phase: "complete",
-            announcement: "The Gemini Live voice session is complete.",
+            announcement: voiceCopy.announcements.liveComplete,
             transcript: voiceTranscript.current,
             agentTranscript: agentTranscript.current || undefined,
           });
@@ -559,27 +717,31 @@ export function LandingPage() {
 
       try {
         await session.start(stream, voiceName);
+        if (attempt !== voiceAttempt.current) {
+          await session.dispose();
+          return;
+        }
         const standbyRecorder = recordedSession.current;
         const standbyBrowserSpeech = browserSpeechSession.current;
         recordedSession.current = null;
         browserSpeechSession.current = null;
         await standbyRecorder?.dispose();
         standbyBrowserSpeech?.dispose();
-        setSearchStatus("Gemini Live voice mode is active. Speak naturally, then choose stop.");
+        setSearchStatus(voiceCopy.statuses.liveActive);
       } catch {
         voiceSession.current = null;
         await session.dispose();
         if (recordedSession.current && mediaStream.current?.active) {
           setVoiceState({
             phase: "listening",
-            announcement: "Secure recorded voice mode is listening for your property brief.",
+            announcement: voiceCopy.announcements.secureRecordedListening,
             transcript: "",
             mode: "recorded",
           });
-          setSearchStatus("Recorded Gemini voice mode is active. Speak, then choose stop.");
+          setSearchStatus(voiceCopy.statuses.recordedActive);
           return;
         }
-        throw new Error("Gemini voice could not start.");
+        throw new Error(voiceCopy.errors.startFailed);
       }
     } catch (error) {
       const session = voiceSession.current;
@@ -599,130 +761,344 @@ export function LandingPage() {
         phase: "error",
         code: permissionDenied ? "permission-denied" : "connection-failed",
         announcement: permissionDenied
-          ? "Microphone access was not granted. Text search remains available."
-          : `${error instanceof Error ? error.message : "Gemini voice could not start."} Text search remains available.`,
+          ? voiceCopy.announcements.permissionNotGranted
+          : voiceCopy.announcements.connectionFailed,
       });
     }
   }
 
   const briefIsInvalid = searchPhase === "error" && brief.trim().length < 3;
+  const hasSearchError = searchPhase === "error" && Boolean(searchError);
+
+  if (mode === "composer") {
+    const voiceIsActive = ["requesting", "connecting", "listening", "thinking", "speaking"].includes(voiceState.phase);
+    const signalState: GeminiLiveSignalState = preparedBrief
+      ? "complete"
+      : voiceState.phase === "error"
+        ? "error"
+        : voiceState.phase === "requesting" || voiceState.phase === "connecting"
+          ? "requesting"
+          : voiceState.phase === "listening"
+            ? "listening"
+            : voiceState.phase === "thinking" || voiceState.phase === "speaking"
+              ? "processing"
+              : voiceState.phase === "complete"
+                ? "complete"
+                : "resting";
+    const dialogStatus = preparedBrief
+      ? (briefRecalculating ? (locale === "ar" ? "جارٍ إعادة حساب المعايير…" : "Recalculating criteria…") : searchStatus)
+      : voiceState.phase === "idle"
+        ? (discoveryInputMode === "voice" ? copy.architecture.hero.dialogVoiceIntro : copy.architecture.hero.dialogTextIntro)
+        : searchStatus;
+
+    function preserveVoiceDraft() {
+      const transcript = voiceTranscript.current.trim();
+      if (!preparedBrief && transcript.length >= 3) setBrief(transcript);
+    }
+
+    function closeDiscoveryDialog() {
+      preserveVoiceDraft();
+      if (voiceState.phase !== "idle") resetVoiceExperience(voiceCopy.statuses.sessionEnded);
+      setDiscoveryDialogOpen(false);
+    }
+
+    function openVoiceDiscovery() {
+      setDiscoveryInputMode("voice");
+      setDiscoveryDialogOpen(true);
+      if (!preparedBrief) void handleVoiceAgent();
+    }
+
+    function switchToText() {
+      preserveVoiceDraft();
+      if (voiceState.phase !== "idle") resetVoiceExperience(voiceCopy.statuses.sessionEnded);
+      setDiscoveryInputMode("text");
+      requestAnimationFrame(() => propertyBriefTextarea.current?.focus({ preventScroll: true }));
+    }
+
+    function switchToVoice() {
+      setDiscoveryInputMode("voice");
+      void handleVoiceAgent();
+    }
+
+    return (
+      <div id="guided-search" className="quiet-voice-launcher">
+        <div className="quiet-voice-launcher__signal" aria-hidden="true">
+          <DecisionAperture state="resting" />
+        </div>
+        <form className="quiet-voice-launcher__actions" action={localizedPath(locale)} method="get" onSubmit={(event) => event.preventDefault()}>
+          <Button data-discovery-trigger="voice" name="briefMode" value="voice" type="submit" size="lg" onClick={(event) => event.preventDefault()} onPress={openVoiceDiscovery}>
+            {copy.architecture.hero.primaryAction}
+          </Button>
+          <Button data-discovery-trigger="text" name="briefMode" value="text" type="submit" variant="ghost" onClick={(event) => event.preventDefault()} onPress={() => {
+            setDiscoveryInputMode("text");
+            setDiscoveryDialogOpen(true);
+          }}>
+            {copy.architecture.hero.secondaryAction}
+          </Button>
+        </form>
+
+        <VoiceDiscoveryDialog
+          open={discoveryDialogOpen}
+          title={copy.architecture.hero.dialogTitle}
+          description={copy.architecture.hero.dialogDescription}
+          closeLabel={copy.architecture.hero.dialogClose}
+          status={dialogStatus}
+          announceStatus={preparedBrief !== null || discoveryInputMode === "text" || voiceState.phase === "idle"}
+          signalState={signalState}
+          signalSrc="/lottie/ai.json"
+          initialFocusRef={discoveryInputMode === "text" && !preparedBrief ? propertyBriefTextarea : undefined}
+          onRequestClose={closeDiscoveryDialog}
+          footer={preparedBrief ? (
+            <p className="voice-discovery-dialog__boundary"><LockKeyhole aria-hidden="true" />{copy.architecture.hero.dialogBoundary}</p>
+          ) : (
+            <>
+              <div className="voice-discovery-dialog__actions">
+                {discoveryInputMode === "voice" ? (
+                  voiceIsActive ? (
+                    <Button type="button" variant="ghost" onPress={switchToText}>{copy.architecture.hero.dialogTextAlternative}</Button>
+                  ) : (
+                    <>
+                      <VoiceAction
+                        state={voiceState}
+                        label={copy.architecture.hero.voiceIdle}
+                        activeLabel={copy.architecture.hero.voiceActive}
+                        onPress={() => void handleVoiceAgent()}
+                      />
+                      <Button type="button" variant="ghost" onPress={switchToText}>{copy.architecture.hero.dialogTextAlternative}</Button>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <Button type="submit" form="guided-search-form" isDisabled={searchPhase === "loading" || briefRecalculating}>
+                      {searchPhase === "loading" ? copy.opening : copy.architecture.hero.textAction}
+                      <ArrowRight className="logical-forward-icon" aria-hidden="true" />
+                    </Button>
+                    <Button type="button" variant="ghost" onPress={switchToVoice}>{copy.architecture.hero.dialogVoiceAlternative}</Button>
+                  </>
+                )}
+              </div>
+              <p id="property-brief-guidance" className="voice-discovery-dialog__boundary"><LockKeyhole aria-hidden="true" />{copy.architecture.hero.dialogBoundary}</p>
+            </>
+          )}
+        >
+          {preparedBrief ? (
+            <>
+              <BriefConfirmation
+                draft={preparedBrief}
+                busy={searchPhase === "loading"}
+                recalculating={briefRecalculating}
+                locale={locale}
+                onChange={(value) => void updatePreparedBrief(value)}
+                onConfirm={() => void confirmAndOpenDecisionRoom()}
+                onCancel={() => {
+                  if (voiceState.phase !== "idle") resetVoiceExperience();
+                  cancelPreparedBrief();
+                  setDiscoveryInputMode("text");
+                }}
+                onRetry={preparedBrief.source === "voice" ? () => {
+                  resetVoiceExperience();
+                  cancelPreparedBrief();
+                  setDiscoveryInputMode("voice");
+                  void handleVoiceAgent(true);
+                } : undefined}
+              />
+              {hasSearchError ? <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p> : null}
+            </>
+          ) : discoveryInputMode === "voice" ? (
+            voiceState.phase === "idle" ? (
+              <div className="voice-discovery-dialog__idle">
+                <p>{copy.architecture.hero.dialogVoiceIntro}</p>
+              </div>
+            ) : (
+              <VoiceConversation
+                state={voiceState}
+                copy={voiceCopy.panel}
+                variant="dialog"
+                announceStatus={!hasSearchError}
+                onStop={() => void endVoiceInput()}
+                onClose={closeDiscoveryDialog}
+              />
+            )
+          ) : (
+            <form
+              id="guided-search-form"
+              className="voice-discovery-dialog__form"
+              aria-busy={searchPhase === "loading" || briefRecalculating}
+              onSubmit={handleSubmit}
+            >
+              <label htmlFor="property-brief">{copy.architecture.hero.composerLabel}</label>
+              <textarea
+                ref={propertyBriefTextarea}
+                id="property-brief"
+                value={brief}
+                onChange={(event) => setBrief(event.target.value)}
+                placeholder={copy.placeholder}
+                maxLength={500}
+                rows={4}
+                aria-invalid={briefIsInvalid}
+                aria-describedby={briefIsInvalid ? "property-brief-guidance property-brief-error" : "property-brief-guidance"}
+              />
+              <p className="voice-discovery-dialog__count">{brief.length} / 500 {copy.architecture.hero.characterCount}</p>
+              {hasSearchError ? <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p> : null}
+            </form>
+          )}
+          {discoveryInputMode === "voice" && !preparedBrief && hasSearchError ? (
+            <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p>
+          ) : null}
+        </VoiceDiscoveryDialog>
+      </div>
+    );
+  }
 
   return (
     <>
       <a className="skip-link" href="#main-content">
-        Skip to content
+        {copy.skip}
       </a>
-      <SiteHeader />
+      <SiteHeader locale={locale} copy={copy.header} />
 
       <main id="main-content">
-        <section id="top" className="hero-stage" aria-labelledby="hero-title">
-          <SectionShell className="hero-stage__inner">
-            <MediaFrame className="hero-media">
-              <Image
-                src="/images/rama-hero-editorial-daylight.png"
-                alt="Contemporary Dubai residence in a desert-edge landscape with the skyline beyond"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 1280px"
-              />
-              <div className="hero-media__veil" aria-hidden="true" />
-              <p className="hero-wordmark" aria-hidden="true">
-                RAMA REALTY
+        <section id="top" className="relative w-full min-h-[100svh] bg-[var(--rama-ink-dark)] overflow-hidden flex flex-col justify-between" aria-labelledby="hero-title">
+          {/* Architectural Villa Daylight Backdrop */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none select-none">
+            <Image
+              src="/images/rama-hero-editorial-daylight.png"
+              alt={copy.heroAlt}
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+            <div className="hero-veil--vellaro" aria-hidden="true" />
+          </div>
+
+          {/* Main Nordic Voice-First Atelier */}
+          <div className="relative z-10 w-full max-w-4xl mx-auto px-6 lg:px-12 pt-24 md:pt-28 pb-8 flex flex-col justify-between flex-grow items-center text-center">
+            {/* Clean Nordic Editorial Title Lockup */}
+            <div className="flex flex-col items-center gap-1.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 text-xs font-sans font-bold uppercase tracking-[0.2em] text-[var(--rama-ivory)]/90">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
+                <span>{copy.badge}</span>
+              </div>
+              <h1 id="hero-title" className="font-heading font-semibold text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] text-white tracking-[-0.025em] leading-tight whitespace-normal lg:whitespace-nowrap">
+                {copy.title}
+              </h1>
+              <p className="font-heading italic text-sm sm:text-base md:text-lg text-white/90 tracking-wide font-normal max-w-lg">
+                {copy.subtitle}
               </p>
+            </div>
 
-              <div className="hero-copy hero-reveal">
-                <VoiceSignal state={voiceState} onPress={() => void handleVoiceAgent()} />
-                <p className="eyebrow eyebrow--hero">Voice-led Dubai property discovery</p>
-                <h1 id="hero-title">Describe the life. We’ll shape the search.</h1>
-                <p className="hero-subtitle">
-                  Speak naturally or type a brief. Rama keeps every criterion visible.
-                </p>
+            {/* AI Voice Agent Hero Interaction Centerpiece */}
+            <div className="w-full max-w-xl my-auto py-4">
+              <form
+                id="guided-search"
+                className="w-full relative flex flex-col items-center gap-4"
+                aria-busy={searchPhase === "loading"}
+                onSubmit={handleSubmit}
+              >
+                {/* Central Voice Hub Orb */}
+                <div className="flex flex-col items-center gap-2" data-primary-interaction="voice">
+                  <p className="text-xs font-sans font-bold uppercase tracking-[0.18em] text-white/90">{copy.voiceLead}</p>
+                  <VoiceSignal state={voiceState} locale={locale} onPress={() => void handleVoiceAgent()} />
+                </div>
 
-                <form
-                  id="guided-search"
-                  className="hero-search"
-                  aria-busy={searchPhase === "loading"}
-                  onSubmit={handleSubmit}
-                >
-                  <label className="sr-only" htmlFor="property-brief">
-                    Describe the Dubai property and lifestyle you want
-                  </label>
-                  <div className="hero-search__control">
-                    <Search aria-hidden="true" />
-                    <input
-                      ref={propertyBriefInput}
-                      id="property-brief"
-                      value={brief}
-                      onChange={(event) => setBrief(event.target.value)}
-                      placeholder="A two-bedroom apartment in Dubai Marina near the waterfront"
-                      maxLength={500}
-                      aria-invalid={briefIsInvalid}
-                      aria-describedby={
-                        briefIsInvalid
-                          ? "property-brief-guidance property-brief-error"
-                          : "property-brief-guidance"
-                      }
-                    />
-                    <Button
-                      className="search-submit"
-                      type="submit"
-                      isDisabled={searchPhase === "loading"}
-                      aria-label={
-                        searchPhase === "loading" ? "Opening your Decision Room" : "Shape my brief"
-                      }
-                    >
-                      <span>{searchPhase === "loading" ? "Opening room" : "Shape my brief"}</span>
-                      <ArrowRight aria-hidden="true" />
-                    </Button>
+                {/* Compact Unified Search Bar - Solid Nordic Ink */}
+                <label className="self-start text-xs font-sans font-semibold uppercase tracking-[0.14em] text-white/80" htmlFor="property-brief">
+                  {copy.inputLabel}
+                </label>
+                <div className="landing-search-control w-full min-w-0 bg-[#0c1216]/85 border border-white/25 p-1.5 rounded-[8px] flex items-center gap-2 transition-[border-color,box-shadow] focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/25">
+                  <div className="pl-3.5 pr-1 hidden sm:flex items-center text-white/60">
+                    <Search className="w-4 h-4" aria-hidden="true" />
                   </div>
-
-                  {briefIsInvalid ? (
-                    <p id="property-brief-error" className="hero-search__error" role="alert">
-                      {searchError}
-                    </p>
-                  ) : null}
-
-                  <div className="hero-search__meta">
-                    <span id="property-brief-guidance">
-                      <LockKeyhole aria-hidden="true" />
-                      Rama currently shows representative residences. Live inventory connects after brokerage authorization.
-                    </span>
-                  </div>
-
-                  <VoiceConversation
-                    state={voiceState}
-                    onStop={() => void endVoiceInput()}
-                    onClose={() => resetVoiceExperience()}
+                  <input
+                    ref={propertyBriefInput}
+                    id="property-brief"
+                    className="min-w-0 w-full bg-transparent border-none outline-none text-white placeholder:text-white/60 px-3 sm:px-0 py-2 text-base font-sans"
+                    value={brief}
+                    onChange={(event) => setBrief(event.target.value)}
+                    placeholder={copy.placeholder}
+                    maxLength={500}
+                    aria-invalid={briefIsInvalid}
+                    aria-describedby={
+                      briefIsInvalid
+                        ? "property-brief-guidance property-brief-error"
+                        : "property-brief-guidance"
+                    }
                   />
-                </form>
-              </div>
+                  <Button
+                    className="inline-flex items-center justify-center min-h-[44px] bg-transparent text-white border border-white/35 hover:bg-white/10 px-5 py-2 font-sans font-bold tracking-[0.12em] text-xs uppercase transition-colors rounded-[6px] cursor-pointer shrink-0"
+                    type="submit"
+                    isDisabled={searchPhase === "loading"}
+                    aria-label={
+                      searchPhase === "loading" ? copy.openingLabel : copy.shapeLabel
+                    }
+                  >
+                    <span>{searchPhase === "loading" ? copy.opening : copy.search}</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" aria-hidden="true" />
+                  </Button>
+                </div>
 
-              <div className="hero-caption" aria-hidden="true">
-                <span>Dubai, UAE</span>
-                <span>Brief to Decision Room</span>
-              </div>
-            </MediaFrame>
-          </SectionShell>
+                {hasSearchError ? (
+                  <p id="property-brief-error" className="!bg-red-950/80 !text-red-200 border border-red-500/30 p-2 text-xs rounded-sm" role="alert">
+                    {searchError}
+                  </p>
+                ) : null}
+
+                <div className="flex items-center justify-center gap-2 text-xs text-white/70 tracking-wide">
+                  <LockKeyhole className="w-3 h-3 flex-shrink-0 text-white/40" aria-hidden="true" />
+                  <span id="property-brief-guidance">
+                    {copy.boundary}
+                  </span>
+                </div>
+
+                <VoiceConversation
+                  state={voiceState}
+                  copy={voiceCopy.panel}
+                  onStop={() => void endVoiceInput()}
+                  onClose={() => resetVoiceExperience()}
+                />
+
+                {preparedBrief ? (
+                  <BriefConfirmation
+                    draft={preparedBrief}
+                    busy={searchPhase === "loading"}
+                    recalculating={briefRecalculating}
+                    locale={locale}
+                    onChange={(value) => void updatePreparedBrief(value)}
+                    onConfirm={() => void confirmAndOpenDecisionRoom()}
+                    onCancel={cancelPreparedBrief}
+                    onRetry={preparedBrief.source === "voice" ? () => { cancelPreparedBrief(); void handleVoiceAgent(); } : undefined}
+                  />
+                ) : null}
+              </form>
+            </div>
+
+            {/* Bottom product boundary */}
+            <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-white/10 pt-3 text-xs tracking-[0.12em] uppercase text-white/70 font-sans">
+              <span>{copy.support}</span>
+              <span>{copy.supply}</span>
+            </div>
+          </div>
         </section>
 
         <section id="trust" className="landing-trust" aria-labelledby="trust-title">
           <SectionShell className="landing-trust__inner">
             <div className="landing-trust__heading">
-              <p className="eyebrow">A governed path to a decision</p>
-              <h2 id="trust-title">The landing page is the invitation. Your room holds the work.</h2>
+              <p className="eyebrow">{copy.trustEyebrow}</p>
+              <h2 id="trust-title">{copy.trustTitle}</h2>
             </div>
             <div className="landing-trust__statements">
               <article>
                 <Database aria-hidden="true" />
-                <p>Rama renders governed property data and keeps the source boundary visible.</p>
+                <p>{copy.trust[0]}</p>
               </article>
               <article>
                 <ShieldCheck aria-hidden="true" />
-                <p>Every residence is explicitly illustrative until licensed inventory is connected.</p>
+                <p>{copy.trust[1]}</p>
               </article>
               <article>
                 <MessageCircle aria-hidden="true" />
-                <p>An advisor handoff begins only when you choose it and submit your details.</p>
+                <p>{copy.trust[2]}</p>
               </article>
             </div>
             <p className="landing-trust__status" aria-live="polite">
@@ -732,7 +1108,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter copy={copy.footer} />
     </>
   );
 }

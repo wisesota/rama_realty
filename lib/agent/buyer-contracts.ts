@@ -58,6 +58,7 @@ export type BuyerDecisionEnvelopeV1 = {
     original: string;
     normalized: string;
     criteria: BuyerCriterion[];
+    source?: "text" | "voice";
   };
   entities: {
     properties: Record<string, BuyerPropertySummary>;
@@ -75,6 +76,48 @@ export type BuyerDecisionEnvelopeV1 = {
     propertyId?: string;
   }>;
 };
+
+export const evidenceStates = [
+  "source_confirmed",
+  "buyer_confirmed",
+  "inferred",
+  "stale",
+  "disputed",
+  "unknown",
+] as const;
+
+export type EvidenceState = (typeof evidenceStates)[number];
+
+export type EvidenceAssertion = {
+  id: string;
+  propertyId: string | null;
+  field: string;
+  label: string;
+  value: string | number | null;
+  state: EvidenceState;
+  sourceName: string | null;
+  observedAt: string | null;
+  asSeenValue: string | number | null;
+  currentValue: string | number | null;
+  contentHash: string;
+  explanation: string;
+};
+
+export type DecisionLedgerEvent = {
+  id: string;
+  type: "brief_confirmed" | "candidate_seen" | "criterion_revised" | "candidate_dismissed" | "open_question";
+  occurredAt: string;
+  summary: string;
+  assertionIds: string[];
+};
+
+export type BuyerDecisionEnvelopeV2 = Omit<BuyerDecisionEnvelopeV1, "schemaVersion"> & {
+  schemaVersion: "2";
+  evidence: { assertions: EvidenceAssertion[] };
+  decisionLedger: { version: "1"; events: DecisionLedgerEvent[] };
+};
+
+export type BuyerDecisionEnvelope = BuyerDecisionEnvelopeV1 | BuyerDecisionEnvelopeV2;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -120,11 +163,12 @@ export function isBuyerPropertySummary(value: unknown): value is BuyerPropertySu
     && typeof value.provenance.version === "number";
 }
 
-export function isBuyerDecisionEnvelope(value: unknown): value is BuyerDecisionEnvelopeV1 {
-  if (!isRecord(value) || value.schemaVersion !== "1" || !isRecord(value.brief) || !isRecord(value.entities) || !isRecord(value.sourceSummary)) return false;
+export function isBuyerDecisionEnvelope(value: unknown): value is BuyerDecisionEnvelope {
+  if (!isRecord(value) || (value.schemaVersion !== "1" && value.schemaVersion !== "2") || !isRecord(value.brief) || !isRecord(value.entities) || !isRecord(value.sourceSummary)) return false;
   if (typeof value.correlationId !== "string" || typeof value.searchRunId !== "string" || typeof value.conversationId !== "string") return false;
   if (!(["needs_clarification", "ready", "partial", "empty"] as unknown[]).includes(value.status)) return false;
   if (typeof value.brief.original !== "string" || typeof value.brief.normalized !== "string" || !Array.isArray(value.brief.criteria)) return false;
+  if (value.brief.source !== undefined && value.brief.source !== "text" && value.brief.source !== "voice") return false;
   if (!value.brief.criteria.every((criterion) => isRecord(criterion)
     && typeof criterion.key === "string"
     && typeof criterion.label === "string"
@@ -150,9 +194,33 @@ export function isBuyerDecisionEnvelope(value: unknown): value is BuyerDecisionE
   const propertyValues = Object.values(properties) as BuyerPropertySummary[];
   const publishedCount = propertyValues.filter((property) => property.provenance.kind === "published").length;
   const illustrativeCount = propertyValues.filter((property) => property.provenance.kind === "illustrative").length;
-  return [value.sourceSummary.publishedCount, value.sourceSummary.illustrativeCount, value.sourceSummary.staleCount]
+  const baseIsValid = [value.sourceSummary.publishedCount, value.sourceSummary.illustrativeCount, value.sourceSummary.staleCount]
     .every((count) => typeof count === "number" && Number.isInteger(count) && count >= 0)
     && value.sourceSummary.publishedCount === publishedCount
     && value.sourceSummary.illustrativeCount === illustrativeCount
     && typeof value.sourceSummary.label === "string";
+  if (!baseIsValid || value.schemaVersion === "1") return baseIsValid;
+  if (!isRecord(value.evidence) || !Array.isArray(value.evidence.assertions)
+    || !value.evidence.assertions.every((assertion) => isRecord(assertion)
+      && typeof assertion.id === "string"
+      && (assertion.propertyId === null || typeof assertion.propertyId === "string")
+      && typeof assertion.field === "string"
+      && typeof assertion.label === "string"
+      && (typeof assertion.value === "string" || typeof assertion.value === "number" || assertion.value === null)
+      && evidenceStates.includes(assertion.state as EvidenceState)
+      && (assertion.sourceName === null || typeof assertion.sourceName === "string")
+      && (assertion.observedAt === null || typeof assertion.observedAt === "string")
+      && (typeof assertion.asSeenValue === "string" || typeof assertion.asSeenValue === "number" || assertion.asSeenValue === null)
+      && (typeof assertion.currentValue === "string" || typeof assertion.currentValue === "number" || assertion.currentValue === null)
+      && typeof assertion.contentHash === "string"
+      && typeof assertion.explanation === "string")) return false;
+  return isRecord(value.decisionLedger)
+    && value.decisionLedger.version === "1"
+    && Array.isArray(value.decisionLedger.events)
+    && value.decisionLedger.events.every((event) => isRecord(event)
+      && typeof event.id === "string"
+      && ["brief_confirmed", "candidate_seen", "criterion_revised", "candidate_dismissed", "open_question"].includes(String(event.type))
+      && typeof event.occurredAt === "string"
+      && typeof event.summary === "string"
+      && isStringArray(event.assertionIds));
 }

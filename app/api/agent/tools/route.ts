@@ -5,17 +5,18 @@ import { runAgentTool } from "@/lib/agent/tools-server";
 import { consumeApiRateLimit, RateLimitBackendUnavailableError } from "@/lib/rate-limit-server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSameOrigin } from "@/lib/supabase/auth";
+import { decisionOsEnabledForBuyer, publicExperienceEnabled } from "@/lib/rollout-server";
 
 const maximumBodyBytes = 8_192;
 const deadlineMs = 12_000;
 
-function jsonError(error: string, status: number, tool: unknown = "search_properties") {
-  const safeTool = isAgentToolName(tool) ? tool : "search_properties";
+function jsonError(error: string, status: number, tool: unknown = "prepare_brief") {
+  const safeTool = isAgentToolName(tool) ? tool : "prepare_brief";
   return Response.json({ ok: false, tool: safeTool, correlationId: crypto.randomUUID(), summary: error, error, blocks: [] } satisfies AgentToolResponse, { status, headers: { "Cache-Control": "no-store" } });
 }
 
 function telemetryArguments(tool: AgentToolName, args: Record<string, unknown>): Json {
-  if (tool === "search_properties") return { brief_length: typeof args.brief === "string" ? args.brief.length : 0, source: "voice" };
+  if (tool === "prepare_brief") return { brief_length: typeof args.brief === "string" ? args.brief.length : 0, source: "voice" };
   if (tool === "compare_properties") return { property_ids: args.propertyIds as string[] };
   if (tool === "get_area_context") return { location: args.location as string };
   if (tool === "calculate_purchase_scenario") return {
@@ -62,6 +63,7 @@ async function persistTelemetry(options: {
 
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return jsonError("Cross-origin agent-tool requests are not allowed.", 403);
+  if (!publicExperienceEnabled()) return jsonError("The public discovery experience is temporarily unavailable.", 503);
   const contentLength = Number(request.headers.get("content-length") ?? 0);
   if (contentLength > maximumBodyBytes) return jsonError("The tool request is too large.", 413);
   try {
@@ -82,6 +84,9 @@ export async function POST(request: Request) {
 
   const correlationId = crypto.randomUUID();
   const buyerTokenHash = await getOrCreateBuyerSessionTokenHash();
+  if (!decisionOsEnabledForBuyer(buyerTokenHash)) {
+    return jsonError("The Decision OS is temporarily unavailable for this rollout cohort.", 503, tool);
+  }
   const abort = new AbortController();
   const timer = setTimeout(() => abort.abort(), deadlineMs);
   const startedAt = performance.now();
