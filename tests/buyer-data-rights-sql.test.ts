@@ -64,7 +64,7 @@ describe("buyer data-rights SQL boundary", () => {
     expect(migration).toContain("deletion.completed_at < p_as_of - interval '24 months'");
     expect(migration).toContain("request.status = 'completed'");
     expect(migration.match(/hashtextextended\('buyer-data-erasure-global', 0\)/g)).toHaveLength(3);
-    expect(migration).toContain("where event.entity_type = 'inquiry'\n      and event.created_at < p_as_of - interval '24 months';");
+    expect(migration).toMatch(/where event\.entity_type = 'inquiry'\r?\n\s*and event\.created_at < p_as_of - interval '24 months';/);
   });
 
   it("serializes inquiry creation with deletion and retention snapshots", () => {

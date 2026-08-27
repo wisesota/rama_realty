@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, Source_Serif_4 } from "next/font/google";
-import { headers } from "next/headers";
 import { Suspense } from "react";
 import "./globals.css";
 import { CookieConsentBanner } from "@/components/rama/cookie-consent-banner";
-import { isPublicLocale, localeDirection, localeRequestHeader } from "@/lib/i18n";
+import { localeDirection } from "@/lib/i18n";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -47,17 +46,38 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
   decisionRoom,
 }: Readonly<{
   children: React.ReactNode;
   decisionRoom: React.ReactNode;
 }>) {
-  const requestedLocale = (await headers()).get(localeRequestHeader);
-  const locale = isPublicLocale(requestedLocale) ? requestedLocale : "en";
+  // Use a default locale for server rendering to enable SSG.
+  // The blocking script below will synchronously update the HTML tag attributes on the client
+  // based on the URL path before the first paint, avoiding FOUC for Arabic (RTL) users.
+  const locale = "en";
+  
   return (
-    <html lang={locale} dir={localeDirection(locale)} data-scroll-behavior="smooth">
+    <html lang={locale} dir={localeDirection(locale)} data-scroll-behavior="smooth" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var path = window.location.pathname;
+                  var locale = path.split('/')[1];
+                  if (locale === 'ar') {
+                    document.documentElement.lang = 'ar';
+                    document.documentElement.dir = 'rtl';
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${instrumentSans.variable} ${sourceSerif.variable}`}>
         <template
           data-impeccable-contract="rama-residential-horizon-pinned-20260824"

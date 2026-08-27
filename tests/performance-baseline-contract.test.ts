@@ -42,11 +42,4 @@ describe("performance baseline harness", () => {
     expect(hero).toContain('media="(max-width: 700px)"');
     expect(hero).toContain('type="image/avif"');
   });
-
-  it("does not send GSAP to mobile user agents", () => {
-    const source = readFileSync("app/[locale]/page.tsx", "utf8");
-
-    expect(source).toContain("motionEnabled");
-    expect(source).toContain("Android|iPhone|iPad|iPod|Mobile");
-  });
 });

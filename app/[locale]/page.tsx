@@ -1,8 +1,11 @@
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import { DecisionArchitectureLanding } from "@/components/decision-architecture-landing";
-import { isPublicLocale, landingCopy } from "@/lib/i18n";
+import { isPublicLocale, landingCopy, publicLocales } from "@/lib/i18n";
 import { landingCompositionEnabled } from "@/lib/rollout-server";
+
+export function generateStaticParams() {
+  return publicLocales.map((locale) => ({ locale }));
+}
 
 export default async function LocalizedHome({
   params,
@@ -11,8 +14,6 @@ export default async function LocalizedHome({
 }) {
   const { locale } = await params;
   if (!isPublicLocale(locale)) notFound();
-  const userAgent = (await headers()).get("user-agent") ?? "";
-  const motionEnabled = !/(?:Android|iPhone|iPad|iPod|Mobile)/i.test(userAgent);
   const compositionEnabled = landingCompositionEnabled();
   if (!compositionEnabled) {
     const [{ LandingPage }, { LandingStoreProvider }] = await Promise.all([
@@ -25,7 +26,7 @@ export default async function LocalizedHome({
       </LandingStoreProvider>
     );
   }
-  const LandingMotion = motionEnabled && compositionEnabled
+  const LandingMotion = compositionEnabled
     ? (await import("@/components/rama/landing-motion")).LandingMotion
     : null;
 
