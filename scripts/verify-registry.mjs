@@ -8,7 +8,8 @@ const temp = mkdtempSync(join(tmpdir(), "rama-registry-"));
 const shadcnCli = join(root, "node_modules", "shadcn", "dist", "index.js");
 
 function normalizedJson(path) {
-  return JSON.stringify(JSON.parse(readFileSync(path, "utf8")));
+  const content = readFileSync(path, "utf8");
+  return JSON.stringify(JSON.parse(content.replace(/\\r\\n/g, "\\n")));
 }
 
 try {
