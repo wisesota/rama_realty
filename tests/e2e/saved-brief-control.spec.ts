@@ -1,10 +1,8 @@
 import { expect, test } from "@playwright/test";
-
-const storyUrl = (story: "english" | "arabic") =>
-  `http://localhost:6006/iframe.html?id=rama-savedbriefcontrol--${story}&viewMode=story`;
+import { getStoryUrl } from "./storybook";
 
 async function openStory(page: import("@playwright/test").Page, story: "english" | "arabic") {
-  await page.goto(storyUrl(story));
+  await page.goto(getStoryUrl(`rama-savedbriefcontrol--${story}`));
   await page.locator("#storybook-root > *").first().waitFor({ state: "attached", timeout: 20_000 });
 }
 
@@ -56,7 +54,7 @@ test("authenticated erasure stays locked until the account-email step-up complet
   await page.getByRole("button", { name: "Email me a one-time deletion link" }).click();
   await expect(page.getByText(/Open the one-time link in this browser within ten minutes/)).toBeVisible();
 
-  await page.goto(`${storyUrl("english")}&deletion=verified`);
+  await page.goto(`${getStoryUrl("rama-savedbriefcontrol--english")}&deletion=verified`);
   await page.getByText("Permanent deletion").click();
   await expect(page.getByRole("button", { name: "Email verification complete" })).toBeDisabled();
   await expect(confirmation).toBeEnabled();

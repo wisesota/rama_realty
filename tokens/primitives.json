@@ -1,43 +1,1134 @@
 {
   "color": {
-    "gallery": { "$value": "#fbfbf8", "$type": "color", "$description": "Airy primary gallery canvas background" },
-    "paper": { "$value": "#ffffff", "$type": "color", "$description": "Clean white card and panel surface" },
-    "architecture": { "$value": "#f0f1f1", "$type": "color", "$description": "Subtle structural surface tone" },
-    "mist": { "$value": "#e7ebec", "$type": "color", "$description": "Muted secondary background" },
-    "ink": { "$value": "#202321", "$type": "color", "$description": "Deep primary typographic and structural ink" },
-    "body-copy": { "$value": "#585d5b", "$type": "color", "$description": "High-legibility editorial body copy" },
-    "quiet": { "$value": "#747a77", "$type": "color", "$description": "Muted supporting metadata and caption tone" },
-    "sky": { "$value": "#82b8d7", "$type": "color", "$description": "Refined sky-blue accent" },
-    "sky-wash": { "$value": "#ddecf4", "$type": "color", "$description": "Atmospheric soft sky tint" },
-    "sand": { "$value": "#b99463", "$type": "color", "$description": "Warm architectural sand accent" },
-    "rule": { "$value": "#d8dad8", "$type": "color", "$description": "Hairline architectural grid and border tone" },
-    "error": { "$value": "#a34132", "$type": "color", "$description": "Restrained semantic error indicator" },
-    "focus": { "$value": "#356d8d", "$type": "color", "$description": "Accessible keyboard focus ring" }
+    "gallery": {
+      "$value": "#f5f3ed",
+      "$type": "color",
+      "$description": "Warm paper canvas for buyer-facing decision work"
+    },
+    "paper": {
+      "$value": "#fcfbf7",
+      "$type": "color",
+      "$description": "Chalk surface for inputs and evidence planes"
+    },
+    "architecture": {
+      "$value": "#ecebe5",
+      "$type": "color",
+      "$description": "Quiet structural surface tone"
+    },
+    "mist": {
+      "$value": "#dce9ec",
+      "$type": "color",
+      "$description": "Pale sky contextual wash"
+    },
+    "ink": {
+      "$value": "#172126",
+      "$type": "color",
+      "$description": "Blue-black primary typographic and structural ink"
+    },
+    "body-copy": {
+      "$value": "#3f4a4f",
+      "$type": "color",
+      "$description": "High-legibility body copy"
+    },
+    "quiet": {
+      "$value": "#556168",
+      "$type": "color",
+      "$description": "Supporting metadata and captions"
+    },
+    "sky": {
+      "$value": "#4f7787",
+      "$type": "color",
+      "$description": "Fjord blue for focus, links, and active evidence"
+    },
+    "sky-wash": {
+      "$value": "#dce9ec",
+      "$type": "color",
+      "$description": "Pale sky contextual surface"
+    },
+    "sand": {
+      "$value": "#b58c54",
+      "$type": "color",
+      "$description": "Rare assumption and annotation accent"
+    },
+    "pine": {
+      "$value": "#3f6b5a",
+      "$type": "color",
+      "$description": "Confirmed source state"
+    },
+    "clay": {
+      "$value": "#9a654d",
+      "$type": "color",
+      "$description": "Unknown, stale, and action-needed state"
+    },
+    "rule": {
+      "$value": "#d6d8d2",
+      "$type": "color",
+      "$description": "Mineral one-pixel hierarchy rule"
+    },
+    "error": {
+      "$value": "#924333",
+      "$type": "color",
+      "$description": "Restrained semantic error indicator"
+    },
+    "focus": {
+      "$value": "#315f73",
+      "$type": "color",
+      "$description": "Accessible keyboard focus ring"
+    }
   },
   "font": {
     "family": {
-      "sans": { "$value": "var(--font-instrument-sans), sans-serif", "$type": "fontFamily", "$description": "Instrument Sans for modern structural readability" },
-      "serif": { "$value": "var(--font-source-serif), serif", "$type": "fontFamily", "$description": "Source Serif 4 for authoritative editorial luxury" }
+      "sans": {
+        "$value": "var(--font-instrument-sans), sans-serif",
+        "$type": "fontFamily",
+        "$description": "Instrument Sans for modern structural readability"
+      },
+      "serif": {
+        "$value": "var(--font-source-serif), serif",
+        "$type": "fontFamily",
+        "$description": "Source Serif 4 for selective editorial contrast"
+      }
     },
     "size": {
-      "xs": { "$value": "0.72rem", "$type": "dimension" },
-      "sm": { "$value": "0.84rem", "$type": "dimension" },
-      "base": { "$value": "1rem", "$type": "dimension" },
-      "lg": { "$value": "1.12rem", "$type": "dimension" },
-      "xl": { "$value": "1.25rem", "$type": "dimension" },
-      "2xl": { "$value": "1.75rem", "$type": "dimension" },
-      "3xl": { "$value": "2.45rem", "$type": "dimension" },
-      "hero": { "$value": "3.85rem", "$type": "dimension" }
+      "xs": {
+        "$value": "0.72rem",
+        "$type": "dimension",
+        "$description": "Compact metadata and taxonomy text"
+      },
+      "sm": {
+        "$value": "0.84rem",
+        "$type": "dimension",
+        "$description": "Compact interface and action text"
+      },
+      "base": {
+        "$value": "1rem",
+        "$type": "dimension",
+        "$description": "Default readable body text"
+      },
+      "lg": {
+        "$value": "1.12rem",
+        "$type": "dimension",
+        "$description": "Lead and emphasized body text"
+      },
+      "xl": {
+        "$value": "1.25rem",
+        "$type": "dimension",
+        "$description": "Small editorial heading"
+      },
+      "2xl": {
+        "$value": "1.75rem",
+        "$type": "dimension",
+        "$description": "Component and pane heading"
+      },
+      "3xl": {
+        "$value": "2.45rem",
+        "$type": "dimension",
+        "$description": "Section heading at compact viewports"
+      },
+      "hero": {
+        "$value": "clamp(3.4rem, 7.8vw, 6rem)",
+        "$type": "dimension",
+        "$description": "Centered public hero promise with a six-rem accessibility cap"
+      }
     }
   },
   "space": {
-    "gutter": { "$value": "clamp(1rem, 2vw, 2rem)", "$type": "dimension" },
-    "section": { "$value": "clamp(4.5rem, 6vw, 6.75rem)", "$type": "dimension" },
-    "content-max": { "$value": "74rem", "$type": "dimension" }
+    "gutter": {
+      "$value": "clamp(1rem, 2vw, 2rem)",
+      "$type": "dimension",
+      "$description": "Fluid public page gutter"
+    },
+    "section": {
+      "$value": "clamp(4.5rem, 6vw, 6.75rem)",
+      "$type": "dimension",
+      "$description": "Default public section interval"
+    },
+    "content-max": {
+      "$value": "77.5rem",
+      "$type": "dimension",
+      "$description": "Twelve-column public content rail"
+    }
+  },
+  "duration": {
+    "instant": {
+      "$value": "0ms",
+      "$type": "duration",
+      "$description": "Reduced-motion and immediate state change"
+    },
+    "fast": {
+      "$value": "150ms",
+      "$type": "duration",
+      "$description": "Color, border, and opacity feedback"
+    },
+    "interface": {
+      "$value": "200ms",
+      "$type": "duration",
+      "$description": "Small semantic interface transitions"
+    },
+    "reveal": {
+      "$value": "600ms",
+      "$type": "duration",
+      "$description": "Bounded public section reveal"
+    }
+  },
+  "easing": {
+    "standard": {
+      "$value": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "$type": "cubicBezier",
+      "$description": "Calm exponential ease-out for authored motion"
+    },
+    "interface": {
+      "$value": "ease-out",
+      "$type": "cubicBezier",
+      "$description": "Native-feeling control response"
+    }
   },
   "radius": {
-    "media": { "$value": "16px", "$type": "dimension", "$description": "Editorial architectural media frame corner radius" },
-    "content": { "$value": "0.625rem", "$type": "dimension", "$description": "10px radius for cards and panels" },
-    "control": { "$value": "0.5rem", "$type": "dimension", "$description": "8px radius for compact interactive controls" }
+    "media": {
+      "$value": "16px",
+      "$type": "dimension",
+      "$description": "Editorial architectural media frame corner radius"
+    },
+    "content": {
+      "$value": "0.5rem",
+      "$type": "dimension",
+      "$description": "8px radius for evidence planes"
+    },
+    "control": {
+      "$value": "0.375rem",
+      "$type": "dimension",
+      "$description": "6px radius for compact interactive controls"
+    }
+  },
+  "legacy": {
+    "dimension": {
+      "negative-1-25rem": {
+        "$value": "-1.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "negative-1-5rem": {
+        "$value": "-1.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "negative-1px": {
+        "$value": "-1px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "negative-2px": {
+        "$value": "-2px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "negative-2rem": {
+        "$value": "-2rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "negative-5rem": {
+        "$value": "-5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-12rem": {
+        "$value": "0.12rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-14em": {
+        "$value": "0.14em",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-15rem": {
+        "$value": "0.15rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-16rem": {
+        "$value": "0.16rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-25rem": {
+        "$value": "0.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-28rem": {
+        "$value": "0.28rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-2rem": {
+        "$value": "0.2rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-35rem": {
+        "$value": "0.35rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-375rem": {
+        "$value": "0.375rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-38rem": {
+        "$value": "0.38rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-3rem": {
+        "$value": "0.3rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-45rem": {
+        "$value": "0.45rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-4rem": {
+        "$value": "0.4rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-55rem": {
+        "$value": "0.55rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-5rem": {
+        "$value": "0.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-65rem": {
+        "$value": "0.65rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-6rem": {
+        "$value": "0.6rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-72rem": {
+        "$value": "0.72rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-75rem": {
+        "$value": "0.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-7rem": {
+        "$value": "0.7rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-82rem": {
+        "$value": "0.82rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-85rem": {
+        "$value": "0.85rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-8rem": {
+        "$value": "0.8rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-0-9rem": {
+        "$value": "0.9rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-15rem": {
+        "$value": "1.15rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-1rem": {
+        "$value": "1.1rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-25rem": {
+        "$value": "1.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-2rem": {
+        "$value": "1.2rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-35rem": {
+        "$value": "1.35rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-45rem": {
+        "$value": "1.45rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-4rem": {
+        "$value": "1.4rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-5rem": {
+        "$value": "1.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-6rem": {
+        "$value": "1.6rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-75rem": {
+        "$value": "1.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1-8rem": {
+        "$value": "1.8rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1240px": {
+        "$value": "1240px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-12rem": {
+        "$value": "12rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-14px": {
+        "$value": "14px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-1rem": {
+        "$value": "1rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-2-25rem": {
+        "$value": "2.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-2-4rem": {
+        "$value": "2.4rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-2-5rem": {
+        "$value": "2.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-2-75rem": {
+        "$value": "2.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-2-8rem": {
+        "$value": "2.8rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-2px": {
+        "$value": "2px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-2rem": {
+        "$value": "2rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-3-25rem": {
+        "$value": "3.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-3-5rem": {
+        "$value": "3.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-3-75rem": {
+        "$value": "3.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-3px": {
+        "$value": "3px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-3rem": {
+        "$value": "3rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-4-5rem": {
+        "$value": "4.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-4-6rem": {
+        "$value": "4.6rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-4-75rem": {
+        "$value": "4.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-42-5rem": {
+        "$value": "42.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-4px": {
+        "$value": "4px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-4rem": {
+        "$value": "4rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-5-25rem": {
+        "$value": "5.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-5rem": {
+        "$value": "5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-5-75rem": {
+        "$value": "5.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-6-25rem": {
+        "$value": "6.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-6-5rem": {
+        "$value": "6.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-6-75rem": {
+        "$value": "6.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-6rem": {
+        "$value": "6rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-7-25rem": {
+        "$value": "7.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-7-4rem": {
+        "$value": "7.4rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-7-5rem": {
+        "$value": "7.5rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-7rem": {
+        "$value": "7rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-8-25rem": {
+        "$value": "8.25rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-8-75rem": {
+        "$value": "8.75rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-9999px": {
+        "$value": "9999px",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      },
+      "positive-9rem": {
+        "$value": "9rem",
+        "$type": "dimension",
+        "$description": "Exact legacy layout value retained while Rama surfaces converge on the four-pixel spacing scale"
+      }
+    },
+    "color": {
+      "value-111827": {
+        "$value": "#111827",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-202321": {
+        "$value": "#202321",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-356d8d": {
+        "$value": "#356d8d",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-406b58": {
+        "$value": "#406b58",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-68716d": {
+        "$value": "#68716d",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-a34132": {
+        "$value": "#a34132",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-a47b46": {
+        "$value": "#a47b46",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-c4c8c2": {
+        "$value": "#c4c8c2",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-d8dad5": {
+        "$value": "#d8dad5",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-e5eee8": {
+        "$value": "#e5eee8",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-e5eef3": {
+        "$value": "#e5eef3",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f1e8dc": {
+        "$value": "#f1e8dc",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f8f3ed": {
+        "$value": "#f8f3ed",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-fbfbf8": {
+        "$value": "#fbfbf8",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-08": {
+        "$value": "rgba(255, 255, 255, 0.08)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-12": {
+        "$value": "rgba(255, 255, 255, 0.12)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-22": {
+        "$value": "rgba(255, 255, 255, 0.22)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-18252b": {
+        "$value": "#18252b",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-22c55e": {
+        "$value": "#22c55e",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-315744": {
+        "$value": "#315744",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-33464d": {
+        "$value": "#33464d",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-344a55": {
+        "$value": "#344a55",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-363a37": {
+        "$value": "#363a37",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-378264": {
+        "$value": "#378264",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-394a4f": {
+        "$value": "#394a4f",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-496472": {
+        "$value": "#496472",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-77562d": {
+        "$value": "#77562d",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-7b807e": {
+        "$value": "#7b807e",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-7c3029": {
+        "$value": "#7c3029",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-ad7c43": {
+        "$value": "#ad7c43",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-afb4af": {
+        "$value": "#afb4af",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-b91c1c": {
+        "$value": "#b91c1c",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-c6d8cd": {
+        "$value": "#c6d8cd",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-c7cdcc": {
+        "$value": "#c7cdcc",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-d4d8d3": {
+        "$value": "#d4d8d3",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-dde1de": {
+        "$value": "#dde1de",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-decdb8": {
+        "$value": "#decdb8",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-e7e8e4": {
+        "$value": "#e7e8e4",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-e8e8e1": {
+        "$value": "#e8e8e1",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-ecece6": {
+        "$value": "#ecece6",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-eceeea": {
+        "$value": "#eceeea",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-eef1ef": {
+        "$value": "#eef1ef",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-efefea": {
+        "$value": "#efefea",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f0f0eb": {
+        "$value": "#f0f0eb",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f1f1ec": {
+        "$value": "#f1f1ec",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f4e6e2": {
+        "$value": "#f4e6e2",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f4f3ee": {
+        "$value": "#f4f3ee",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f4f4ef": {
+        "$value": "#f4f4ef",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f4f6f4": {
+        "$value": "#f4f6f4",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f6f6f2": {
+        "$value": "#f6f6f2",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f7f6f1": {
+        "$value": "#f7f6f1",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-f8f8f4": {
+        "$value": "#f8f8f4",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-fee2e2": {
+        "$value": "#fee2e2",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-fff1ed": {
+        "$value": "#fff1ed",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgb-23-33-38-10": {
+        "$value": "rgb(23 33 38 / 10%)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgb-255-255-255-10": {
+        "$value": "rgb(255 255 255 / 10%)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgb-255-255-255-45": {
+        "$value": "rgb(255 255 255 / 45%)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-0-0-0-0-24": {
+        "$value": "rgba(0, 0, 0, 0.24)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-0-0-0-0-28": {
+        "$value": "rgba(0, 0, 0, 0.28)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-0-0-0-0-5": {
+        "$value": "rgba(0, 0, 0, 0.5)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-0-0-0-04": {
+        "$value": "rgba(0, 0, 0, .04)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-10-15-20-0-25": {
+        "$value": "rgba(10, 15, 20, 0.25)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-10-15-20-0-45": {
+        "$value": "rgba(10, 15, 20, 0.45)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-10-15-20-0-60": {
+        "$value": "rgba(10, 15, 20, 0.60)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-10-15-20-0-85": {
+        "$value": "rgba(10, 15, 20, 0.85)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-12-18-22-0-72": {
+        "$value": "rgba(12, 18, 22, 0.72)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-12-18-22-0-84": {
+        "$value": "rgba(12, 18, 22, 0.84)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-12-28-30-35": {
+        "$value": "rgba(12,28,30,.35)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-17-24-25-0-78": {
+        "$value": "rgba(17, 24, 25, 0.78)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-20-25-22-28": {
+        "$value": "rgba(20, 25, 22, .28)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-20-25-22-36": {
+        "$value": "rgba(20, 25, 22, .36)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-20-26-23-18": {
+        "$value": "rgba(20, 26, 23, .18)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-20-26-23-2": {
+        "$value": "rgba(20, 26, 23, .2)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-23-27-26-0-66": {
+        "$value": "rgba(23, 27, 26, 0.66)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-23-28-27-08": {
+        "$value": "rgba(23, 28, 27, .08)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-23-33-38-0-22": {
+        "$value": "rgba(23, 33, 38, 0.22)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-23-33-38-0-34": {
+        "$value": "rgba(23, 33, 38, 0.34)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-25-31-28-12": {
+        "$value": "rgba(25, 31, 28, .12)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-25-31-28-15": {
+        "$value": "rgba(25, 31, 28, .15)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-251-251-248-0-08": {
+        "$value": "rgba(251, 251, 248, 0.08)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-251-251-248-0-1": {
+        "$value": "rgba(251, 251, 248, 0.1)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-251-251-248-0-32": {
+        "$value": "rgba(251, 251, 248, 0.32)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-251-251-248-0-72": {
+        "$value": "rgba(251, 251, 248, 0.72)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-251-251-248-97": {
+        "$value": "rgba(251, 251, 248, .97)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-251-251-248-98": {
+        "$value": "rgba(251, 251, 248, .98)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-16": {
+        "$value": "rgba(255, 255, 255, 0.16)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-3": {
+        "$value": "rgba(255, 255, 255, 0.3)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-35": {
+        "$value": "rgba(255, 255, 255, 0.35)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-42": {
+        "$value": "rgba(255, 255, 255, 0.42)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-6": {
+        "$value": "rgba(255, 255, 255, 0.6)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-72": {
+        "$value": "rgba(255, 255, 255, 0.72)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-9": {
+        "$value": "rgba(255, 255, 255, 0.9)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-93": {
+        "$value": "rgba(255, 255, 255, 0.93)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-0-94": {
+        "$value": "rgba(255, 255, 255, 0.94)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-02": {
+        "$value": "rgba(255,255,255,.02)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-25": {
+        "$value": "rgba(255,255,255,.25)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-55": {
+        "$value": "rgba(255,255,255,.55)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-255-255-255-78": {
+        "$value": "rgba(255,255,255,.78)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-27-42-49-0-08": {
+        "$value": "rgba(27, 42, 49, 0.08)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-30-43-45-0-82": {
+        "$value": "rgba(30, 43, 45, 0.82)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-32-35-33-12": {
+        "$value": "rgba(32, 35, 33, .12)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-34-197-94-2": {
+        "$value": "rgba(34, 197, 94, .2)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-40-52-55-0-16": {
+        "$value": "rgba(40, 52, 55, 0.16)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-42-51-50-0-1": {
+        "$value": "rgba(42, 51, 50, 0.1)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-42-51-50-0-14": {
+        "$value": "rgba(42, 51, 50, 0.14)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-42-51-50-0-15": {
+        "$value": "rgba(42, 51, 50, 0.15)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      },
+      "value-rgba-55-130-100-0-16": {
+        "$value": "rgba(55, 130, 100, 0.16)",
+        "$type": "color",
+        "$description": "Exact legacy surface value retained while Rama components converge on semantic color roles"
+      }
+    }
   }
 }

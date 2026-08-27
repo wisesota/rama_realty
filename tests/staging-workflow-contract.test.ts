@@ -6,7 +6,7 @@ describe("staging verification workflow", () => {
 
   it("is manual, environment-bound, and read-only", () => {
     expect(workflow).toContain("workflow_dispatch:");
-    expect(workflow).toContain("environment: staging");
+    expect(workflow).toMatch(/environment:\s*(staging|\n\s+name:\s+staging)/);
     expect(workflow).toMatch(/permissions:\s+contents: read/);
     expect(workflow).toContain("persist-credentials: false");
   });

@@ -1,5 +1,13 @@
 export type ProductEvent =
   | {
+      event: "voice.lifecycle";
+      state: "requesting" | "connecting" | "listening" | "thinking" | "speaking" | "complete" | "error" | "idle";
+      mode: "live" | "recorded" | "unknown";
+      locale: "en" | "ar";
+      elapsed: "lt_1s" | "1_3s" | "3_10s" | "10_30s" | "30_120s" | "gte_120s";
+      timestamp: string;
+    }
+  | {
       event: "room.search_outcome";
       searchRunId: string;
       outcome: "needs_clarification" | "ready" | "partial" | "empty";
@@ -71,6 +79,27 @@ export function criterionCategoriesFromKeys(keys: string[]): CriterionCategory[]
  * transcripts, contact details, or other buyer-provided text to this payload.
  */
 export function emitProductEvent(event: ProductEvent) {
+  if (event.event === "voice.lifecycle") {
+    if (typeof window !== "undefined") {
+      // Do not initialize analytics or emit an event before the buyer opts in.
+      if (window.localStorage.getItem("rama_cookie_consent") !== "accepted") {
+        if (process.env.NODE_ENV === "development") console.info("[rama.product-event]", event);
+        return;
+      }
+      void import("posthog-js").then(({ default: posthog }) => {
+        if (!posthog.__loaded || !posthog.has_opted_in_capturing()) return;
+        posthog.capture("rama_voice_lifecycle", {
+          state: event.state,
+          mode: event.mode,
+          locale: event.locale,
+          elapsed: event.elapsed,
+          $process_person_profile: false,
+        });
+      });
+    }
+    if (process.env.NODE_ENV === "development") console.info("[rama.product-event]", event);
+    return;
+  }
   if (process.env.NODE_ENV !== "development") return;
 
   if (event.event === "landing.brief_submit") {
@@ -127,4 +156,13 @@ export function emitProductEvent(event: ProductEvent) {
     sourceVersion: event.sourceVersion,
     timestamp: event.timestamp,
   });
+}
+
+export function elapsedBucket(durationMs: number): Extract<ProductEvent, { event: "voice.lifecycle" }>["elapsed"] {
+  if (durationMs < 1_000) return "lt_1s";
+  if (durationMs < 3_000) return "1_3s";
+  if (durationMs < 10_000) return "3_10s";
+  if (durationMs < 30_000) return "10_30s";
+  if (durationMs < 120_000) return "30_120s";
+  return "gte_120s";
 }

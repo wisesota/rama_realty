@@ -38,6 +38,31 @@ export async function transitionInquiryAction(
   return { status: "success", message: `Conversation moved to ${status.replace("_", " ")}.` };
 }
 
+export async function createAdvisorFeedbackAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, staff } = await requireStaffContext(advisorRoles);
+  const inquiryId = readText(formData, "inquiryId", 64);
+  const category = readText(formData, "category", 40);
+  const outcome = readText(formData, "outcome", 40);
+  const notes = readText(formData, "notes", 1000);
+  if (!/^[0-9a-f-]{36}$/i.test(inquiryId)
+    || !["missing_evidence", "wrong_criterion", "stale_source", "handoff_outcome"].includes(category)
+    || (outcome && !["useful", "needs_follow_up", "not_a_fit", "contacted", "viewing_booked", "closed"].includes(outcome))) {
+    return { status: "error", message: "Choose a valid evidence issue and outcome." };
+  }
+  const { error } = await supabase.rpc("create_advisor_evidence_feedback", {
+    p_actor_id: staff.userId,
+    p_inquiry_id: inquiryId,
+    p_category: category,
+    p_outcome: outcome,
+    p_notes: notes,
+  });
+  if (error) return { status: "error", message: "Advisor feedback could not be saved." };
+  return { status: "success", message: "Feedback saved for the evidence-quality review." };
+}
+
 export async function createPropertyAction(
   _previous: ActionState,
   formData: FormData,

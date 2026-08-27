@@ -63,7 +63,7 @@ describe("hosted Supabase verification", () => {
     expect(verifier).toContain('"audit_events"');
     expect(verifier).toContain("response.status !== 401 && response.status !== 403");
     expect(verifier).toContain("verify_operational_security_posture");
-    expect(verifier).toContain("row.rls_enabled !== true || row.anon_select === true");
+    expect(verifier).toContain("row.rls_enabled !== true || row.anon_select !== false");
     expect(verifier).not.toContain("const rows = response.ok ? await response.json() : [];");
   });
 

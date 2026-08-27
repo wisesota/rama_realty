@@ -1,0 +1,4 @@
+# Security-sensitive automation and scanner configuration require repository-owner review.
+/.github/workflows/ @wisesota
+/.github/CODEOWNERS @wisesota
+/.gitleaks.toml @wisesota

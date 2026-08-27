@@ -156,7 +156,7 @@ The main remaining DX issue is operational, not code: preview/staging deployment
 | Eng Review | `/plan-eng-review` via plan audit | Architecture, data flow, tests | 2 | `CLEAR (LOCAL)` | Current tree contains the reported concurrency, publication, evidence-age, and typing fixes |
 | Design Review | `/plan-design-review` via plan audit | UI states, accessibility, RTL | 2 | `CLEAR (REPOSITORY)` | Automated responsive/RTL/state coverage exists; real assistive-device and asset-rights evidence remains open |
 | DX Review | `/plan-devex-review` via plan audit | First run and operations | 2 | `CLEAR (LOCAL)` | Credential-free demo and diagnostics exist; hosted test identities and owners remain external |
-| Security Review | `/cso` via plan audit | Secrets, auth, supply chain, privacy | 3 | `CLEAR (DEVELOPMENT) / PRODUCTION BLOCKED` | Development migrations, RLS posture, ACLs, and two-user isolation pass. Leaked-password protection is intentionally excluded under the Supabase Free-plan decision; hosted production evidence remains open. |
+| Security Review | `/cso` via plan audit | Secrets, auth, supply chain, privacy | 3 | `CLEAR (DEVELOPMENT) / PRODUCTION BLOCKED` | Development migrations, RLS posture, ACLs, and two-user isolation pass. Leaked-password protection is implemented at the application edge via HIBP to support the Supabase Free-plan architecture. Hosted production evidence remains open. |
 
 **VERDICT:** Feature implementation is complete for P0-P8 and locally verified, but release readiness remains red for the measured mobile LCP gate as well as the external evidence listed above. Production remains unauthorized until every item is real, current, reviewed, and bound to the release commit.
 

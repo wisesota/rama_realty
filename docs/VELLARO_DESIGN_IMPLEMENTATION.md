@@ -3,7 +3,7 @@
 **Project:** Rama Realty — Voice-Led Dubai Property Discovery  
 **Design Architecture:** Vellaro Editorial Luxury Real Estate  
 **Reference Source:** [Luxury Real Estate Website Design \| Vellaro (Behance)](https://www.behance.net/gallery/249554227/Luxury-Real-Estate-Website-Design-Vellaro)  
-**Status:** Production Ready  
+**Status:** Superseded Historical Reference  
 
 ---
 
@@ -87,9 +87,9 @@ The navigation bar floats directly over the hero media without adding visual bul
 Positioned directly under the header at `top: 4.25rem`:
 - Displays large ghosted `REAL ESTATE` watermark spanning horizontally across the viewport.
 - Sub-grid with 4 micro-captions:
-  1. `Dubai Q1 2026 Volume AED 18.4B` (Left)
+  1. `Dubai Market Context` (Left)
   2. `Precision Voice Interface` (Center-Left)
-  3. `2026` (Center-Right)
+  3. `Current Year` (Center-Right)
   4. `Regulated Discovery` (Right)
 
 ### 3.3 Main Hero Layout (`components/landing-page.tsx`)
@@ -110,8 +110,8 @@ The core content grid uses flexbox with split horizontal alignment:
 │  🔒 Rama renders representative residences until licensed brokerage...     │
 │                                                                            │
 │  ────────────────────────────────────────────────────────────────────────  │
-│  100+ SUCCESSFUL   │ 15 LEGAL   │ 87+ VERIFIED       [🎙️] [GET A          │
-│       DEALS        │    EXPERTS │     REVIEWS             CONSULTATION]    │
+│  APPROVED          │ VETTED     │ LICENSED           [🎙️] [GET A          │
+│       INVENTORY    │    EXPERTS │     REVIEWS             CONSULTATION]    │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 

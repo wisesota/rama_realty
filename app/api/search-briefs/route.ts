@@ -1,4 +1,5 @@
 import { getAuthenticatedSupabase, isSameOrigin } from "@/lib/supabase/auth";
+import type { SavedBriefHistoryResponse } from "@/lib/saved-briefs";
 
 type SearchBriefRequest = {
   brief?: unknown;
@@ -14,6 +15,45 @@ function cleanStringList(value: unknown, maximumItems: number) {
     .map((item) => item.trim())
     .filter(Boolean);
   return strings.length === value.length ? strings : null;
+}
+
+export async function GET() {
+  const { supabase, userId } = await getAuthenticatedSupabase();
+  if (!userId) {
+    return Response.json(
+      { authenticated: false, briefs: [] } satisfies SavedBriefHistoryResponse,
+      { status: 401, headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("search_briefs")
+    .select("id,brief,criteria,source,result_ids,created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(12);
+
+  if (error) {
+    return Response.json(
+      { error: "Saved brief history is unavailable in this environment." },
+      { status: 503, headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
+
+  return Response.json(
+    {
+      authenticated: true,
+      briefs: data.map((brief) => ({
+        id: brief.id,
+        brief: brief.brief,
+        criteria: brief.criteria,
+        source: brief.source === "voice" ? "voice" : "text",
+        resultIds: brief.result_ids,
+        createdAt: brief.created_at,
+      })),
+    } satisfies SavedBriefHistoryResponse,
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }
 
 export async function POST(request: Request) {

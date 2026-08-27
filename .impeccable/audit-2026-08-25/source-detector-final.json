@@ -1,0 +1,3516 @@
+[
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\auth\\sign-in\\sign-in.css",
+    "line": 42,
+    "snippet": "font-size: .92rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".92rem",
+    "importedBy": [
+      "page.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\auth\\sign-in\\sign-in.css",
+    "line": 47,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "page.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\auth\\sign-in\\sign-in.css",
+    "line": 53,
+    "snippet": "font-size: .82rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".82rem",
+    "importedBy": [
+      "page.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\auth\\sign-in\\sign-in.css",
+    "line": 57,
+    "snippet": "font-size: .82rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".82rem",
+    "importedBy": [
+      "page.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 56,
+    "snippet": "font-size: 1.05rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.05rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 57,
+    "snippet": "font-size: .58rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".58rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 59,
+    "snippet": "font-size: .67rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".67rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 60,
+    "snippet": "font-size: .82rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".82rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 70,
+    "snippet": "font-size: .84rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".84rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 82,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 84,
+    "snippet": "font-size: .58rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".58rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 121,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 122,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 128,
+    "snippet": "font-size: .6rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".6rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 139,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 140,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 141,
+    "snippet": "font-size: .58rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".58rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 143,
+    "snippet": "font-size: .56rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".56rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 160,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 167,
+    "snippet": "font-size: .82rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".82rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 168,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 185,
+    "snippet": "font-size: .67rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".67rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 186,
+    "snippet": "font-size: .95rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".95rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 190,
+    "snippet": "font-size: .64rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".64rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 201,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 202,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 208,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 209,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 210,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 216,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 217,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 221,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 225,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 232,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 233,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 243,
+    "snippet": "font-size: .64rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".64rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 246,
+    "snippet": "font-size: .6rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".6rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 251,
+    "snippet": "font-size: .64rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".64rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 254,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 271,
+    "snippet": "font-size: .58rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".58rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 272,
+    "snippet": "font-size: .67rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".67rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 276,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 282,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 290,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 293,
+    "snippet": "font-size: .63rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".63rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 294,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 295,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 299,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 302,
+    "snippet": "font-size: .64rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".64rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 338,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 341,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 348,
+    "snippet": "font-size: .64rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".64rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 350,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 353,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 354,
+    "snippet": "font-size: .63rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".63rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 363,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 365,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 372,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 373,
+    "snippet": "font-size: .67rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".67rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 375,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 382,
+    "snippet": "font-size: .67rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".67rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 385,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 390,
+    "snippet": "font-size: .67rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".67rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 394,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 399,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 400,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 403,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 413,
+    "snippet": "font-size: .63rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".63rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 417,
+    "snippet": "font-size: .64rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".64rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 418,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 423,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 428,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 429,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 432,
+    "snippet": "font-size: .63rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".63rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 438,
+    "snippet": "font-size: .64rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".64rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 441,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 442,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 444,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 447,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 452,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 454,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 457,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 458,
+    "snippet": "font-size: .56rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".56rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 463,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 468,
+    "snippet": "font-size: .62rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".62rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 470,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 478,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 482,
+    "snippet": "font-size: .58rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".58rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 485,
+    "snippet": "font-size: .6rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".6rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 486,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 493,
+    "snippet": "font-size: .58rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".58rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 494,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 495,
+    "snippet": "font-size: .6rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".6rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 496,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 502,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 505,
+    "snippet": "font-size: .67rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".67rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 508,
+    "snippet": "font-size: .66rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".66rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 510,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 511,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 602,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 697,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 814,
+    "snippet": "font-size: 2.25rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2.25rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 863,
+    "snippet": "font-size: 1.15rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.15rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 870,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 878,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 975,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 988,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1013,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1066,
+    "snippet": "font-size: .82rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".82rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1086,
+    "snippet": "font-size: .82rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".82rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1093,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1121,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1132,
+    "snippet": "font-size: .95rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".95rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1139,
+    "snippet": "font-size: 2rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1195,
+    "snippet": "font-size: .84rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".84rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1212,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1288,
+    "snippet": "font-size: 1.5rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.5rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1295,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1332,
+    "snippet": "font-size: .84rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".84rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1350,
+    "snippet": "font-size: .78rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".78rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1414,
+    "snippet": "font-size: .7rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".7rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1421,
+    "snippet": "font-size: 2rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1423,
+    "snippet": "font-size: .8rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".8rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1440,
+    "snippet": "font-size: .65rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".65rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\dashboard\\dashboard.css",
+    "line": 1475,
+    "snippet": "font-size: .58rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".58rem",
+    "importedBy": [
+      "layout.tsx"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\design-tokens.css",
+    "line": 248,
+    "snippet": "font-size: 0.84rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.84rem",
+    "importedBy": [
+      "global-error.tsx",
+      "globals.css"
+    ]
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 246,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 251,
+    "snippet": "font-size: 0.62rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.62rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 373,
+    "snippet": "font-size: .68rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 378,
+    "snippet": "font-size: .82rem is off the DESIGN.md type ramp",
+    "ignoreValue": ".82rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 382,
+    "snippet": "font-size: 1.1rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.1rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 492,
+    "snippet": "font-size: clamp(2.45rem, 4.2vw, 3.8rem) has fluid endpoints 2.45rem and 3.8rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.45rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 502,
+    "snippet": "font-size: 1.06rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.06rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 578,
+    "snippet": "font-size: 1.12rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.12rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 586,
+    "snippet": "font-size: 0.64rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.64rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 607,
+    "snippet": "font-size: 0.84rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.84rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 691,
+    "snippet": "font-size: clamp(4rem, 8.8vw, 7.5rem) has fluid endpoint 7.5rem off the DESIGN.md type ramp",
+    "ignoreValue": "7.5rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 723,
+    "snippet": "font-size: clamp(2.8rem, 4.25vw, 3.65rem) has fluid endpoints 2.8rem and 3.65rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 735,
+    "snippet": "font-size: 0.96rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.96rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 825,
+    "snippet": "font-size: 0.82rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.82rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 931,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 943,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 994,
+    "snippet": "font-size: 0.66rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.66rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1032,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1058,
+    "snippet": "font-size: clamp(2.25rem, 4vw, 3.75rem) has fluid endpoints 2.25rem and 3.75rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.25rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1092,
+    "snippet": "font-size: 1.15rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.15rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1168,
+    "snippet": "font-size: 0.66rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.66rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1178,
+    "snippet": "font-size: 0.78rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.78rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1196,
+    "snippet": "font-size: 0.78rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.78rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1230,
+    "snippet": "font-size: 0.78rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.78rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1235,
+    "snippet": "font-size: 0.62rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.62rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1263,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1289,
+    "snippet": "font-size: clamp(2.5rem, 5vw, 4.5rem) has fluid endpoints 2.5rem and 4.5rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.5rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1328,
+    "snippet": "font-size: 0.65rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.65rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1337,
+    "snippet": "font-size: clamp(2.75rem, 5vw, 5rem) has fluid endpoint 2.75rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.75rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1360,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1371,
+    "snippet": "font-size: clamp(2rem, 3vw, 3rem) has fluid endpoints 2rem and 3rem off the DESIGN.md type ramp",
+    "ignoreValue": "2rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1396,
+    "snippet": "font-size: 0.58rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.58rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1407,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1433,
+    "snippet": "font-size: 0.62rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.62rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1469,
+    "snippet": "font-size: clamp(2.25rem, 4vw, 3.75rem) has fluid endpoints 2.25rem and 3.75rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.25rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1498,
+    "snippet": "font-size: 0.64rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.64rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1507,
+    "snippet": "font-size: 0.82rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.82rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1550,
+    "snippet": "font-size: 0.65rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.65rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1612,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1629,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1638,
+    "snippet": "font-size: 2rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1652,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1731,
+    "snippet": "font-size: clamp(2rem, 4vw, 3.5rem) has fluid endpoints 2rem and 3.5rem off the DESIGN.md type ramp",
+    "ignoreValue": "2rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1769,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1780,
+    "snippet": "font-size: 1.2rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.2rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1795,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1879,
+    "snippet": "font-size: 1.05rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.05rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1887,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1909,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 1919,
+    "snippet": "font-size: 0.78rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.78rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2005,
+    "snippet": "font-size: 0.78rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.78rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2015,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2063,
+    "snippet": "font-size: clamp(1.8rem, 3vw, 2.75rem) has fluid endpoints 1.8rem and 2.75rem off the DESIGN.md type ramp",
+    "ignoreValue": "1.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2097,
+    "snippet": "font-size: 0.65rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.65rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2140,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2171,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2187,
+    "snippet": "font-size: clamp(4rem, 10.5vw, 10rem) has fluid endpoint 10rem off the DESIGN.md type ramp",
+    "ignoreValue": "10rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2197,
+    "snippet": "font-size: clamp(2.7rem, 5.2vw, 3.7rem) has fluid endpoints 2.7rem and 3.7rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2213,
+    "snippet": "font-size: clamp(3.8rem, 8.3vw, 6.75rem) has fluid endpoints 3.8rem and 6.75rem off the DESIGN.md type ramp",
+    "ignoreValue": "3.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2218,
+    "snippet": "font-size: clamp(2.7rem, 3.9vw, 3.25rem) has fluid endpoints 2.7rem and 3.25rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2219,
+    "snippet": "font-size: 0.91rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.91rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2296,
+    "snippet": "font-size: clamp(2.5rem, 11vw, 3.45rem) has fluid endpoints 2.5rem and 3.45rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.5rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2379,
+    "snippet": "font-size: clamp(2.75rem, 12vw, 4rem) has fluid endpoint 2.75rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.75rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2418,
+    "snippet": "font-size: clamp(2.55rem, 11.2vw, 3.05rem) has fluid endpoints 2.55rem and 3.05rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.55rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2422,
+    "snippet": "font-size: 2.45rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2.45rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2424,
+    "snippet": "font-size: 0.82rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.82rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2427,
+    "snippet": "font-size: 2.4rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2.4rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2431,
+    "snippet": "font-size: 1.75rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.75rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2435,
+    "snippet": "font-size: 2.45rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2.45rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2537,
+    "snippet": "font-size: 0.78rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.78rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2641,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2660,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2680,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2761,
+    "snippet": "font-size: 0.69rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.69rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2822,
+    "snippet": "font-size: clamp(1rem, 1.3vw, 1.15rem) has fluid endpoint 1.15rem off the DESIGN.md type ramp",
+    "ignoreValue": "1.15rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2949,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 2989,
+    "snippet": "font-size: 1.05rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.05rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3006,
+    "snippet": "font-size: 0.7rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.7rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3045,
+    "snippet": "font-size: 0.66rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.66rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3070,
+    "snippet": "font-size: 0.8rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3110,
+    "snippet": "font-size: clamp(1.5rem, 2.6vw, 2.5rem) has fluid endpoints 1.5rem and 2.5rem off the DESIGN.md type ramp",
+    "ignoreValue": "1.5rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3115,
+    "snippet": "font-size: clamp(1rem, 1.4vw, 1.2rem) has fluid endpoint 1.2rem off the DESIGN.md type ramp",
+    "ignoreValue": "1.2rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3118,
+    "snippet": "font-size: 1.4rem is off the DESIGN.md type ramp",
+    "ignoreValue": "1.4rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3179,
+    "snippet": "font-size: clamp(2.8rem, 11vw, 4.5rem) has fluid endpoints 2.8rem and 4.5rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.8rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3214,
+    "snippet": "font-size: 0.66rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.66rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3215,
+    "snippet": "font-size: clamp(1.9rem, 9.6vw, 2.65rem) has fluid endpoints 1.9rem and 2.65rem off the DESIGN.md type ramp",
+    "ignoreValue": "1.9rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3239,
+    "snippet": "font-size: clamp(2.9rem, 4.2vw, 4.2rem) has fluid endpoints 2.9rem and 4.2rem off the DESIGN.md type ramp",
+    "ignoreValue": "2.9rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3606,
+    "snippet": "font-size: 0.78rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.78rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3820,
+    "snippet": "font-size: 0.84rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.84rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3841,
+    "snippet": "font-size: 0.84rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.84rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 3935,
+    "snippet": "font-size: clamp(2rem, 2.7vw, 2.65rem) has fluid endpoints 2rem and 2.65rem off the DESIGN.md type ramp",
+    "ignoreValue": "2rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 4082,
+    "snippet": "font-size: clamp(1rem, 1.25vw, 1.14rem) has fluid endpoint 1.14rem off the DESIGN.md type ramp",
+    "ignoreValue": "1.14rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 4224,
+    "snippet": "font-size: 2rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 4242,
+    "snippet": "font-size: clamp(3rem, 14vw, 4rem) has fluid endpoint 3rem off the DESIGN.md type ramp",
+    "ignoreValue": "3rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 4248,
+    "snippet": "font-size: 0.96rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.96rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 4272,
+    "snippet": "font-size: 0.68rem is off the DESIGN.md type ramp",
+    "ignoreValue": "0.68rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\app\\globals.css",
+    "line": 4288,
+    "snippet": "font-size: clamp(3.5rem, 6.2vw, 5.25rem) has fluid endpoints 3.5rem and 5.25rem off the DESIGN.md type ramp",
+    "ignoreValue": "3.5rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-about.tsx",
+    "line": 60,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-about.tsx",
+    "line": 95,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-about.tsx",
+    "line": 135,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-about.tsx",
+    "line": 176,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-blog.tsx",
+    "line": 60,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-blog.tsx",
+    "line": 70,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-blog.tsx",
+    "line": 91,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-blog.tsx",
+    "line": 97,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-blog.tsx",
+    "line": 118,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-communities.tsx",
+    "line": 110,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-communities.tsx",
+    "line": 160,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-communities.tsx",
+    "line": 167,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-communities.tsx",
+    "line": 173,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-cta-banner.tsx",
+    "line": 24,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-curators.tsx",
+    "line": 61,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-curators.tsx",
+    "line": 71,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-curators.tsx",
+    "line": 94,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-curators.tsx",
+    "line": 107,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-faq.tsx",
+    "line": 76,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-faq.tsx",
+    "line": 93,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-faq.tsx",
+    "line": 102,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-faq.tsx",
+    "line": 125,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-featured-collection.tsx",
+    "line": 69,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-featured-collection.tsx",
+    "line": 94,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-featured-collection.tsx",
+    "line": 103,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-featured-collection.tsx",
+    "line": 131,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-featured-collection.tsx",
+    "line": 135,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-footer.tsx",
+    "line": 29,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-footer.tsx",
+    "line": 37,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-footer.tsx",
+    "line": 49,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-footer.tsx",
+    "line": 61,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-footer.tsx",
+    "line": 82,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-footer.tsx",
+    "line": 92,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-hero.tsx",
+    "line": 17,
+    "snippet": "text-[…] class: 13px is off the DESIGN.md type ramp",
+    "ignoreValue": "13px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-hero.tsx",
+    "line": 23,
+    "snippet": "text-[…] class: 13px is off the DESIGN.md type ramp",
+    "ignoreValue": "13px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-hero.tsx",
+    "line": 29,
+    "snippet": "text-[…] class: 13px is off the DESIGN.md type ramp",
+    "ignoreValue": "13px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-hero.tsx",
+    "line": 38,
+    "snippet": "text-[…] class: 13px is off the DESIGN.md type ramp",
+    "ignoreValue": "13px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-hero.tsx",
+    "line": 65,
+    "snippet": "fontSize: clamp(6rem, 15vw, 18rem) has fluid endpoint 18rem off the DESIGN.md type ramp",
+    "ignoreValue": "18rem"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-hero.tsx",
+    "line": 99,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-how-we-work.tsx",
+    "line": 51,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-how-we-work.tsx",
+    "line": 72,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-how-we-work.tsx",
+    "line": 80,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-how-we-work.tsx",
+    "line": 109,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-how-we-work.tsx",
+    "line": 122,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-how-we-work.tsx",
+    "line": 135,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-partners.tsx",
+    "line": 27,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-partners.tsx",
+    "line": 48,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-partners.tsx",
+    "line": 64,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-projects.tsx",
+    "line": 105,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-projects.tsx",
+    "line": 114,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-projects.tsx",
+    "line": 136,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-projects.tsx",
+    "line": 149,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-projects.tsx",
+    "line": 157,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-projects.tsx",
+    "line": 161,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-projects.tsx",
+    "line": 165,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-reviews.tsx",
+    "line": 83,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-reviews.tsx",
+    "line": 120,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-reviews.tsx",
+    "line": 127,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-reviews.tsx",
+    "line": 155,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-why-dubai.tsx",
+    "line": 67,
+    "snippet": "text-[…] class: 10px is off the DESIGN.md type ramp",
+    "ignoreValue": "10px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\archivanta\\archivanta-why-dubai.tsx",
+    "line": 89,
+    "snippet": "text-[…] class: 9px is off the DESIGN.md type ramp",
+    "ignoreValue": "9px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "C:\\rama-agent\\components\\landing-page.tsx",
+    "line": 984,
+    "snippet": "text-[…] class: 2.75rem is off the DESIGN.md type ramp",
+    "ignoreValue": "2.75rem"
+  }
+]

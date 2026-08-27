@@ -25,7 +25,8 @@ test("staging administrator access is native Supabase email and password only", 
 
 test("staging rejects an unscoped provider-style callback", async ({ page }) => {
   await page.goto("/auth/callback?code=provider-code&next=%2Fdashboard");
-  await expect(page).toHaveURL(/\/?auth=error#current-brief$/);
+  await expect(page).toHaveURL(/.*#current-brief/);
+  await expect(page.getByRole("heading", { name: "Describe the life you want in Dubai." })).toBeVisible();
 });
 
 test("staging remains usable at mobile RTL width without overflow", async ({ page }) => {

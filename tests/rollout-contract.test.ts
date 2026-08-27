@@ -14,6 +14,42 @@ import {
 
 const buyerHash = "a".repeat(64);
 
+vi.mock("@/lib/supabase/env", () => ({
+  getPublicSupabaseEnvironment: vi.fn().mockReturnValue({
+    url: "http://localhost:54321",
+    publishableKey: "anon-key"
+  }),
+  getServiceRoleEnvironment: vi.fn().mockReturnValue({
+    url: "http://localhost:54321",
+    serviceRoleKey: "service-key"
+  })
+}));
+
+vi.mock("@/lib/public-catalog-repository", () => {
+  return {
+    PublicCatalogRepository: class {
+      search = vi.fn().mockResolvedValue({
+        criteria: [],
+        candidates: []
+      });
+    }
+  };
+});
+vi.mock("@/lib/supabase/admin", () => ({
+  createAdminClient: vi.fn().mockReturnValue({
+    rpc: vi.fn().mockResolvedValue({
+      data: {
+        conversationId: "conv-1",
+        searchRunId: "run-1",
+        resultCount: 0,
+        propertyIds: [],
+        reused: false
+      },
+      error: null
+    })
+  })
+}));
+
 afterEach(() => vi.unstubAllEnvs());
 
 describe("Decision OS rollout contract", () => {
@@ -71,13 +107,34 @@ describe("Decision OS rollout contract", () => {
     expect(buildBuyerDecisionEnvelope({ ...base, renderEvidenceV2: true }).schemaVersion).toBe("2");
   });
 
-  it("keeps durable v2 writes independent from the compatible renderer rollback", () => {
-    const source = readFileSync("lib/discovery-service.ts", "utf8");
-    expect(source).toContain("p_write_evidence_v2: writeEvidenceV2");
-    expect(source).toContain("const renderEvidenceV2 = evidenceV2RendererEnabled()");
-    expect(source).toContain("renderEvidenceV2: renderEvidenceV2 && writeEvidenceV2");
-    expect(source).toContain("renderEvidenceV2: renderEvidenceV2 && ledgerEvents.length > 0");
-    expect(source).toContain("renderEvidenceV2\n      ? admin.rpc(\"read_buyer_ledger_events\"");
+  it("keeps durable v2 writes independent from the compatible renderer rollback", async () => {
+    vi.resetModules();
+    vi.doMock("@/lib/rollout-server", async (importOriginal) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const actual = await importOriginal<any>();
+      return {
+        ...actual,
+        evidenceV2RendererEnabled: vi.fn().mockReturnValue(false),
+        evidenceV2WriterEnabled: vi.fn().mockReturnValue(true),
+      };
+    });
+
+    const { discoverProperties } = await import("@/lib/discovery-service");
+    const envelope = await discoverProperties({
+      brief: "Test",
+      source: "text",
+      idempotencyKey: "123",
+      context: { correlationId: "cor-1", buyerTokenHash: "hash", deadline: Date.now() + 10000 }
+    });
+    expect(envelope.schemaVersion).toBe("1");
+    // Assert RPC was called with writeEvidenceV2 = true
+    const { createAdminClient: mockClient } = await import("@/lib/supabase/admin");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rpcMock = mockClient().rpc as any;
+    expect(rpcMock).toHaveBeenCalledWith("persist_buyer_search", expect.objectContaining({ p_write_evidence_v2: true }));
+
+    vi.doUnmock("@/lib/supabase/admin");
+    vi.doUnmock("@/lib/rollout-server");
   });
 
   it("gates every paid voice transport with the same stable buyer cohort", () => {

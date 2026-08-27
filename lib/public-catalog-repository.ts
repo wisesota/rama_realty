@@ -75,14 +75,16 @@ function criterionList(brief: string): BuyerCriterion[] {
   const hard = extractHardConstraints(brief);
   const labels = parsePropertyBrief(brief);
   return labels.map((label, index) => {
-    const hardCriterion = (hard.location && label === hard.location)
-      || (hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms)))
-      || (hard.maximumPriceAed !== undefined && label.startsWith("Up to"));
-    const key = hard.location && label === hard.location
+    const isLocation = Boolean(hard.location && label === hard.location);
+    const isBedrooms = Boolean(hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms)));
+    const isBudget = Boolean(hard.maximumPriceAed !== undefined && label.startsWith("Up to"));
+
+    const hardCriterion = isLocation || isBedrooms || isBudget;
+    const key = isLocation
       ? "location"
-      : hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms))
+      : isBedrooms
         ? "bedrooms"
-        : hard.maximumPriceAed !== undefined && label.startsWith("Up to")
+        : isBudget
           ? "budget"
           : ["Penthouse", "Villa", "Townhouse", "Apartment"].includes(label)
             ? "property-type"
@@ -147,6 +149,10 @@ function demoRows(brief: string): Array<{ property: BuyerPropertySummary; score:
   }));
 }
 
+function demoProperties() {
+  return demoRows("").map((candidate) => candidate.property);
+}
+
 export type PublicSearchResult = {
   criteria: BuyerCriterion[];
   candidates: Array<{ property: BuyerPropertySummary; score: number; reasons: string[] }>;
@@ -156,6 +162,9 @@ export class PublicCatalogRepository {
   private readonly client = createPublicCatalogClient();
 
   async search(brief: string): Promise<PublicSearchResult> {
+    if (process.env.RAMA_DEMO_MODE === "true") {
+      return { criteria: criterionList(brief), candidates: demoRows(brief) };
+    }
     const hard = extractHardConstraints(brief);
     let query = this.client.from("public_property_catalog").select("*")
       .order("price_aed", { ascending: true })
@@ -186,6 +195,9 @@ export class PublicCatalogRepository {
   }
 
   async getProperty(propertyId: string) {
+    if (process.env.RAMA_DEMO_MODE === "true") {
+      return demoProperties().find((property) => property.id === propertyId) ?? null;
+    }
     const { data, error } = await this.client.from("public_property_catalog").select("*").eq("id", propertyId).maybeSingle();
     if (error) throw new CatalogUnavailableError();
     return data ? mapProperty(data) : null;
@@ -194,6 +206,10 @@ export class PublicCatalogRepository {
   async getProperties(propertyIds: string[]) {
     const uniqueIds = [...new Set(propertyIds)].slice(0, 3);
     if (!uniqueIds.length) return [];
+    if (process.env.RAMA_DEMO_MODE === "true") {
+      const byId = new Map(demoProperties().map((property) => [property.id, property]));
+      return uniqueIds.map((id) => byId.get(id)).filter((property): property is BuyerPropertySummary => Boolean(property));
+    }
     const { data, error } = await this.client.from("public_property_catalog").select("*").in("id", uniqueIds);
     if (error) throw new CatalogUnavailableError();
     const byId = new Map((data ?? []).map((row) => [row.id, mapProperty(row)]));
@@ -202,6 +218,7 @@ export class PublicCatalogRepository {
 
   async getPaymentSchedule(propertyId: string) {
     if (!(await this.getProperty(propertyId))) return null;
+    if (process.env.RAMA_DEMO_MODE === "true") return null;
     const { data: plan, error } = await this.client.from("payment_plans")
       .select("id,name,description,currency,total_percentage,source_name,source_updated_at,published_at,version")
       .eq("property_id", propertyId)
@@ -222,6 +239,7 @@ export class PublicCatalogRepository {
 
   async getFloorPlans(propertyId: string) {
     if (!(await this.getProperty(propertyId))) return [];
+    if (process.env.RAMA_DEMO_MODE === "true") return [];
     const { data, error } = await this.client.from("floor_plans")
       .select("id,name,image_url,image_alt,beds,baths,area_sq_ft,source_name,source_updated_at,published_at,version,is_default")
       .eq("property_id", propertyId)
@@ -234,6 +252,7 @@ export class PublicCatalogRepository {
 
   async getDocuments(propertyId: string) {
     if (!(await this.getProperty(propertyId))) return [];
+    if (process.env.RAMA_DEMO_MODE === "true") return [];
     const { data, error } = await this.client.from("property_documents")
       .select("id,document_type,title,file_url,mime_type,source_name,source_updated_at,published_at,version")
       .eq("property_id", propertyId)
@@ -256,6 +275,7 @@ export class PublicCatalogRepository {
   }
 
   async getAreaContext(location: string) {
+    if (process.env.RAMA_DEMO_MODE === "true") return null;
     const slug = location.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const { data, error } = await this.client.from("content_entries")
       .select("id,title,summary,body,source_name,source_updated_at,published_at,version")

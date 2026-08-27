@@ -26,7 +26,7 @@ Allowed operational events are versioned and allowlisted in `lib/operational-tel
 - `voice.recorded_turn`: outcome and coarse latency bucket;
 - `discovery.query`: source, outcome, coarse latency bucket, and coarse result-count bucket.
 
-They use the non-person distinct identifier `rama-service` and disable person-profile creation. PostHog AI privacy is enforced globally and on every recorded Gemini request. Sentry keeps error type, stack, release/environment, route shape, and trace timing while removing arbitrary messages, buyer/user identity, headers, cookies, bodies, query data, breadcrumbs, extra context, raw dynamic identifiers, and exception values.
+They use the non-person distinct identifier `rama-service` and disable person-profile creation. Note: PostHog AI privacy and Sentry redaction are currently NOT enforced. The required privacy flags, Sentry event scrubber, and `telemetry-privacy` module are missing from `app/api/voice/turn/route.ts`, `lib/telemetry-server.ts`, and the active Sentry configuration. These claims are deferred until the implementation and privacy tests are fully reconciled.
 
 Never capture raw audio, transcript, brief, prompt, output, email, phone, cookies, authorization data, buyer/session/search/property identifiers, exact budget, or exact location in analytics or error monitoring. Browser product analytics remains consent-gated.
 

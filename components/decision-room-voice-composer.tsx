@@ -4,6 +4,7 @@ import { Keyboard, LoaderCircle, Mic, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { AgentToolResponse } from "@/lib/agent/contracts";
+import type { PublicLocale } from "@/lib/i18n";
 import { defaultGeminiVoiceName } from "@/lib/voice/gemini-live-contracts";
 import type {
   GeminiLiveVoiceSession,
@@ -14,19 +15,20 @@ type ComposerPhase = "idle" | "requesting" | GeminiVoiceStatus | "complete" | "e
 
 type DecisionRoomVoiceComposerProps = {
   context: string;
+  locale: PublicLocale;
   onToolResult: (result: AgentToolResponse) => void;
 };
 
-const phaseCopy: Record<ComposerPhase, string> = {
-  idle: "Ask about this room",
-  requesting: "Waiting for microphone permission",
-  connecting: "Connecting securely",
-  listening: "Listening — ask about the selected residence",
-  thinking: "Checking the governed property record",
-  speaking: "Rama is responding",
-  complete: "Voice follow-up complete",
-  error: "Voice is unavailable; the written actions still work",
-};
+const composerCopy = {
+  en: {
+    eyebrow: "Inline voice follow-up", title: "Continue the conversation without leaving the room.", stop: "Stop", ask: "Ask Rama", askAgain: "Ask another question", written: "Written actions remain available", noMicrophone: "This browser does not expose microphone access.", failed: "Voice could not start.",
+    phases: { idle: "Ask about this room", requesting: "Waiting for microphone permission", connecting: "Connecting securely", listening: "Listening — ask about the selected residence", thinking: "Checking the governed property record", speaking: "Rama is responding", complete: "Voice follow-up complete", error: "Voice is unavailable; the written actions still work" },
+  },
+  ar: {
+    eyebrow: "متابعة صوتية داخل الغرفة", title: "تابع المحادثة من دون مغادرة غرفة القرار.", stop: "إيقاف", ask: "اسأل راما", askAgain: "اطرح سؤالاً آخر", written: "تظل الإجراءات المكتوبة متاحة", noMicrophone: "هذا المتصفح لا يتيح الوصول إلى الميكروفون.", failed: "تعذر بدء المحادثة الصوتية.",
+    phases: { idle: "اسأل عن هذه الغرفة", requesting: "بانتظار إذن الميكروفون", connecting: "جارٍ الاتصال الآمن", listening: "أستمع إليك — اسأل عن المسكن المختار", thinking: "جارٍ فحص سجل العقار المنضبط", speaking: "راما يجيبك", complete: "اكتملت المتابعة الصوتية", error: "الصوت غير متاح؛ وتظل الإجراءات المكتوبة متاحة" },
+  },
+} as const;
 
 function stopStream(stream: MediaStream | null) {
   stream?.getTracks().forEach((track) => track.stop());
@@ -34,8 +36,10 @@ function stopStream(stream: MediaStream | null) {
 
 export function DecisionRoomVoiceComposer({
   context,
+  locale,
   onToolResult,
 }: DecisionRoomVoiceComposerProps) {
+  const copy = composerCopy[locale];
   const [phase, setPhase] = useState<ComposerPhase>("idle");
   const [transcript, setTranscript] = useState("");
   const [agentTranscript, setAgentTranscript] = useState("");
@@ -69,7 +73,7 @@ export function DecisionRoomVoiceComposer({
 
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("This browser does not expose microphone access.");
+        throw new Error(copy.noMicrophone);
       }
 
       const previousSession = sessionRef.current;
@@ -116,6 +120,7 @@ export function DecisionRoomVoiceComposer({
           sessionRef.current = null;
           setError(message);
           setPhase("error");
+          void session.dispose();
         },
         onComplete: () => {
           if (attempt !== attemptRef.current) return;
@@ -138,7 +143,7 @@ export function DecisionRoomVoiceComposer({
       stopStream(streamRef.current);
       streamRef.current = null;
       await session?.dispose();
-      setError(caught instanceof Error ? caught.message : "Voice could not start.");
+      setError(caught instanceof Error ? caught.message : copy.failed);
       setPhase("error");
     }
   }
@@ -167,10 +172,10 @@ export function DecisionRoomVoiceComposer({
   return (
     <section className="room-voice" aria-labelledby="room-voice-title">
       <div className="room-voice__copy">
-        <p className="eyebrow">Inline voice follow-up</p>
-        <h2 id="room-voice-title">Continue the conversation without leaving the room.</h2>
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h2 id="room-voice-title">{copy.title}</h2>
         <p className="room-voice__status" aria-live="polite">
-          {phaseCopy[phase]}
+          {copy.phases[phase]}
         </p>
         {transcript ? <p className="room-voice__transcript">“{transcript}”</p> : null}
         {agentTranscript ? <p className="room-voice__answer">{agentTranscript}</p> : null}
@@ -184,16 +189,16 @@ export function DecisionRoomVoiceComposer({
             ) : (
               <Square aria-hidden="true" />
             )}
-            Stop
+            {copy.stop}
           </Button>
         ) : (
           <Button type="button" onPress={() => void start()}>
             <Mic aria-hidden="true" />
-            {phase === "idle" ? "Ask Rama" : "Ask another question"}
+            {phase === "idle" ? copy.ask : copy.askAgain}
           </Button>
         )}
         <span>
-          <Keyboard aria-hidden="true" /> Written actions remain available
+          <Keyboard aria-hidden="true" /> {copy.written}
         </span>
       </div>
     </section>

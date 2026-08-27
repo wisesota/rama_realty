@@ -2,17 +2,19 @@
 
 import { Mic } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { VoiceExperienceState } from "@/lib/voice/types";
+import type { PublicLocale } from "@/lib/i18n";
 
-const LottiePlayer = dynamic(
-  () => import("lottie-react").then((mod) => mod.Lottie),
+const LottieVisualizer = dynamic(
+  () => import("@/components/lottie-visualizer").then((mod) => mod.LottieVisualizer),
   { ssr: false },
 );
 
 type VoiceSignalProps = {
   state: VoiceExperienceState;
+  locale: PublicLocale;
   onPress: () => void;
 };
 
@@ -41,18 +43,31 @@ function VoiceSignalFallback() {
   );
 }
 
-function signalCopy(state: VoiceExperienceState) {
+function signalCopy(state: VoiceExperienceState, locale: PublicLocale) {
+  if (locale === "ar") {
+    switch (state.phase) {
+      case "requesting": return "اسمح بالوصول إلى الميكروفون — اضغط للإيقاف";
+      case "connecting": return "جارٍ الاتصال الآمن — اضغط للإيقاف";
+      case "listening": return "أستمع إليك — اضغط للإنهاء";
+      case "thinking": return "جارٍ فهم متطلباتك — اضغط للإيقاف";
+      case "speaking": return "راما يجيبك — اضغط للإيقاف";
+      case "complete": return "المتطلبات جاهزة — تحدّث مجددًا";
+      case "error": return "الصوت غير متاح — حاول مجددًا";
+      default: return "اضغط للتحدث مع راما";
+    }
+  }
+
   switch (state.phase) {
     case "requesting":
-      return "Allow microphone access";
+      return "Allow microphone access — tap to stop";
     case "connecting":
-      return "Connecting securely";
+      return "Connecting securely — tap to stop";
     case "listening":
       return "Listening — tap to finish";
     case "thinking":
-      return "Understanding your brief";
+      return "Understanding your brief — tap to stop";
     case "speaking":
-      return "Rama is responding";
+      return "Rama is responding — tap to stop";
     case "complete":
       return "Brief ready — speak again";
     case "error":
@@ -62,42 +77,46 @@ function signalCopy(state: VoiceExperienceState) {
   }
 }
 
-function visibleSignalCopy(state: VoiceExperienceState) {
-  return state.phase === "idle" ? "Speak, and Rama listens." : signalCopy(state);
+function visibleSignalCopy(state: VoiceExperienceState, locale: PublicLocale) {
+  return state.phase === "idle"
+    ? locale === "ar" ? "تحدّث، وراما يستمع." : "Speak, and Rama listens."
+    : signalCopy(state, locale);
 }
 
-export function VoiceSignal({ state, onPress }: VoiceSignalProps) {
+export const VoiceSignal = forwardRef<HTMLButtonElement, VoiceSignalProps>(function VoiceSignal(
+  { state, locale, onPress },
+  ref
+) {
   const reducedMotion = useReducedMotion();
   const active = ["requesting", "connecting", "listening", "thinking", "speaking"].includes(
     state.phase,
   );
 
-  const accessibleLabel = signalCopy(state);
-  const visibleLabel = visibleSignalCopy(state);
+  const accessibleLabel = signalCopy(state, locale);
+  const visibleLabel = visibleSignalCopy(state, locale);
 
   return (
     <div className="voice-signal-wrap" data-active={active} data-phase={state.phase}>
       <Button
+        ref={ref}
         className="voice-signal"
         type="button"
         variant="ghost"
         aria-label={accessibleLabel}
+        aria-pressed={active}
         aria-expanded={state.phase !== "idle"}
         aria-controls={state.phase !== "idle" ? "voice-conversation-panel" : undefined}
         onPress={onPress}
       >
-        <VoiceSignalFallback />
-        {!reducedMotion && active ? (
-          <LottiePlayer
-            key={state.phase}
+        {active && !reducedMotion ? (
+          <LottieVisualizer
             src="/lottie/ai.json"
-            autoplay={active}
-            loop={false}
-            segment={[0, 150]}
+            active={active}
             className="voice-signal__lottie"
-            aria-hidden="true"
           />
-        ) : null}
+        ) : (
+          <VoiceSignalFallback />
+        )}
         <span className="voice-signal__affordance" aria-hidden="true">
           <Mic />
         </span>
@@ -109,4 +128,4 @@ export function VoiceSignal({ state, onPress }: VoiceSignalProps) {
       <span className="voice-signal__axis" aria-hidden="true" />
     </div>
   );
-}
+});

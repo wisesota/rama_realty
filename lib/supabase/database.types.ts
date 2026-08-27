@@ -363,6 +363,367 @@ export type Database = {
           },
         ]
       }
+      advisor_evidence_feedback: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string
+          id: string
+          inquiry_id: string
+          notes: string | null
+          organization_id: string
+          outcome: string | null
+          property_id: string | null
+          search_run_id: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by: string
+          id?: string
+          inquiry_id: string
+          notes?: string | null
+          organization_id: string
+          outcome?: string | null
+          property_id?: string | null
+          search_run_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          inquiry_id?: string
+          notes?: string | null
+          organization_id?: string
+          outcome?: string | null
+          property_id?: string | null
+          search_run_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advisor_evidence_feedback_inquiry_id_fkey"
+            columns: ["inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "inquiries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_evidence_feedback_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_evidence_feedback_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_evidence_feedback_search_run_id_fkey"
+            columns: ["search_run_id"]
+            isOneToOne: false
+            referencedRelation: "search_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_ledger_events: {
+        Row: {
+          buyer_session_id: string
+          event_key: string
+          event_type: string
+          id: string
+          occurred_at: string
+          payload: Json
+          schema_version: string
+          search_run_id: string
+          summary: string
+        }
+        Insert: {
+          buyer_session_id: string
+          event_key: string
+          event_type: string
+          id?: string
+          occurred_at?: string
+          payload?: Json
+          schema_version?: string
+          search_run_id: string
+          summary: string
+        }
+        Update: {
+          buyer_session_id?: string
+          event_key?: string
+          event_type?: string
+          id?: string
+          occurred_at?: string
+          payload?: Json
+          schema_version?: string
+          search_run_id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_ledger_events_buyer_session_id_fkey"
+            columns: ["buyer_session_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_ledger_events_search_run_id_fkey"
+            columns: ["search_run_id"]
+            isOneToOne: false
+            referencedRelation: "search_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evidence_assertions: {
+        Row: {
+          as_seen_value: Json | null
+          assertion_key: string
+          buyer_session_id: string
+          content_hash: string
+          created_at: string
+          field: string
+          id: string
+          observed_at: string | null
+          property_id: string | null
+          schema_version: string
+          search_run_id: string
+          source_name: string | null
+          state: string
+        }
+        Insert: {
+          as_seen_value?: Json | null
+          assertion_key: string
+          buyer_session_id: string
+          content_hash: string
+          created_at?: string
+          field: string
+          id?: string
+          observed_at?: string | null
+          property_id?: string | null
+          schema_version?: string
+          search_run_id: string
+          source_name?: string | null
+          state: string
+        }
+        Update: {
+          as_seen_value?: Json | null
+          assertion_key?: string
+          buyer_session_id?: string
+          content_hash?: string
+          created_at?: string
+          field?: string
+          id?: string
+          observed_at?: string | null
+          property_id?: string | null
+          schema_version?: string
+          search_run_id?: string
+          source_name?: string | null
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_assertions_buyer_session_id_fkey"
+            columns: ["buyer_session_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_assertions_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_assertions_search_run_id_fkey"
+            columns: ["search_run_id"]
+            isOneToOne: false
+            referencedRelation: "search_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_reconciliation_events: {
+        Row: {
+          created_at: string
+          details: Json
+          event_type: string
+          id: string
+          provider_source_id: string
+          resolved_at: string | null
+          severity: string
+          source_record_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          event_type: string
+          id?: string
+          provider_source_id: string
+          resolved_at?: string | null
+          severity: string
+          source_record_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          event_type?: string
+          id?: string
+          provider_source_id?: string
+          resolved_at?: string | null
+          severity?: string
+          source_record_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_reconciliation_events_provider_source_id_fkey"
+            columns: ["provider_source_id"]
+            isOneToOne: false
+            referencedRelation: "provider_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_records_staging: {
+        Row: {
+          content_hash: string
+          id: string
+          media_rights_confirmed: boolean
+          normalized_payload: Json | null
+          permit_number: string | null
+          provider_source_id: string
+          publication_ends_at: string
+          published_at: string | null
+          published_property_id: string | null
+          raw_payload: Json
+          received_at: string
+          source_observed_at: string
+          source_record_id: string
+          status: string
+          validated_at: string | null
+          validation_errors: Json
+        }
+        Insert: {
+          content_hash: string
+          id?: string
+          media_rights_confirmed?: boolean
+          normalized_payload?: Json | null
+          permit_number?: string | null
+          provider_source_id: string
+          publication_ends_at: string
+          published_at?: string | null
+          published_property_id?: string | null
+          raw_payload: Json
+          received_at?: string
+          source_observed_at: string
+          source_record_id: string
+          status?: string
+          validated_at?: string | null
+          validation_errors?: Json
+        }
+        Update: {
+          content_hash?: string
+          id?: string
+          media_rights_confirmed?: boolean
+          normalized_payload?: Json | null
+          permit_number?: string | null
+          provider_source_id?: string
+          publication_ends_at?: string
+          published_at?: string | null
+          published_property_id?: string | null
+          raw_payload?: Json
+          received_at?: string
+          source_observed_at?: string
+          source_record_id?: string
+          status?: string
+          validated_at?: string | null
+          validation_errors?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_records_staging_provider_source_id_fkey"
+            columns: ["provider_source_id"]
+            isOneToOne: false
+            referencedRelation: "provider_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_records_staging_published_property_id_fkey"
+            columns: ["published_property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_sources: {
+        Row: {
+          attribution: string
+          created_at: string
+          enabled: boolean
+          external_provider_id: string
+          geography: string[]
+          id: string
+          legal_owner: string | null
+          maximum_freshness_hours: number
+          organization_id: string
+          publication_rights_status: string
+          rights_expires_at: string | null
+          rights_reviewed_at: string | null
+          source_name: string
+          updated_at: string
+        }
+        Insert: {
+          attribution: string
+          created_at?: string
+          enabled?: boolean
+          external_provider_id: string
+          geography?: string[]
+          id?: string
+          legal_owner?: string | null
+          maximum_freshness_hours?: number
+          organization_id: string
+          publication_rights_status?: string
+          rights_expires_at?: string | null
+          rights_reviewed_at?: string | null
+          source_name: string
+          updated_at?: string
+        }
+        Update: {
+          attribution?: string
+          created_at?: string
+          enabled?: boolean
+          external_provider_id?: string
+          geography?: string[]
+          id?: string
+          legal_owner?: string | null
+          maximum_freshness_hours?: number
+          organization_id?: string
+          publication_rights_status?: string
+          rights_expires_at?: string | null
+          rights_reviewed_at?: string | null
+          source_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_sources_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       developments: {
         Row: {
           community: string
@@ -920,6 +1281,7 @@ export type Database = {
           organization_id: string | null
           price_aed: number
           property_type: string
+          provider_source_id: string | null
           publication_ends_at: string | null
           publication_status: string
           published_at: string | null
@@ -957,6 +1319,7 @@ export type Database = {
           organization_id?: string | null
           price_aed: number
           property_type?: string
+          provider_source_id?: string | null
           publication_ends_at?: string | null
           publication_status?: string
           published_at?: string | null
@@ -994,6 +1357,7 @@ export type Database = {
           organization_id?: string | null
           price_aed?: number
           property_type?: string
+          provider_source_id?: string | null
           publication_ends_at?: string | null
           publication_status?: string
           published_at?: string | null
@@ -1021,6 +1385,13 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "properties_provider_source_id_fkey"
+            columns: ["provider_source_id"]
+            isOneToOne: false
+            referencedRelation: "provider_sources"
             referencedColumns: ["id"]
           },
         ]
@@ -1208,6 +1579,7 @@ export type Database = {
       search_runs: {
         Row: {
           buyer_session_id: string | null
+          confirmation_key: string | null
           conversation_id: string | null
           correlation_id: string
           created_at: string
@@ -1222,6 +1594,7 @@ export type Database = {
         }
         Insert: {
           buyer_session_id?: string | null
+          confirmation_key?: string | null
           conversation_id?: string | null
           correlation_id?: string
           created_at?: string
@@ -1236,6 +1609,7 @@ export type Database = {
         }
         Update: {
           buyer_session_id?: string | null
+          confirmation_key?: string | null
           conversation_id?: string | null
           correlation_id?: string
           created_at?: string
@@ -1499,6 +1873,40 @@ export type Database = {
       }
     }
     Functions: {
+      create_advisor_evidence_feedback: {
+        Args: {
+          p_actor_id: string
+          p_category: string
+          p_inquiry_id: string
+          p_notes: string
+          p_outcome: string
+        }
+        Returns: string
+      }
+      append_buyer_ledger_event: {
+        Args: {
+          p_event_type: string
+          p_idempotency_key: string
+          p_property_id: string | null
+          p_search_run_id: string
+          p_summary: string
+          p_token_hash: string
+        }
+        Returns: string
+      }
+      read_buyer_ledger_events: {
+        Args: {
+          p_search_run_id: string
+          p_token_hash: string
+        }
+        Returns: {
+          event_type: string
+          id: string
+          occurred_at: string
+          payload: Json
+          summary: string
+        }[]
+      }
       bootstrap_staff_workspace: {
         Args: { p_name: string; p_slug: string }
         Returns: string
@@ -1515,6 +1923,77 @@ export type Database = {
           remaining: number
           reset_at: string
         }[]
+      }
+      complete_buyer_deletion_challenge: {
+        Args: {
+          p_authorization_hash: string
+          p_challenge_hash: string
+          p_session_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      claim_processor_deletion_jobs: {
+        Args: { p_lease_seconds?: number; p_limit?: number; p_worker_id: string }
+        Returns: {
+          attempt_count: number
+          destination: string
+          id: number
+          processor_record_id: string | null
+          request_id: string
+          resource_reference: string
+          resource_type: string
+          lease_token: string
+          lease_expires_at: string
+        }[]
+      }
+      complete_processor_deletion_job: {
+        Args: {
+          p_job_id: number
+          p_lease_token: string
+          p_outcome: string
+          p_processor_record_id?: string | null
+          p_worker_id: string
+        }
+        Returns: boolean
+      }
+      create_buyer_deletion_challenge: {
+        Args: { p_challenge_hash: string; p_user_id: string }
+        Returns: string
+      }
+      delete_anonymous_buyer_data: {
+        Args: { p_confirmation: string; p_token_hash: string }
+        Returns: Json
+      }
+      delete_authenticated_buyer_data: {
+        Args: {
+          p_authorization_hash: string
+          p_confirmation: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      enforce_buyer_data_retention: {
+        Args: { p_apply?: boolean; p_as_of?: string }
+        Returns: Json
+      }
+      export_anonymous_buyer_data: {
+        Args: { p_token_hash: string }
+        Returns: Json
+      }
+      export_authenticated_buyer_data: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      fail_processor_deletion_job: {
+        Args: {
+          p_error_code: string
+          p_job_id: number
+          p_lease_token: string
+          p_retry_delay_seconds?: number
+          p_worker_id: string
+        }
+        Returns: boolean
       }
       create_buyer_inquiry: {
         Args: {
@@ -1538,6 +2017,8 @@ export type Database = {
         Args: {
           p_candidates: Json
           p_correlation_id: string
+          p_idempotency_key: string
+          p_write_evidence_v2?: boolean
           p_model?: string
           p_normalized_criteria: Json
           p_raw_brief: string
@@ -1546,6 +2027,10 @@ export type Database = {
           p_ttl_seconds?: number
         }
         Returns: Json
+      }
+      publish_validated_provider_record: {
+        Args: { p_staging_id: string }
+        Returns: string
       }
       rotate_buyer_session: {
         Args: {

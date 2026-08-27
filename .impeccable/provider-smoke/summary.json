@@ -1,0 +1,15 @@
+{
+  "targetRepo": "C:\\rama-agent",
+  "bundlePath": "C:\\Users\\rtf70\\AppData\\Local\\Temp\\rama-impeccable-audit-93df3815152544b4969c91f594938058\\dist\\universal.zip",
+  "providers": [
+    "codex"
+  ],
+  "results": [
+    {
+      "name": "fatal",
+      "pass": false,
+      "classification": "fatal",
+      "detail": "universal bundle does not exist: C:\\Users\\rtf70\\AppData\\Local\\Temp\\rama-impeccable-audit-93df3815152544b4969c91f594938058\\dist\\universal.zip"
+    }
+  ]
+}

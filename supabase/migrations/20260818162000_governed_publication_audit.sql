@@ -12,6 +12,7 @@ declare
 begin
   if old.publication_status = 'published'
     and new.publication_status = 'published'
+    and coalesce(pg_catalog.current_setting('rama.provider_publication', true), 'off') <> 'on'
     and (
       old.name,
       old.location,

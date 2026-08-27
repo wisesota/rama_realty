@@ -8,7 +8,7 @@ try {
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-const secret = process.env.RATE_LIMIT_SECRET || process.env.GEMINI_API_KEY;
+const secret = process.env.RATE_LIMIT_SECRET;
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 if (!url || !publishableKey || !secret || !supabaseSecretKey) {
@@ -83,7 +83,7 @@ async function main() {
   }
   for (const table of serviceOnlyTables) {
     const row = postureRows.find((candidate) => candidate.table_name === table);
-    if (!row || row.rls_enabled !== true || row.anon_select === true) {
+    if (!row || row.rls_enabled !== true || row.anon_select !== false) {
       throw new Error(`Operational security posture is unsafe for ${table}.`);
     }
   }

@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     p_message: message,
     p_consent_purpose: "Advisor follow-up about the selected Rama property and buyer brief",
     p_policy_version: "buyer-handoff-v1",
-    p_destination: "Rama Realty CRM",
+    p_destination: "Rama CRM",
     p_idempotency_key: idempotencyKey,
     p_correlation_id: correlationId,
   });

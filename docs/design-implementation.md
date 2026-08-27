@@ -1,7 +1,10 @@
-# Rama Realty: Vellaro Design Implementation
+# [HISTORICAL] Rama Realty: Vellaro Design Implementation
+
+> [!WARNING]
+> This document is historical. The active design direction is the "Nordic Decision Desk" as defined in `docs/designs/nordic-decision-desk-redesign-brief.md`.
 
 ## Overview
-This document details the transition from the legacy "Nordic Lagom" minimalist aesthetic to the high-contrast, editorial "Vellaro" art direction. The redesign aligns with the authorized pivot toward a premium, institutional-grade luxury real estate interface. 
+This document details the transition from the legacy "Nordic Lagom" minimalist aesthetic to the high-contrast, editorial "Vellaro" art direction. It is retained for historical reference of the token architecture it introduced, but the UI is now aligned with the Nordic Decision Desk requirements.
 
 The core of this implementation relies on **Tailwind CSS utilities** coupled with an expanded design token architecture in `app/globals.css`, fully eliminating the previous reliance on custom, tangled CSS classes (`.vellaro-*` and `.realtifye-*`).
 
@@ -84,4 +87,4 @@ To achieve the Vellaro-style atmospheric depth over the main imagery, a custom l
 - **Linting:** Modified files (`landing-page.tsx`, `archivanta-communities.tsx`, `archivanta-projects.tsx`) pass ESLint strictly.
 - **Build Status:** `pnpm build` completes successfully.
 
-This architecture ensures the UI is entirely scalable, avoids CSS specificity conflicts, and strictly enforces the approved Vellaro art direction through centralized tokens.
+This architecture ensures the UI is entirely scalable and avoids CSS specificity conflicts. Its token system remains the foundation of the active Nordic Decision Desk implementation.

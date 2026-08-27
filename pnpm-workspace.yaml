@@ -1,21 +1,19 @@
-packages:
-  - .
-
 overrides:
-  '@storybook/nextjs>sharp': 0.35.3
+  '@storybook/addon-actions>uuid': 11.1.1
 
 allowBuilds:
-  '@google/genai': false
+  # Reviewed native/build toolchain dependencies required by Sentry, Tailwind,
+  # Storybook/Vite, Next image optimization, and module resolution.
   '@sentry/cli': true
   '@tailwindcss/oxide': true
-  core-js: false
-  core-js-pure: true
   esbuild: true
-  protobufjs: false
   sharp: true
   unrs-resolver: true
-
-onlyBuiltDependencies:
-  - "@sentry/cli"
-  - "@tailwindcss/oxide"
-  - "unrs-resolver"
+  # Its install hook is not required for application functionality.
+  core-js-pure: false
+  # The package's install hook is a no-op and is not needed at runtime.
+  '@google/genai': false
+  core-js: false
+  protobufjs: false
+  # Required by Impeccable's rendered URL audits; downloads its managed browser.
+  puppeteer: true

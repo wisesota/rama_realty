@@ -19,6 +19,12 @@ const config: StorybookConfig = {
   viteFinal: async (config) => {
     config.plugins = config.plugins || [];
     config.plugins.push(tsconfigPaths());
+    config.optimizeDeps = config.optimizeDeps || {};
+    config.optimizeDeps.include = [
+      ...(config.optimizeDeps.include || []),
+      'motion/react',
+      'next/dist/shared/lib/app-router-context.shared-runtime',
+    ];
     return config;
   },
 };

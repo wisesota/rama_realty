@@ -154,6 +154,8 @@ export class GeminiLiveVoiceSession {
   private reconnectAttempts = 0;
   private reconnecting = false;
   private connectionGeneration = 0;
+  private disposed = false;
+  private startAbort: AbortController | null = null;
   private toolRequests = new Map<string, AbortController>();
 
   constructor(callbacks: GeminiLiveSessionCallbacks) {
@@ -161,17 +163,29 @@ export class GeminiLiveVoiceSession {
   }
 
   async start(stream: MediaStream, voiceName: GeminiVoiceName, initialContext?: string) {
+    this.assertActive();
     this.inputStream = stream;
     this.callbacks.onStatus("connecting");
     await this.player.prepare();
+    this.assertActive();
 
-    const tokenResponse = await fetch("/api/voice/token", {
-      method: "POST",
-      headers: { Accept: "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify({ voiceName }),
-      cache: "no-store",
-    });
+    const controller = new AbortController();
+    this.startAbort = controller;
+    let tokenResponse: Response;
+    try {
+      tokenResponse = await fetch("/api/voice/token", {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ voiceName }),
+        cache: "no-store",
+        signal: controller.signal,
+      });
+    } finally {
+      if (this.startAbort === controller) this.startAbort = null;
+    }
+    this.assertActive();
     const tokenPayload: unknown = await tokenResponse.json();
+    this.assertActive();
 
     if (!tokenResponse.ok) {
       const message = (tokenPayload as Partial<GeminiLiveTokenError>).error;
@@ -183,6 +197,7 @@ export class GeminiLiveVoiceSession {
     this.model = tokenPayload.model;
     this.voiceName = voiceName;
     await this.connectSession();
+    this.assertActive();
 
     if (initialContext?.trim()) {
       this.session?.sendClientContent({
@@ -192,6 +207,7 @@ export class GeminiLiveVoiceSession {
     }
 
     await this.startAudioCapture(stream);
+    this.assertActive();
     this.callbacks.onStatus("listening");
     this.sessionTimer = setTimeout(
       () => this.fail("The eight-minute voice-session limit was reached."),
@@ -200,7 +216,7 @@ export class GeminiLiveVoiceSession {
   }
 
   async endInput() {
-    if (this.inputEnded) return;
+    if (this.disposed || this.inputEnded) return;
     this.inputEnded = true;
     await this.stopAudioCapture();
     this.session?.sendRealtimeInput({ audioStreamEnd: true });
@@ -208,8 +224,12 @@ export class GeminiLiveVoiceSession {
   }
 
   async dispose() {
+    if (this.disposed) return;
+    this.disposed = true;
     this.intentionalClose = true;
     this.connectionGeneration += 1;
+    this.startAbort?.abort();
+    this.startAbort = null;
     for (const controller of this.toolRequests.values()) controller.abort();
     this.toolRequests.clear();
     if (this.sessionTimer) clearTimeout(this.sessionTimer);
@@ -221,6 +241,7 @@ export class GeminiLiveVoiceSession {
   }
 
   private async connectSession() {
+    this.assertActive();
     const generation = ++this.connectionGeneration;
     let configured = false;
     let rejectEarly!: (reason: Error) => void;
@@ -284,7 +305,7 @@ export class GeminiLiveVoiceSession {
 
     try {
       const session = await Promise.race([connecting, earlyFailure]);
-      if (generation !== this.connectionGeneration) {
+      if (this.disposed || generation !== this.connectionGeneration) {
         session.close();
         throw new Error("Gemini Live connection was superseded.");
       }
@@ -326,15 +347,19 @@ export class GeminiLiveVoiceSession {
   }
 
   private async startAudioCapture(stream: MediaStream) {
-    this.inputContext = new AudioContext();
-    await this.inputContext.audioWorklet.addModule("/audio/pcm-processor.js");
-    if (this.inputContext.state === "suspended") await this.inputContext.resume();
+    this.assertActive();
+    const context = new AudioContext();
+    this.inputContext = context;
+    await context.audioWorklet.addModule("/audio/pcm-processor.js");
+    this.assertActive();
+    if (context.state === "suspended") await context.resume();
+    this.assertActive();
 
-    this.inputSource = this.inputContext.createMediaStreamSource(stream);
-    this.inputWorklet = new AudioWorkletNode(this.inputContext, "rama-pcm-processor", {
+    this.inputSource = context.createMediaStreamSource(stream);
+    this.inputWorklet = new AudioWorkletNode(context, "rama-pcm-processor", {
       processorOptions: { targetSampleRate: 16_000, chunkDurationMs: 80 },
     });
-    this.silentGain = this.inputContext.createGain();
+    this.silentGain = context.createGain();
     this.silentGain.gain.value = 0;
     this.inputWorklet.port.onmessage = (event: MessageEvent<Float32Array>) => {
       if (!this.session || this.inputEnded) return;
@@ -348,7 +373,11 @@ export class GeminiLiveVoiceSession {
 
     this.inputSource.connect(this.inputWorklet);
     this.inputWorklet.connect(this.silentGain);
-    this.silentGain.connect(this.inputContext.destination);
+    this.silentGain.connect(context.destination);
+  }
+
+  private assertActive() {
+    if (this.disposed) throw new DOMException("Gemini Live session was disposed.", "AbortError");
   }
 
   private async stopAudioCapture() {
@@ -390,14 +419,21 @@ export class GeminiLiveVoiceSession {
       this.callbacks.onStatus(this.inputEnded ? "thinking" : "listening");
     }
 
-    const finalInput = content.inputTranscription?.text;
-    if (finalInput) {
-      this.currentTranscript = mergeTranscript(this.currentTranscript, finalInput);
+    const inputText = content.inputTranscription?.text;
+    // Gemini's v2 preview briefly exposed interim transcription separately.
+    // Keep the runtime fallback while compiling against the PostHog-supported v1 SDK.
+    const interimInput = (
+      content as typeof content & {
+        interimInputTranscription?: { text?: string };
+      }
+    ).interimInputTranscription?.text;
+    if (inputText) {
+      this.currentTranscript = mergeTranscript(this.currentTranscript, inputText);
       this.callbacks.onTranscript(this.currentTranscript);
       if (content.inputTranscription?.finished) this.finalizeTranscript();
-    } else if (content.interimInputTranscription?.text) {
+    } else if (interimInput) {
       this.callbacks.onTranscript(
-        mergeTranscript(this.currentTranscript, content.interimInputTranscription.text),
+        mergeTranscript(this.currentTranscript, interimInput),
       );
     }
 

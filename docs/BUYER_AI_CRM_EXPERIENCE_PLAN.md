@@ -318,7 +318,7 @@ Do not use Supabase Realtime in the first vertical slice. Every search and dossi
 
 ## Buyer session and CRM handoff
 
-The landing remains usable without buyer login. A dedicated `buyer_sessions` table stores only an HMAC/hash of a server-generated 256-bit token, expiry, revocation, and minimal lifecycle metadata. The browser receives a `__Host-` cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, and no `Domain`. Search runs, candidates, conversations, tool runs, shortlists, and inquiries bind to that session by foreign key. The URL reference alone never authorizes a run; nonexistent and foreign runs return the same response. Tokens rotate on login, handoff, and privilege change.
+The landing remains usable without buyer login. A dedicated `buyer_sessions` table stores only an HMAC/hash of a server-generated 256-bit token (with a 7200-second / 2-hour lifespan), expiry, revocation, and minimal lifecycle metadata. The browser receives a `__Host-` cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, and no `Domain`. Search runs, candidates, conversations, tool runs, shortlists, and inquiries bind to that session by foreign key. The URL reference alone never authorizes a run; nonexistent and foreign runs return the same response. Tokens rotate on login, handoff, and privilege change.
 
 The first search transaction creates or resolves the session, persists the run and versioned candidates, and only then returns `/discover/{searchRunId}`. If persistence fails, Rama may show an explicitly temporary result in the current page but must not claim it can be restored. Public browser roles lose direct DML on operational tables; constrained server routes/RPCs derive timestamps, correlation IDs, tenant, status, and ownership.
 
@@ -390,7 +390,7 @@ Before the CRM and buyer AI are linked for production:
 - deeply validate per-tool ingress, every result block, nested entity, string/array limit, and request body size;
 - keep missing `Origin` fail-closed in production and retain shared server-side rate limits;
 - add authoritative-proxy IP handling, per-session/concurrency/daily/project Gemini budgets and circuit breakers;
-- remain on Supabase Free without leaked-password protection; retain strong application password validation and define a staff MFA/step-up policy;
+- remain on Supabase Free but require leaked-password protection for production; retain strong application password validation and define a staff MFA/step-up policy;
 - revoke browser DML on operational/audit tables and expose only narrow transactional routes/RPCs;
 - persist only allowlisted redacted tool summaries: normalized non-PII criteria, property IDs, tool name, timing, result class, and correlation ID; never log audio, tokens, raw briefs, transcripts, or tool arguments wholesale;
 - require consent before inquiry creation or CRM export;
@@ -421,7 +421,7 @@ Operational logs use IDs, normalized classifications, timings, and result classe
 - Apply and verify the pending hosted migrations, then add public-fact immutability, versioned compare-and-swap publication, freshness/publication expiry, same-tenant child enforcement, installment-sum validation, inquiry immutability, and browser-DML revocation.
 - Add `buyer_sessions` plus ownership foreign keys and property-version/source snapshots for search candidates.
 - Add related-record provenance/version/effective/default fields and a deterministic public identifier strategy.
-- Add audited owner/admin staff invitations or a documented privileged provisioning runbook; keep leaked-password protection out of scope under the Supabase Free-plan decision and define MFA/step-up policy.
+- Add audited owner/admin staff invitations or a documented privileged provisioning runbook; require leaked-password protection for production and define MFA/step-up policy.
 - Make the hosted anon/buyer/staff/cross-tenant/service-role identity matrix, clock-based expiry, concurrent publication, and inquiry transition suite blocking.
 
 Exit gate: direct Data API writes cannot bypass publication or operational workflows, stale facts disappear automatically, and every stored guest/run/inquiry has enforceable ownership.

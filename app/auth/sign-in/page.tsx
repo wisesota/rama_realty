@@ -22,7 +22,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <main className="auth-page">
       <section className="auth-intro" aria-labelledby="sign-in-title">
-        <Link href="/" aria-label="Return to Rama Realty">
+        <Link href="/" aria-label="Return to Rama">
           <Logo />
         </Link>
         <div>
@@ -52,7 +52,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         ) : null}
         <SignInForm nextPath={nextPath} />
         <p className="auth-legal">
-          Access is restricted to authorized Rama Realty administrators. Activity
+          Access is restricted to authorized Rama administrators. Activity
           may be logged for security and audit purposes.
         </p>
       </section>

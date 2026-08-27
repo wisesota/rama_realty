@@ -18,7 +18,7 @@ const envelope: BuyerDecisionEnvelopeV1 = {
   searchRunId: "2c84ec06-06db-4ea7-a3b9-9c9a9a1ae8c9",
   conversationId: "0d7f79db-0033-4f58-9364-682359223f8a",
   status: "empty",
-  brief: { original: "Dubai apartment", normalized: "Dubai", criteria: [], source: "text" },
+  brief: { original: "Dubai apartment", normalized: "Dubai", criteria: [] },
   entities: { properties: {} },
   blocks: [{ type: "no_results", title: "No exact residence yet", suggestions: ["Add a budget"] }],
   sourceSummary: { publishedCount: 0, illustrativeCount: 0, staleCount: 0, label: "0 illustrative residences" },

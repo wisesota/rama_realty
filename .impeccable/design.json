@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-24T12:59:21Z",
+  "title": "Design System: Rama Decision Architecture",
+  "extensions": {
+    "colorMeta": {
+      "warm-paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#f5f3ed",
+        "tonalRamp": ["oklch(15% 0.018 95)", "oklch(26% 0.018 95)", "oklch(38% 0.018 95)", "oklch(50% 0.018 95)", "oklch(62% 0.018 95)", "oklch(74% 0.018 95)", "oklch(86% 0.018 95)", "oklch(95% 0.018 95)"]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Chalk",
+        "canonical": "#fcfbf7",
+        "tonalRamp": ["oklch(15% 0.01 95)", "oklch(26% 0.01 95)", "oklch(38% 0.01 95)", "oklch(50% 0.01 95)", "oklch(62% 0.01 95)", "oklch(74% 0.01 95)", "oklch(86% 0.01 95)", "oklch(95% 0.01 95)"]
+      },
+      "architecture-gray": {
+        "role": "neutral",
+        "displayName": "Architecture Gray",
+        "canonical": "#ecebe5",
+        "tonalRamp": ["oklch(15% 0.012 100)", "oklch(26% 0.012 100)", "oklch(38% 0.012 100)", "oklch(50% 0.012 100)", "oklch(62% 0.012 100)", "oklch(74% 0.012 100)", "oklch(86% 0.012 100)", "oklch(95% 0.012 100)"]
+      },
+      "blue-black-ink": {
+        "role": "primary",
+        "displayName": "Blue-Black Ink",
+        "canonical": "#172126",
+        "tonalRamp": ["oklch(15% 0.03 220)", "oklch(26% 0.03 220)", "oklch(38% 0.03 220)", "oklch(50% 0.03 220)", "oklch(62% 0.03 220)", "oklch(74% 0.03 220)", "oklch(86% 0.03 220)", "oklch(95% 0.03 220)"]
+      },
+      "body-copy": {
+        "role": "neutral",
+        "displayName": "Body Copy",
+        "canonical": "#3f4a4f",
+        "tonalRamp": ["oklch(15% 0.025 210)", "oklch(26% 0.025 210)", "oklch(38% 0.025 210)", "oklch(50% 0.025 210)", "oklch(62% 0.025 210)", "oklch(74% 0.025 210)", "oklch(86% 0.025 210)", "oklch(95% 0.025 210)"]
+      },
+      "slate": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "#556168",
+        "tonalRamp": ["oklch(15% 0.028 210)", "oklch(26% 0.028 210)", "oklch(38% 0.028 210)", "oklch(50% 0.028 210)", "oklch(62% 0.028 210)", "oklch(74% 0.028 210)", "oklch(86% 0.028 210)", "oklch(95% 0.028 210)"]
+      },
+      "mineral-rule": {
+        "role": "neutral",
+        "displayName": "Mineral Rule",
+        "canonical": "#d6d8d2",
+        "tonalRamp": ["oklch(15% 0.012 105)", "oklch(26% 0.012 105)", "oklch(38% 0.012 105)", "oklch(50% 0.012 105)", "oklch(62% 0.012 105)", "oklch(74% 0.012 105)", "oklch(86% 0.012 105)", "oklch(95% 0.012 105)"]
+      },
+      "fjord": {
+        "role": "primary",
+        "displayName": "Fjord",
+        "canonical": "#4f7787",
+        "tonalRamp": ["oklch(15% 0.06 220)", "oklch(26% 0.06 220)", "oklch(38% 0.06 220)", "oklch(50% 0.06 220)", "oklch(62% 0.06 220)", "oklch(74% 0.06 220)", "oklch(86% 0.06 220)", "oklch(95% 0.06 220)"]
+      },
+      "pale-sky": {
+        "role": "secondary",
+        "displayName": "Pale Sky",
+        "canonical": "#dce9ec",
+        "tonalRamp": ["oklch(15% 0.025 210)", "oklch(26% 0.025 210)", "oklch(38% 0.025 210)", "oklch(50% 0.025 210)", "oklch(62% 0.025 210)", "oklch(74% 0.025 210)", "oklch(86% 0.025 210)", "oklch(95% 0.025 210)"]
+      },
+      "sand": {
+        "role": "secondary",
+        "displayName": "Sand Annotation",
+        "canonical": "#b58c54",
+        "tonalRamp": ["oklch(15% 0.1 75)", "oklch(26% 0.1 75)", "oklch(38% 0.1 75)", "oklch(50% 0.1 75)", "oklch(62% 0.1 75)", "oklch(74% 0.1 75)", "oklch(86% 0.1 75)", "oklch(95% 0.1 75)"]
+      },
+      "pine": {
+        "role": "tertiary",
+        "displayName": "Pine Confirmation",
+        "canonical": "#3f6b5a",
+        "tonalRamp": ["oklch(15% 0.065 160)", "oklch(26% 0.065 160)", "oklch(38% 0.065 160)", "oklch(50% 0.065 160)", "oklch(62% 0.065 160)", "oklch(74% 0.065 160)", "oklch(86% 0.065 160)", "oklch(95% 0.065 160)"]
+      },
+      "clay": {
+        "role": "tertiary",
+        "displayName": "Clay Unknown",
+        "canonical": "#9a654d",
+        "tonalRamp": ["oklch(15% 0.085 42)", "oklch(26% 0.085 42)", "oklch(38% 0.085 42)", "oklch(50% 0.085 42)", "oklch(62% 0.085 42)", "oklch(74% 0.085 42)", "oklch(86% 0.085 42)", "oklch(95% 0.085 42)"]
+      },
+      "contradiction": {
+        "role": "tertiary",
+        "displayName": "Contradiction Red",
+        "canonical": "#924333",
+        "tonalRamp": ["oklch(15% 0.125 30)", "oklch(26% 0.125 30)", "oklch(38% 0.125 30)", "oklch(50% 0.125 30)", "oklch(62% 0.125 30)", "oklch(74% 0.125 30)", "oklch(86% 0.125 30)", "oklch(95% 0.125 30)"]
+      },
+      "focus-fjord": {
+        "role": "primary",
+        "displayName": "Focus Fjord",
+        "canonical": "#315f73",
+        "tonalRamp": ["oklch(15% 0.085 220)", "oklch(26% 0.085 220)", "oklch(38% 0.085 220)", "oklch(50% 0.085 220)", "oklch(62% 0.085 220)", "oklch(74% 0.085 220)", "oklch(86% 0.085 220)", "oklch(95% 0.085 220)"]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(26% 0 0)", "oklch(38% 0 0)", "oklch(50% 0 0)", "oklch(62% 0 0)", "oklch(74% 0 0)", "oklch(86% 0 0)", "oklch(95% 0 0)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Large editorial section arguments and closing invitations." },
+      "hero": { "displayName": "Hero", "purpose": "The short English first-viewport promise on standard desktop viewports." },
+      "hero-mobile": { "displayName": "Hero Mobile", "purpose": "The wrapped first-viewport promise on narrow screens." },
+      "hero-short": { "displayName": "Hero Short Viewport", "purpose": "The compressed promise for wide but shallow desktop viewports." },
+      "headline": { "displayName": "Headline", "purpose": "Dialog, pane, briefing, and specimen titles." },
+      "body": { "displayName": "Body", "purpose": "Primary reading copy, explanations, and evidence context." },
+      "action": { "displayName": "Action", "purpose": "Sentence-case controls with at least a 44px target." },
+      "label": { "displayName": "Label", "purpose": "Short Latin indices and evidence taxonomies only." },
+      "arabic-display": { "displayName": "Arabic Display", "purpose": "Arabic headings with natural shaping, no artificial tracking, and a roomier line height." }
+    },
+    "shadows": [
+      {
+        "name": "bounded-dialog-ambient",
+        "value": "0 1.6rem 4rem rgba(23, 33, 38, 0.22)",
+        "purpose": "Separates the native discovery dialog from its ink-tinted backdrop; never use as a general card shadow."
+      }
+    ],
+    "motion": [
+      {
+        "name": "residential-horizon-reveal",
+        "value": "GSAP 1.15s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Reveals the original residential cityscape and editorial hero hierarchy without splitting text or moving layout."
+      },
+      {
+        "name": "decision-aperture",
+        "value": "Motion 32s orbit with 3.2s criterion-state pulse",
+        "purpose": "Visualizes voice becoming criteria; resolves to a static semantic glyph under reduced motion."
+      },
+      {
+        "name": "voice-bars-active",
+        "value": "720ms ease-in-out infinite alternate",
+        "purpose": "Signals an active microphone state; disabled under reduced motion and never used as ambient decoration."
+      }
+    ],
+    "breakpoints": [
+      { "name": "mobile-sheet", "value": "520px" },
+      { "name": "mobile-media-source", "value": "640px" },
+      { "name": "stacked-layout", "value": "768px" },
+      { "name": "collapsed-split", "value": "1024px" },
+      { "name": "desktop-hero-line", "value": "1100px" },
+      { "name": "content-rail", "value": "1240px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The decisive 44px action used for Talk to Rama, brief review, and confirmation.",
+      "html": "<button class=\"ds-button-primary\" type=\"button\">Talk to Rama</button>",
+      "css": ".ds-button-primary { min-height: 44px; padding: 0 16px; border: 1px solid transparent; border-radius: var(--radius-control); background: var(--ink); color: #fff; font: 600 0.875rem/1.2 var(--font-instrument-sans), Arial, sans-serif; transition: color 150ms, background-color 150ms, border-color 150ms, transform 150ms; cursor: pointer; } .ds-button-primary:hover { background: color-mix(in srgb, var(--ink) 80%, transparent); } .ds-button-primary:focus-visible { border-color: var(--focus); outline: 2px solid color-mix(in srgb, var(--focus) 35%, transparent); outline-offset: 2px; } .ds-button-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A restrained secondary action that stays on the paper plane until interaction.",
+      "html": "<button class=\"ds-button-outline\" type=\"button\">Use voice instead</button>",
+      "css": ".ds-button-outline { min-height: 44px; padding: 0 16px; border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--paper); color: var(--ink); font: 600 0.875rem/1.2 var(--font-instrument-sans), Arial, sans-serif; transition: color 150ms, background-color 150ms, border-color 150ms, transform 150ms; cursor: pointer; } .ds-button-outline:hover { background: var(--architecture); } .ds-button-outline:focus-visible { border-color: var(--focus); outline: 2px solid color-mix(in srgb, var(--focus) 35%, transparent); outline-offset: 2px; } .ds-button-outline:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Quiet Text Launcher",
+      "kind": "button",
+      "description": "The fully capable Type instead path, visually quieter but not functionally subordinate.",
+      "html": "<button class=\"ds-text-launcher\" type=\"button\">Type instead</button>",
+      "css": ".ds-text-launcher { min-height: 44px; padding: 0 8px; border: 0; background: transparent; color: var(--quiet); font: 500 1rem/1.4 var(--font-instrument-sans), Arial, sans-serif; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--quiet) 40%, transparent); text-underline-offset: 0.28rem; cursor: pointer; } .ds-text-launcher:hover { color: var(--ink); text-decoration-color: var(--ink); } .ds-text-launcher:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; } .ds-text-launcher:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Decision Aperture",
+      "kind": "custom",
+      "description": "A criterion-aware voice glyph shared by the hero and bounded discovery dialog.",
+      "html": "<div class=\"ds-decision-aperture\" aria-hidden=\"true\"><svg viewBox=\"0 0 120 120\"><circle cx=\"60\" cy=\"60\" r=\"45\"/><path d=\"M43 61h6l4-13 7 26 7-33 6 20h5\"/></svg></div>",
+      "css": ".ds-decision-aperture { width: 112px; aspect-ratio: 1; color: var(--paper); } .ds-decision-aperture svg { width: 100%; height: 100%; fill: none; stroke: currentColor; } @media (prefers-reduced-motion: reduce) { .ds-decision-aperture { animation: none; } }"
+    },
+    {
+      "name": "Bounded Discovery Dialog",
+      "kind": "custom",
+      "description": "The single stable frame where voice, text, criteria review, and confirmation converge.",
+      "html": "<section class=\"ds-discovery-dialog\"><header><div><h2>Shape your Dubai brief.</h2><p>Speak naturally or type what matters.</p></div><button type=\"button\" aria-label=\"Close\">×</button></header><div class=\"ds-dialog-signal\"><div class=\"ds-decision-aperture\" aria-hidden=\"true\"><svg viewBox=\"0 0 120 120\"><circle cx=\"60\" cy=\"60\" r=\"45\"/><path d=\"M43 61h6l4-13 7 26 7-33 6 20h5\"/></svg></div></div><p class=\"ds-dialog-status\">Write naturally. Longer briefs scroll within the field.</p><div class=\"ds-dialog-body\">Voice, text, criteria, and recovery stay inside this bounded body.</div><footer><button class=\"ds-dialog-action\" type=\"button\">Review my brief</button></footer></section>",
+      "css": ".ds-discovery-dialog { display: grid; grid-template-rows: auto 96px 56px minmax(120px, 1fr) auto; width: min(736px, 100%); min-height: 520px; overflow: hidden; border: 1px solid var(--ink); border-radius: var(--radius-content); background: var(--paper); color: var(--ink); box-shadow: 0 1.6rem 4rem rgba(23, 33, 38, 0.22); font-family: var(--font-instrument-sans), Arial, sans-serif; } .ds-discovery-dialog header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; padding: 20px 22px 16px; border-bottom: 1px solid var(--rule); } .ds-discovery-dialog h2 { margin: 0; font: 520 2rem/1.04 var(--font-source-serif), Georgia, serif; letter-spacing: -0.025em; } .ds-discovery-dialog header p { margin: 7px 0 0; color: var(--quiet); font-size: 0.9rem; } .ds-discovery-dialog header button { width: 44px; height: 44px; border: 0; background: transparent; color: var(--ink); font-size: 20px; } .ds-discovery-dialog header button:hover { background: var(--architecture); } .ds-discovery-dialog header button:focus-visible { outline: 2px solid var(--focus); } .ds-dialog-signal { display: grid; place-content: center; gap: 12px; border-bottom: 1px solid var(--rule); background: var(--sky-wash); } .ds-dialog-signal i { display: block; width: 92px; height: 3px; background: var(--sky); } .ds-dialog-signal i:nth-child(2) { width: 72px; margin-inline: auto; } .ds-dialog-signal i:nth-child(3) { width: 54px; margin-inline: auto; background: var(--clay); } .ds-dialog-status { display: grid; place-items: center; margin: 0; padding: 12px 22px; border-bottom: 1px solid var(--rule); color: var(--body-copy); font-size: 0.86rem; text-align: center; } .ds-dialog-body { padding: 20px 22px; overflow-y: auto; color: var(--body-copy); line-height: 1.55; } .ds-discovery-dialog footer { padding: 16px 22px 18px; border-top: 1px solid var(--rule); background: var(--gallery); } .ds-dialog-action { min-height: 44px; padding: 0 16px; border: 1px solid var(--ink); border-radius: var(--radius-control); background: var(--ink); color: #fff; font-weight: 600; } .ds-dialog-action:hover { background: var(--sky); } .ds-dialog-action:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }"
+    },
+    {
+      "name": "Brief Text Field",
+      "kind": "input",
+      "description": "A fixed-height, internally scrolling text field that cannot expand the dialog frame.",
+      "html": "<label class=\"ds-brief-field\"><span>Describe the decision you are making</span><textarea rows=\"5\" placeholder=\"Or type criteria: 2-bed in Dubai Marina under 3M…\"></textarea><small>0 / 500 characters</small></label>",
+      "css": ".ds-brief-field { display: grid; gap: 10px; color: var(--ink); font: 700 0.9rem/1.4 var(--font-instrument-sans), Arial, sans-serif; } .ds-brief-field textarea { width: 100%; height: clamp(144px, 25dvh, 208px); min-height: 144px; max-height: 208px; padding: 14px; overflow-y: auto; border: 1px solid var(--rule); border-radius: var(--radius-control); outline: none; background: var(--paper); color: var(--ink); font: 400 1rem/1.55 var(--font-instrument-sans), Arial, sans-serif; resize: none; } .ds-brief-field textarea:hover { border-color: var(--quiet); } .ds-brief-field textarea:focus-visible { border-color: var(--focus); box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus) 24%, transparent); } .ds-brief-field small { justify-self: end; color: var(--quiet); font-size: 0.78rem; font-weight: 400; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Criteria Slip",
+      "kind": "card",
+      "refersTo": "criteria-slip",
+      "description": "The compact proof plane for required, preferred, unknown, and contradiction states.",
+      "html": "<article class=\"ds-criteria-slip\"><header><strong>Illustrative criteria</strong><span>Unsaved example</span></header><dl><div data-state=\"required\"><dt>Required</dt><dd>2 bedrooms · Up to AED 3M</dd></div><div data-state=\"preferred\"><dt>Preferred</dt><dd>Waterfront · Walkable</dd></div><div data-state=\"unknown\"><dt>Unknown</dt><dd>Service-charge tolerance</dd></div></dl></article>",
+      "css": ".ds-criteria-slip { padding: clamp(16px, 2.4vw, 28px); border: 1px solid var(--ink); border-radius: var(--radius-content); background: var(--paper); color: var(--ink); font-family: var(--font-instrument-sans), Arial, sans-serif; } .ds-criteria-slip header { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 13px; border-bottom: 1px solid var(--rule); color: var(--quiet); font-size: 0.7rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; } .ds-criteria-slip dl { margin: 0; } .ds-criteria-slip dl div { display: grid; grid-template-columns: 83px minmax(0, 1fr); gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--rule); } .ds-criteria-slip dt { color: var(--quiet); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; } .ds-criteria-slip dd { margin: 0; font-size: 0.9rem; font-weight: 600; } .ds-criteria-slip [data-state=\"required\"] dt { color: var(--pine); } .ds-criteria-slip [data-state=\"unknown\"] dt { color: var(--clay); } .ds-criteria-slip:hover { border-color: var(--focus); } .ds-criteria-slip:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }"
+    },
+    {
+      "name": "Public Navigation",
+      "kind": "nav",
+      "description": "A transparent hero rail that settles into ink after scroll while keeping decision destinations and one clear brief action visible.",
+      "html": "<nav class=\"ds-public-nav\" aria-label=\"Primary navigation\"><a class=\"ds-wordmark\" href=\"#top\">Rama</a><div><a href=\"#method\">Decision method</a><a href=\"#specimen\">Specimen</a><a href=\"#boundaries\">Boundaries</a></div><a class=\"ds-nav-action\" href=\"#top\">Begin a brief</a></nav>",
+      "css": ".ds-public-nav { display: grid; grid-template-columns: 1fr auto 1fr; min-height: 88px; align-items: center; gap: 24px; padding: 0 32px; border-bottom: 1px solid rgb(255 255 255 / 18%); background: transparent; color: var(--paper); font-family: var(--font-instrument-sans), Arial, sans-serif; } .ds-public-nav > div { display: flex; gap: 32px; } .ds-public-nav a { color: inherit; text-decoration: none; } .ds-public-nav > div a { min-height: 44px; display: inline-flex; align-items: center; font-size: 0.74rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; } .ds-public-nav a:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; } .ds-wordmark { justify-self: start; font: italic 520 2rem/1 var(--font-source-serif), Georgia, serif; } .ds-nav-action { justify-self: end; display: inline-flex; min-height: 44px; align-items: center; padding: 0 24px; border: 1px solid rgb(255 255 255 / 58%); border-radius: var(--radius-control); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; } .ds-nav-action:hover { background: var(--paper); color: var(--ink); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Rama Decision Architecture",
+    "overview": "Rama is an editorial decision desk, not a property portal or luxury brokerage. Its structural world uses oversized scale, alternating paper surfaces, long-scroll rhythm, rectangular geometry, and one sticky narrative. Nordic Lagom supplies the restraint: every visible object either helps a buyer state intent, inspect evidence, understand an unknown, or choose the next action. Residential Horizon is the public landing expression of this system: original Dubai residential architecture establishes context while Rama holds the buyer's decision still.\n\nThe public discovery rhythm is Quiet → Converse → Confirm. The quiet first viewport places Rama identity, one short promise, one supporting sentence, the criterion-aware Decision Aperture, and two clear actions over one original Dubai residential cityscape. The image supplies atmosphere only; a nearby disclosure states that it is illustrative context, not inventory. “Talk to Rama” is primary; “Type instead” is equally capable. Either action opens the same bounded conversation surface, where voice or text produces an editable brief and criteria review before one explicit confirmation. The landing explains the method; `/discover/{searchRunId}` is the only results, dossier, comparison, Decision Ledger, and eligible consent-handoff surface.\n\nCurrent residences, prices, and matches are illustrative until licensed inventory is connected. Illustrative records cannot be sent to an advisor. Property facts retain source and observation state when available, and unsupported market performance, partnership, customer, award, professional-advice, or live-inventory claims never enter the visual language.",
+    "keyCharacteristics": [
+      "Editorial scale with quiet, information-bearing composition.",
+      "A minimal first viewport that defers working complexity to one focused conversation surface.",
+      "Warm paper, blue-black ink, Fjord context, and restrained state color.",
+      "Required, preferred, unknown, contradiction, evidence, and change as signature forms.",
+      "Original Rama imagery and content; reference structure is adapted, never cloned.",
+      "Complete EN/AR parity with a deliberate RTL composition."
+    ],
+    "rules": [
+      { "name": "The Evidence-Redundancy Rule", "body": "Color never communicates evidence state alone; pair it with a label, mark, icon, structure, or status sentence.", "section": "colors" },
+      { "name": "The Rare-Accent Rule", "body": "Fjord and sand clarify context or action. They do not decorate empty space.", "section": "colors" },
+      { "name": "The Two-Voice Rule", "body": "Serif expresses the editorial argument; sans-serif expresses the system state. Do not use decorative display faces or add a third Latin family.", "section": "typography" },
+      { "name": "The One-Narrative Rule", "body": "The Decision Room specimen is the single signature scroll story; every other section stays calm enough to support it.", "section": "layout" },
+      { "name": "The Flat-by-Default Rule", "body": "Try a rule, tonal shift, or spacing change before elevation. Do not introduce glass, blur-heavy panels, gradients, glow, metallic simulation, or dark-luxury black-and-gold styling into the active buyer experience.", "section": "elevation" },
+      { "name": "The Evidence-Plane Rule", "body": "Radius follows function: compact for controls, restrained for evidence, and softer only for media.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep the first viewport quiet: Rama identity, one short localized heading, one supporting sentence, Decision Aperture, and the two equivalent launch paths.",
+      "Do move voice, text, criteria review, and confirmation into one bounded native dialog, and keep long content internally scrollable.",
+      "Do place stable illustrative criteria proof below the fold, where it explains the method without crowding the primary action.",
+      "Do make unknowns, source state, freshness, contradiction, and buyer consent visible at the decision point.",
+      "Do keep voice primary and text fully equivalent through permission denial, unsupported browsers, live-session failure, recorded fallback, retry, and confirmation.",
+      "Do preserve exact EN/AR content structure, logical-property mirroring, visible focus, live-region clarity, keyboard completion, Escape and focus return, and WCAG AA contrast.",
+      "Do verify EN and AR at 320, 390, 768, 1024, 1280, and 1440px, plus 1280×720 and short landscape; check 44px targets, no document overflow, reduced motion, and JavaScript-failure fallbacks.",
+      "Do verify release candidates with `pnpm registry:build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, and `pnpm e2e`, plus rendered desktop/mobile review. Staging targets remain LCP at or below 2.5s, CLS at or below 0.1, and INP at or below 200ms.",
+      "Do treat staff surfaces as operational: reuse tokens and semantic evidence primitives without importing the public landing’s airy composition."
+    ],
+    "donts": [
+      "Don't present a property grid, second composer, testimonial, rating, partner mark, award, yield, legal outcome, or live-inventory implication without approved evidence.",
+      "Don't place a persistent form, transcript, criteria slip, or confirmation plane in the resting hero.",
+      "Don't copy Archivanta code, CDN assets, portfolio content, motion implementation, or claims; structural pacing is the reference, not the identity.",
+      "Don't use glassmorphism, gradients, generic AI orbs, pill-heavy SaaS chrome, equal feature-card walls, decorative curves, glow, or black-and-gold luxury brokerage styling.",
+      "Don't add infinite marquees, uncontrolled parallax, SplitText, character-split Arabic, ambient motion outside the bounded aperture and state system, or scroll hijacking.",
+      "Don't allow client state, model-authored HTML, or marketing prose to become property truth.",
+      "Don't imply that architectural scene imagery depicts an available residence."
+    ]
+  }
+}

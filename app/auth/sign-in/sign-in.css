@@ -4,19 +4,19 @@
   height: calc(100svh - 2rem);
   min-height: 34rem;
   max-height: 42.5rem;
-  margin: max(1rem, calc((100svh - 42.5rem) / 2)) auto;
+  margin: max(var(--rama-legacy-dimension-positive-1rem), calc((100svh - var(--rama-legacy-dimension-positive-42-5rem)) / 2)) auto;
   display: grid;
   grid-template-columns: minmax(0, 1.03fr) minmax(23rem, .97fr);
   overflow: hidden;
   border: 1px solid var(--rule);
   background: var(--paper);
   color: var(--ink);
-  box-shadow: 0 1.5rem 4rem rgba(23, 28, 27, .08);
+  box-shadow: 0 var(--rama-legacy-dimension-positive-1-5rem) var(--rama-legacy-dimension-positive-4rem) var(--rama-legacy-color-value-rgba-23-28-27-08);
 }
 
 .auth-intro,
 .auth-form-wrap {
-  padding: clamp(2rem, 3.2vw, 3.25rem);
+  padding: clamp(var(--rama-legacy-dimension-positive-2rem), 3.2vw, var(--rama-legacy-dimension-positive-3-25rem));
 }
 
 .auth-intro {
@@ -24,41 +24,41 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: var(--rama-legacy-dimension-positive-2rem);
   background:
-    linear-gradient(180deg, rgba(255,255,255,.02), rgba(12,28,30,.35)),
+    linear-gradient(180deg, var(--rama-legacy-color-value-rgba-255-255-255-02), var(--rama-legacy-color-value-rgba-12-28-30-35)),
     url('/images/rama-hero-editorial-daylight.png') center / cover;
-  color: white;
+  color: var(--rama-text-inverse);
 }
 
-.auth-intro .brand-lockup { color: white; }
+.auth-intro .brand-lockup { color: var(--rama-text-inverse); }
 .auth-intro > a { display: inline-flex; min-height: 2.75rem; align-items: center; align-self: flex-start; }
 .auth-intro h1 {
   max-width: 12ch;
-  margin: .65rem 0 1rem;
+  margin: var(--rama-legacy-dimension-positive-0-65rem) 0 var(--rama-legacy-dimension-positive-1rem);
   font: 500 clamp(2.65rem, 4.2vw, 4.6rem)/.94 var(--font-source-serif), serif;
   letter-spacing: -.05em;
 }
-.auth-intro p:not(.auth-eyebrow) { max-width: 36rem; color: rgba(255,255,255,.78); font-size: .92rem; line-height: 1.55; }
+.auth-intro p:not(.auth-eyebrow) { max-width: 36rem; color: var(--rama-legacy-color-value-rgba-255-255-255-78); font-size: .92rem; line-height: 1.55; }
 .auth-eyebrow,
 .auth-form-heading > p { margin: 0; font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-.auth-assurances { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border-top: 1px solid rgba(255,255,255,.25); }
-.auth-assurances div { padding: .85rem .75rem 0 0; }
-.auth-assurances dt { font-size: .7rem; color: rgba(255,255,255,.55); text-transform: uppercase; letter-spacing: .12em; }
-.auth-assurances dd { margin: .2rem 0 0; font-size: .76rem; line-height: 1.35; }
+.auth-assurances { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border-top: 1px solid var(--rama-legacy-color-value-rgba-255-255-255-25); }
+.auth-assurances div { padding: var(--rama-legacy-dimension-positive-0-85rem) var(--rama-legacy-dimension-positive-0-75rem) 0 0; }
+.auth-assurances dt { font-size: .7rem; color: var(--rama-legacy-color-value-rgba-255-255-255-55); text-transform: uppercase; letter-spacing: .12em; }
+.auth-assurances dd { margin: var(--rama-legacy-dimension-positive-0-2rem) 0 0; font-size: .76rem; line-height: 1.35; }
 
 .auth-form-wrap { display: flex; flex-direction: column; justify-content: center; max-width: 33rem; width: 100%; margin-inline: auto; }
-.auth-form-heading h2 { margin: .4rem 0 1.45rem; font: 500 clamp(2rem, 3.2vw, 2.8rem)/1 var(--font-source-serif), serif; letter-spacing: -.035em; }
-.auth-panel form { display: grid; gap: .85rem; }
-.auth-panel label { display: grid; gap: .45rem; color: var(--ink); font-size: .82rem; font-weight: 650; }
-.auth-panel input { min-height: 2.75rem; border: 1px solid var(--rule); border-radius: 0; background: white; padding: .6rem .75rem; color: var(--ink); }
-.auth-submit { min-height: 2.85rem; border: 1px solid var(--ink); border-radius: 0; background: var(--ink); color: white; font-weight: 700; }
+.auth-form-heading h2 { margin: var(--rama-legacy-dimension-positive-0-4rem) 0 var(--rama-legacy-dimension-positive-1-45rem); font: 500 clamp(2rem, 3.2vw, 2.8rem)/1 var(--font-source-serif), serif; letter-spacing: -.035em; }
+.auth-panel form { display: grid; gap: var(--rama-legacy-dimension-positive-0-85rem); }
+.auth-panel label { display: grid; gap: var(--rama-legacy-dimension-positive-0-45rem); color: var(--ink); font-size: .82rem; font-weight: 650; }
+.auth-panel input { min-height: 2.75rem; border: 1px solid var(--rule); border-radius: 0; background: var(--rama-text-inverse); padding: var(--rama-legacy-dimension-positive-0-6rem) var(--rama-legacy-dimension-positive-0-75rem); color: var(--ink); }
+.auth-submit { min-height: 2.85rem; border: 1px solid var(--ink); border-radius: 0; background: var(--ink); color: var(--rama-text-inverse); font-weight: 700; }
 .auth-submit:disabled { opacity: .55; }
 .auth-legal { color: var(--quiet); font-size: .82rem; }
-.auth-message { margin: 0; padding: .75rem; border-left: 2px solid var(--sand); background: var(--architecture); font-size: .85rem; }
+.auth-message { margin: 0; padding: var(--rama-legacy-dimension-positive-0-75rem); border-left: var(--rama-legacy-dimension-positive-2px) solid var(--sand); background: var(--architecture); font-size: .85rem; }
 .auth-message--error { border-color: var(--error); color: var(--error); }
 .auth-message--success { border-color: var(--focus); }
-.auth-legal { margin-top: 1.5rem; max-width: 29rem; font-size: .76rem; line-height: 1.5; }
+.auth-legal { margin-top: var(--rama-legacy-dimension-positive-1-5rem); max-width: 29rem; font-size: .76rem; line-height: 1.5; }
 
 @media (max-width: 800px) {
   .auth-page {
@@ -73,9 +73,9 @@
     border: 0;
     box-shadow: none;
   }
-  .auth-intro { min-height: 22rem; gap: 1.25rem; }
+  .auth-intro { min-height: 22rem; gap: var(--rama-legacy-dimension-positive-1-25rem); }
   .auth-assurances { grid-template-columns: 1fr; }
-  .auth-assurances div { padding-top: .6rem; }
-  .auth-form-wrap { min-height: 0; padding-block: 2rem; }
-  .auth-form-heading h2 { margin-bottom: 1.25rem; }
+  .auth-assurances div { padding-top: var(--rama-legacy-dimension-positive-0-6rem); }
+  .auth-form-wrap { min-height: 0; padding-block: var(--rama-legacy-dimension-positive-2rem); }
+  .auth-form-heading h2 { margin-bottom: var(--rama-legacy-dimension-positive-1-25rem); }
 }

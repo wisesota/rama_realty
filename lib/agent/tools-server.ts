@@ -2,14 +2,14 @@ import "server-only";
 
 import type { BuyerPropertySummary } from "@/lib/agent/buyer-contracts";
 import {
-  propertySearchBlocks,
   type AgentBlock,
   type AgentToolName,
   type AgentToolResponse,
 } from "@/lib/agent/contracts";
-import { discoverProperties, type RequestContext } from "@/lib/discovery-service";
 import { CatalogUnavailableError, PublicCatalogRepository } from "@/lib/public-catalog-repository";
 import type { SampleProperty } from "@/lib/sample-properties";
+import { prepareBriefDraft } from "@/lib/brief-confirmation";
+import { briefConfirmationEnabled } from "@/lib/rollout-server";
 
 export type AgentToolContext = {
   correlationId: string;
@@ -50,20 +50,20 @@ function noResult(tool: AgentToolName, correlationId: string, title: string, exp
   return { ok: true, tool, correlationId, summary: explanation, blocks: [{ type: "no_results", title, explanation, suggestions: ["Ask about another visible property", "Request a Rama advisor after reviewing consent"] }] };
 }
 
-async function searchProperties(args: Record<string, unknown>, context: AgentToolContext): Promise<AgentToolResponse> {
+async function prepareBrief(args: Record<string, unknown>, context: AgentToolContext): Promise<AgentToolResponse> {
+  if (!briefConfirmationEnabled()) {
+    return errorResult("prepare_brief", context.correlationId, "Brief confirmation is temporarily unavailable.");
+  }
   const brief = textArg(args, "brief");
-  const envelope = await discoverProperties({ brief, source: "voice", context: context satisfies RequestContext });
-  const properties = Object.values(envelope.entities.properties).map(toSample);
-  const summary = properties.length
-    ? `${properties[0].name} is the strongest of ${properties.length} governed ${properties.length === 1 ? "match" : "matches"}. The visual dossier is ready.`
-    : "No exact governed match is available. The buyer's brief is preserved for refinement.";
+  const preparedBrief = prepareBriefDraft({ brief, source: "voice" });
+  const summary = "The written brief is ready for the buyer to review. No search has been saved.";
   return {
     ok: true,
-    tool: "search_properties",
+    tool: "prepare_brief",
     correlationId: context.correlationId,
     summary,
-    blocks: propertySearchBlocks({ properties, summary }),
-    decisionEnvelope: envelope,
+    blocks: [],
+    preparedBrief,
   };
 }
 
@@ -217,7 +217,7 @@ function handoff(args: Record<string, unknown>, correlationId: string): AgentToo
 export async function runAgentTool(tool: AgentToolName, args: Record<string, unknown>, context: AgentToolContext): Promise<AgentToolResponse> {
   try {
     switch (tool) {
-      case "search_properties": return await searchProperties(args, context);
+      case "prepare_brief": return await prepareBrief(args, context);
       case "get_property_details": return await propertyDetails(args, context.correlationId);
       case "compare_properties": return await compareProperties(args, context.correlationId);
       case "get_payment_schedule": return await paymentSchedule(args, context.correlationId);

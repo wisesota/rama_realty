@@ -11,6 +11,11 @@
       "path": "components/rama/editorial-media.tsx",
       "content": "import Image from \"next/image\";\nimport { MediaFrame } from \"@/components/rama/media-frame\";\nimport { cn } from \"@/lib/utils\";\n\nexport type EditorialMediaModel = {\n  src: string;\n  alt: string;\n  caption: string;\n};\n\nexport function EditorialMedia({\n  media,\n  label,\n  sizes,\n  aspect = \"landscape\",\n  className,\n}: {\n  media: EditorialMediaModel;\n  label: string;\n  sizes: string;\n  aspect?: \"landscape\" | \"portrait\" | \"panorama\";\n  className?: string;\n}) {\n  return (\n    <figure className={cn(\"editorial-media\", className)} data-aspect={aspect}>\n      <MediaFrame className=\"editorial-media__frame\">\n        <Image\n          src={media.src}\n          alt={media.alt}\n          fill\n          sizes={sizes}\n          className=\"editorial-media__image\"\n        />\n      </MediaFrame>\n      <figcaption>\n        <span>{label}</span>\n        <p>{media.caption}</p>\n      </figcaption>\n    </figure>\n  );\n}\n",
       "type": "registry:component"
+    },
+    {
+      "path": "lib/utils.ts",
+      "content": "import { clsx, type ClassValue } from \"clsx\"\r\nimport { twMerge } from \"tailwind-merge\"\r\n\r\nexport function cn(...inputs: ClassValue[]) {\r\n  return twMerge(clsx(inputs))\r\n}\r\n",
+      "type": "registry:lib"
     }
   ],
   "type": "registry:component"

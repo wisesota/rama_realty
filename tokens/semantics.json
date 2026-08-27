@@ -17,11 +17,19 @@
       "focus": { "$value": "{color.focus}", "$type": "color", "$description": "Active focus indicator" }
     },
     "accent": {
-      "sky": { "$value": "{color.sky}", "$type": "color" },
-      "sand": { "$value": "{color.sand}", "$type": "color" }
+      "sky": { "$value": "{color.sky}", "$type": "color", "$description": "Active context and inspectable evidence accent" },
+      "sand": { "$value": "{color.sand}", "$type": "color", "$description": "Rare assumption and annotation accent" },
+      "pine": { "$value": "{color.pine}", "$type": "color", "$description": "Confirmed evidence or buyer state" },
+      "clay": { "$value": "{color.clay}", "$type": "color", "$description": "Unknown, stale, or action-needed state" }
     },
     "feedback": {
-      "error": { "$value": "{color.error}", "$type": "color" }
+      "error": { "$value": "{color.error}", "$type": "color", "$description": "Error, contradiction, and failed recovery state" }
+    },
+    "motion": {
+      "feedbackDuration": { "$value": "{duration.fast}", "$type": "duration", "$description": "Color, border, and opacity response" },
+      "transformDuration": { "$value": "{duration.interface}", "$type": "duration", "$description": "Small semantic movement response" },
+      "revealDuration": { "$value": "{duration.reveal}", "$type": "duration", "$description": "One-time landing reveal duration" },
+      "easeOut": { "$value": "{easing.standard}", "$type": "cubicBezier", "$description": "Shared authored ease-out curve" }
     }
   }
 }

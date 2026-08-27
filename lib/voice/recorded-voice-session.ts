@@ -73,9 +73,12 @@ export class RecordedVoiceSession {
   }
 
   async start(stream: MediaStream) {
+    this.assertActive();
     this.context = new AudioContext();
     await this.context.audioWorklet.addModule("/audio/pcm-processor.js");
+    this.assertActive();
     if (this.context.state === "suspended") await this.context.resume();
+    this.assertActive();
 
     this.source = this.context.createMediaStreamSource(stream);
     this.worklet = new AudioWorkletNode(this.context, "rama-pcm-processor");
@@ -136,5 +139,9 @@ export class RecordedVoiceSession {
     this.silentGain = null;
     if (this.context && this.context.state !== "closed") await this.context.close();
     this.context = null;
+  }
+
+  private assertActive() {
+    if (this.stopped) throw new DOMException("Recorded voice session was disposed.", "AbortError");
   }
 }

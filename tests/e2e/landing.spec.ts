@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-
+import { getStoryUrl } from "./storybook";
 async function openTextComposer(page: Page, label = "Type instead") {
   await page.getByRole("button", { name: label, exact: true }).first().click();
   const brief = page.locator("#property-brief");
@@ -534,7 +534,7 @@ test("Arabic recorded fallback localizes status and its accessibility announceme
 });
 
 test("Arabic voice completion localizes visible state and its live announcement", async ({ page }) => {
-  await page.goto("http://localhost:6006/iframe.html?id=rama-voice-conversation--arabic-complete&viewMode=story");
+  await page.goto(getStoryUrl("rama-voice-conversation--arabic-complete"));
   await expect(page.getByText("تم التقاط الموجز")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("شقة بغرفتي نوم في دبي مارينا")).toBeVisible();
   await expect(page.locator(".voice-dialog-panel .sr-only")).toHaveText("اكتمل الموجز الصوتي وتم تحديث معايير القرار.");

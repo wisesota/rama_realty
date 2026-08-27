@@ -3,7 +3,7 @@
 import { ArrowRight, Clock3, Inbox, Mail, MapPin, MessageSquareText, Phone, Search, ShieldCheck, UserRound } from "lucide-react";
 import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
-import { transitionInquiryAction } from "@/app/dashboard/actions";
+import { createAdvisorFeedbackAction, transitionInquiryAction } from "@/app/dashboard/actions";
 import { SectionHeader } from "@/components/dashboard/page-header";
 import { initialActionState } from "@/lib/dashboard/validation";
 import {
@@ -44,6 +44,18 @@ function InquiryStatusForm({ inquiry }: { inquiry: InquiryRecord }) {
   </form>;
 }
 
+function AdvisorFeedbackForm({ inquiry }: { inquiry: InquiryRecord }) {
+  const [state, action, pending] = useActionState(createAdvisorFeedbackAction, initialActionState);
+  return <form action={action} className="ops-dossier-action">
+    <input type="hidden" name="inquiryId" value={inquiry.id} />
+    <label>Evidence feedback<select name="category" defaultValue="missing_evidence"><option value="missing_evidence">Missing evidence</option><option value="wrong_criterion">Wrong criterion</option><option value="stale_source">Stale source</option><option value="handoff_outcome">Handoff outcome</option></select></label>
+    <label>Outcome<select name="outcome" defaultValue=""><option value="">Not set</option><option value="useful">Useful</option><option value="needs_follow_up">Needs follow-up</option><option value="not_a_fit">Not a fit</option><option value="contacted">Contacted</option><option value="viewing_booked">Viewing booked</option><option value="closed">Closed</option></select></label>
+    <label>Evidence-quality note<textarea name="notes" maxLength={1000} placeholder="Describe the missing, incorrect, or stale evidence without adding unnecessary buyer data." /></label>
+    <button type="submit" disabled={pending}>{pending ? "Saving…" : "Save evidence feedback"}</button>
+    {state.message ? <small data-status={state.status} role="status">{state.message}</small> : null}
+  </form>;
+}
+
 export function ConversationsWorkspace({ inquiries, canManage, initialView = "all" }: { inquiries: InquiryRecord[]; canManage: boolean; initialView?: ConversationView }) {
   const [query, setQuery] = useState("");
   const [view, setView] = useState<ConversationView>(initialView);
@@ -71,7 +83,7 @@ export function ConversationsWorkspace({ inquiries, canManage, initialView = "al
         <section className="ops-dossier-section"><p>What the buyer asked</p><blockquote>{selected.message || "Advisor follow-up requested."}</blockquote>{selected.search_run_id ? <small>Discovery run {selected.search_run_id.slice(0, 8)}</small> : null}</section>
         <section className="ops-dossier-section"><p>Residence in context</p>{selected.property ? <div className="ops-linked-property"><div><MapPin aria-hidden="true" /><span><strong>{selected.property.name}</strong><small>{selected.property.location}</small></span></div><strong>{formatAed(selected.property.price_aed)}</strong></div> : <div className="ops-context-gap"><MessageSquareText aria-hidden="true" /><span><strong>Property context unavailable</strong><small>The catalog record may have been removed after the handoff.</small></span></div>}</section>
         <section className="ops-dossier-section"><p>Consent and governance</p><div className="ops-consent-note"><ShieldCheck aria-hidden="true" /><span><strong>Explicit advisor handoff</strong><small>{selected.consent_purpose || "Buyer requested advisor follow-up."}</small></span></div></section>
-        {canManage ? <InquiryStatusForm key={selected.id} inquiry={selected} /> : <div className="ops-read-only"><UserRound aria-hidden="true" />Your role can inspect this dossier but cannot change its status.</div>}
+        {canManage ? <><InquiryStatusForm key={`status:${selected.id}`} inquiry={selected} /><AdvisorFeedbackForm key={`feedback:${selected.id}`} inquiry={selected} /></> : <div className="ops-read-only"><UserRound aria-hidden="true" />Your role can inspect this dossier but cannot change its status.</div>}
       </article> : null}
     </div>
   </section>;
