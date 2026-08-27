@@ -19,3 +19,6 @@ allowBuilds:
   puppeteer: true
   '@swc/core': true
   cbor-extract: true
+
+patchedDependencies:
+  "next@16.3.1": "patches/next@16.3.1.patch"
