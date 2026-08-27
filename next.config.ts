@@ -30,15 +30,15 @@ const nextConfig: NextConfig = {
   webpack: (config, { dev }) => {
     if (dev) {
       const existingIgnored = config.watchOptions?.ignored;
-      const wellKnownRegex = /[\/\\]\.well-known[\/\\]/;
+      const wellKnownGlob = "**/.well-known/**";
 
       config.watchOptions = {
         ...(config.watchOptions || {}),
         ignored: existingIgnored
           ? Array.isArray(existingIgnored)
-            ? [...existingIgnored, wellKnownRegex]
-            : [existingIgnored, wellKnownRegex]
-          : [wellKnownRegex],
+            ? [...existingIgnored, wellKnownGlob]
+            : [existingIgnored, wellKnownGlob]
+          : [wellKnownGlob],
       };
     }
     return config;
