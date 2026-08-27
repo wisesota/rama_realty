@@ -1,6 +1,31 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("@/lib/supabase/admin", () => {
+  const chainable = {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    is: vi.fn().mockReturnThis(),
+    gt: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn()
+      .mockResolvedValueOnce({ data: { id: "buyer-id" }, error: null })
+      .mockResolvedValueOnce({ data: { id: "run-id", conversation_id: "conv-id" }, error: null })
+      .mockResolvedValue({ data: null, error: null })
+  };
+  return {
+    createAdminClient: vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnValue(chainable),
+      rpc: vi.fn().mockResolvedValue({ data: null, error: { code: "Fail", message: "RPC error" } })
+    })
+  };
+});
+
+vi.mock("@/lib/rollout-server", () => ({
+  evidenceV2RendererEnabled: vi.fn().mockReturnValue(true),
+  evidenceV2WriterEnabled: vi.fn().mockReturnValue(true),
+}));
 
 function source(path: string) {
   return readFileSync(resolve(process.cwd(), path), "utf8");
@@ -17,14 +42,9 @@ describe("Decision OS v2 release contracts", () => {
     expect(store).not.toContain("searchProperties: async");
   });
 
-  it("fails closed on enabled ledger-read failures while preserving the v1 rollback path", () => {
-    const discovery = source("lib/discovery-service.ts");
-    expect(discovery).toContain("if (ledgerError) throw new PersistenceUnavailableError()");
-    expect(discovery).toContain("? admin.rpc(\"read_buyer_ledger_events\"");
-    expect(discovery).toContain("p_write_evidence_v2: writeEvidenceV2");
-    expect(discovery).toContain("const renderEvidenceV2 = evidenceV2RendererEnabled()");
-    expect(discovery).toContain("if (data.reused)");
-    expect(discovery).toContain("loadBuyerDecisionEnvelope(data.searchRunId, options.context.buyerTokenHash)");
+  it("fails closed on enabled ledger-read failures while preserving the v1 rollback path", async () => {
+    const { loadBuyerDecisionEnvelope, PersistenceUnavailableError } = await import("@/lib/discovery-service");
+    await expect(loadBuyerDecisionEnvelope("run-id", "buyer-hash")).rejects.toThrow(PersistenceUnavailableError);
   });
 
   it("keeps dismissal retries stable and restores comparison state after failure", () => {

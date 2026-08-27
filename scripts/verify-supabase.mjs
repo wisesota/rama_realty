@@ -83,7 +83,7 @@ async function main() {
   }
   for (const table of serviceOnlyTables) {
     const row = postureRows.find((candidate) => candidate.table_name === table);
-    if (!row || row.rls_enabled !== true || row.anon_select === true) {
+    if (!row || row.rls_enabled !== true || row.anon_select !== false) {
       throw new Error(`Operational security posture is unsafe for ${table}.`);
     }
   }

@@ -6,6 +6,7 @@
   "registryDependencies": [
     "media-frame"
   ],
+  "dependencies": ["@/lib/utils"],
   "files": [
     {
       "path": "components/rama/editorial-media.tsx",

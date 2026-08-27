@@ -7,7 +7,7 @@ import { BlurFade } from "@/components/ui/blur-fade";
 const reviews = [
   {
     id: 1,
-    name: "Sir Alistair Vance",
+    name: "Sir Alistair Vance [Illustrative Persona]",
     role: "Family Office Principal, London",
     location: "Acquired Palm Jumeirah Signature Villa",
     text: "The voice-led brief was refreshing. In two minutes, Rama synthesized our yield expectations and waterfront requirements without the aggressive broker calls typical of Dubai.",
@@ -15,7 +15,7 @@ const reviews = [
   },
   {
     id: 2,
-    name: "Dr. Marlene Schmidt",
+    name: "Dr. Marlene Schmidt [Illustrative Persona]",
     role: "Private Investor, Zurich",
     location: "Acquired Downtown Duplex & Hills Villa",
     text: "The Decision Room gave our family unprecedented transparency — payment milestones, net yield projections, and DLD escrow status in one place. An institutional benchmark.",
@@ -23,7 +23,7 @@ const reviews = [
   },
   {
     id: 3,
-    name: "Tariq Al-Mansoor",
+    name: "Tariq Al-Mansoor [Illustrative Persona]",
     role: "Architectural Collector, Riyadh",
     location: "Acquired Orla Infinity Penthouse",
     text: "Rama understands architectural provenance. They don’t just sell square footage; they curate works of living art with timeless Nordic restraint.",
@@ -31,7 +31,7 @@ const reviews = [
   },
   {
     id: 4,
-    name: "Elena Rostova",
+    name: "Elena Rostova [Illustrative Persona]",
     role: "Technology Founder, Singapore",
     location: "Acquired Dubai Marina Sky Mansion",
     text: "Transitioning to Dubai was frictionless. From Golden Visa advisory to property handover, the Lagom philosophy made the entire journey tranquil and precise.",
@@ -117,14 +117,14 @@ export function ArchivantaReviews() {
             {/* Stat Box */}
             <div className="flex-shrink-0 w-80 md:w-96 snap-start bg-transparent border border-white/10 p-8 flex flex-col justify-between">
               <div className="space-y-4">
-                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--rama-ivory)]/70">Satisfaction Metric</span>
+                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--rama-ivory)]/70">Illustrative Prototype Metric</span>
                 <div className="font-heading italic text-6xl text-white">98.4%</div>
                 <p className="font-sans text-xs text-white/50 leading-relaxed">
-                  Of clients establish ongoing multi-property advisory relationships with Rama.
+                  [Illustrative] Of clients establish ongoing multi-property advisory relationships with Rama.
                 </p>
               </div>
               <div className="pt-6 border-t border-white/10 mt-8">
-                <span className="font-sans text-[10px] uppercase tracking-widest text-white/40">Verified Advisory Audits • 2024–2026</span>
+                <span className="font-sans text-[10px] uppercase tracking-widest text-white/40">Prototype Demonstration • Not Real Data</span>
               </div>
             </div>
 

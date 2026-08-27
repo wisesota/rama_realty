@@ -75,6 +75,7 @@ export function ArchivantaFeaturedCollection() {
           </div>
           <p className="text-[var(--rama-ink-dark)]/60 text-sm md:text-base max-w-md font-sans leading-relaxed">
             Hand-picked architectural statements across Dubai&apos;s most coveted enclaves.
+            <span className="block mt-2 text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--rama-ink-dark)]/40">Illustrative Inventory Example</span>
           </p>
         </div>
 
@@ -128,7 +129,7 @@ export function ArchivantaFeaturedCollection() {
                       <div className="font-sans font-bold text-2xl text-[var(--rama-ink-dark)] tracking-tight">
                         {item.priceAed}
                       </div>
-                      <div className="font-sans text-[10px] uppercase tracking-widest text-[var(--rama-ink-dark)]/50 mt-0.5">{item.priceUsd} • Representative Valuation</div>
+                      <div className="font-sans text-[10px] uppercase tracking-widest text-[var(--rama-ink-dark)]/50 mt-0.5">{item.priceUsd} • Illustrative Data</div>
                     </div>
                     <a
                       href="#guided-search"

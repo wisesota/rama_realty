@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 const productionCookieName = "__Host-rama-buyer";
 const developmentCookieName = "rama-buyer";
-export const buyerSessionTtlSeconds = 60 * 60 * 24 * 30;
+export const buyerSessionTtlSeconds = 60 * 60 * 2;
 
 function cookieName() {
   return process.env.NODE_ENV === "production" ? productionCookieName : developmentCookieName;

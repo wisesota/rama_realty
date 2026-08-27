@@ -29,6 +29,7 @@ describe("root proxy coverage", () => {
   });
 
   it("keeps locale routes canonical while their rollout flag is enabled", async () => {
+    vi.stubEnv("RAMA_LOCALE_ROUTES_ENABLED", "true");
     const response = await proxy(new NextRequest("http://localhost/discover/run-1", {
       headers: { "accept-language": "ar" },
     }));
@@ -36,6 +37,7 @@ describe("root proxy coverage", () => {
   });
 
   it("fails the landing composition closed with a non-cacheable operational response", async () => {
+    vi.stubEnv("RAMA_LOCALE_ROUTES_ENABLED", "true");
     vi.stubEnv("RAMA_LANDING_COMPOSITION_ENABLED", "false");
     const response = await proxy(new NextRequest("http://localhost/ar"));
     expect(response.status).toBe(503);
@@ -45,6 +47,7 @@ describe("root proxy coverage", () => {
   });
 
   it("localizes the legacy-root operational response from the trusted locale preference", async () => {
+    vi.stubEnv("RAMA_LOCALE_ROUTES_ENABLED", "true");
     vi.stubEnv("RAMA_LANDING_COMPOSITION_ENABLED", "false");
     const response = await proxy(new NextRequest("http://localhost/", {
       headers: { "accept-language": "ar-AE,ar;q=0.9,en;q=0.8" },

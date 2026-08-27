@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Noto_Sans_Arabic, Source_Serif_4 } from "next/font/google";
+import { Instrument_Sans, Source_Serif_4 } from "next/font/google";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 import "./globals.css";
@@ -19,13 +19,7 @@ const sourceSerif = Source_Serif_4({
   display: "swap",
 });
 
-const notoSansArabic = Noto_Sans_Arabic({
-  variable: "--font-noto-sans-arabic",
-  subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: false,
-});
+
 
 const impeccableContract = `<!--
 THESIS: Dubai residential architecture frames the choice while Rama makes the buyer's intent clear; refuse tourism footage and crowded listing forms.
@@ -64,7 +58,7 @@ export default async function RootLayout({
   const locale = isPublicLocale(requestedLocale) ? requestedLocale : "en";
   return (
     <html lang={locale} dir={localeDirection(locale)} data-scroll-behavior="smooth">
-      <body className={`${instrumentSans.variable} ${sourceSerif.variable} ${notoSansArabic.variable}`}>
+      <body className={`${instrumentSans.variable} ${sourceSerif.variable}`}>
         <template
           data-impeccable-contract="rama-residential-horizon-pinned-20260824"
           dangerouslySetInnerHTML={{ __html: impeccableContract }}

@@ -107,7 +107,7 @@ export function parseAgentToolArguments(tool: AgentToolName, value: unknown): { 
   if (tool === "prepare_advisor_handoff" && only("propertyId", "reason") && (value.propertyId === undefined || validId(value.propertyId)) && typeof value.reason === "string" && value.reason.trim().length >= 3 && value.reason.length <= 240) return { ok: true, args: { propertyId: typeof value.propertyId === "string" ? value.propertyId.trim() : undefined, reason: value.reason.trim() } };
   if (tool === "calculate_purchase_scenario" && only("propertyId", "downPaymentPercent", "annualInterestPercent", "termYears", "expectedAnnualRent", "vacancyPercent") && validId(value.propertyId) && finite(value.downPaymentPercent) && value.downPaymentPercent >= 5 && value.downPaymentPercent <= 100) {
     const numeric = ["annualInterestPercent", "termYears", "expectedAnnualRent", "vacancyPercent"] as const;
-    if (numeric.some((key) => value[key] !== undefined && !finite(value[key]))) return { ok: false, error: "Purchase assumptions must be finite numbers." };
+    if (numeric.some((key) => value[key] !== undefined && value[key] !== null && !finite(value[key]))) return { ok: false, error: "Purchase assumptions must be finite numbers." };
     return { ok: true, args: { ...value, propertyId: (value.propertyId as string).trim() } };
   }
   return { ok: false, error: `Invalid arguments for ${tool}.` };

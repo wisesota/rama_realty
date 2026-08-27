@@ -106,10 +106,10 @@ begin
     or (staged.normalized_payload ->> 'slug') !~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'
     or (staged.normalized_payload ->> 'propertyType') not in ('apartment','villa','townhouse','penthouse')
     or (staged.normalized_payload ->> 'completionStatus') not in ('off_plan','under_construction','ready')
-    or (staged.normalized_payload ->> 'priceAed') !~ '^[1-9][0-9]*$'
-    or (staged.normalized_payload ->> 'beds') !~ '^[0-9]+$'
-    or (staged.normalized_payload ->> 'baths') !~ '^[0-9]+$'
-    or (staged.normalized_payload ->> 'areaSqFt') !~ '^[1-9][0-9]*$'
+    or (staged.normalized_payload ->> 'priceAed') !~ '^[1-9][0-9]{0,9}$'
+    or (staged.normalized_payload ->> 'beds') !~ '^[0-9]{1,2}$'
+    or (staged.normalized_payload ->> 'baths') !~ '^[0-9]{1,2}$'
+    or (staged.normalized_payload ->> 'areaSqFt') !~ '^[1-9][0-9]{0,9}$'
     or (staged.normalized_payload ->> 'beds')::integer > 30
     or (staged.normalized_payload ->> 'baths')::integer > 30
     or (staged.normalized_payload ->> 'imageUrl') !~ '^https://'

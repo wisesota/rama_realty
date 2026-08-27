@@ -167,11 +167,11 @@ textarea {
 [dir="rtl"] button,
 [dir="rtl"] input,
 [dir="rtl"] textarea {
-  font-family: var(--font-noto-sans-arabic), var(--font-instrument-sans), sans-serif;
+  font-family: var(--font-instrument-sans), sans-serif;
 }
 
 [dir="rtl"] .font-heading {
-  font-family: var(--font-noto-sans-arabic), var(--font-source-serif), serif;
+  font-family: var(--font-source-serif), serif;
 }
 
 [dir="rtl"] .skip-link {
@@ -199,7 +199,7 @@ textarea {
 }
 
 [dir="rtl"] .brief-confirmation h2 {
-  font-family: var(--font-noto-sans-arabic), sans-serif;
+  font-family: var(--font-source-serif), serif;
 }
 
 .brief-confirmation > div:first-child > p:last-child,
@@ -2386,7 +2386,7 @@ img {
   .decision-room-modal { max-height: calc(100dvh - .75rem); border-radius: var(--radius-media) var(--radius-media) 0 0; }
   .decision-room__header { min-height: 4.25rem; padding-inline: var(--rama-legacy-dimension-positive-1rem); }
   .decision-room__identity span { max-width: 65vw; }
-  .decision-room__header-actions a { display: none; }
+  .decision-room-page .decision-room__header-actions a { display: none; }
   .decision-room__body { padding: var(--rama-legacy-dimension-positive-1rem); }
   .decision-room__brief { grid-template-columns: 1fr; gap: var(--rama-legacy-dimension-positive-0-75rem); }
   .decision-room__source-summary { white-space: normal; }
@@ -2453,7 +2453,6 @@ img {
   padding-block: 0;
   border-bottom: 1px solid var(--rule);
   background: color-mix(in srgb, var(--gallery) 96%, transparent);
-  backdrop-filter: blur(10px);
 }
 
 .public-site-header[data-variant="solid"] > div {
@@ -3124,7 +3123,6 @@ img {
   color: var(--ink);
 }
 
-.decision-closing__media .media-frame { border-radius: 0; }
 .decision-closing__media figcaption {
   padding: var(--rama-legacy-dimension-positive-0-85rem) max(var(--rama-legacy-dimension-positive-1-25rem), calc((100vw - var(--rama-legacy-dimension-positive-1240px)) / 2));
   border-color: color-mix(in srgb, var(--paper) 22%, transparent);

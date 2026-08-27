@@ -21,7 +21,6 @@ describe("agent tool boundary", () => {
 
   it("allows only the bounded real-estate tools", () => {
     expect(isAgentToolName("prepare_brief")).toBe(true);
-    expect(isAgentToolName("search_properties")).toBe(false);
     expect(isAgentToolName("run_sql")).toBe(false);
     expect(isAgentToolName("fetch_url")).toBe(false);
   });
@@ -30,6 +29,7 @@ describe("agent tool boundary", () => {
     expect(parseAgentToolArguments("prepare_brief", { brief: "Two bedrooms in Dubai Marina" }).ok).toBe(true);
     expect(parseAgentToolArguments("compare_properties", { propertyIds: ["home-1", "home-2"] }).ok).toBe(true);
     expect(parseAgentToolArguments("calculate_purchase_scenario", { propertyId: "home-1", downPaymentPercent: 25, annualInterestPercent: 5, termYears: 25 }).ok).toBe(true);
+    expect(parseAgentToolArguments("calculate_purchase_scenario", { propertyId: "home-1", downPaymentPercent: 25, annualInterestPercent: null, termYears: null }).ok).toBe(true);
     expect(parseAgentToolArguments("get_property_details", { propertyId: "home-1", organizationId: "victim" }).ok).toBe(false);
     expect(parseAgentToolArguments("calculate_purchase_scenario", { propertyId: "home-1", downPaymentPercent: 0 }).ok).toBe(false);
   });

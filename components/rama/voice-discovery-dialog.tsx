@@ -45,14 +45,15 @@ export function VoiceDiscoveryDialog({
   useEffect(() => {
     const node = dialog.current;
     if (!node) return;
+    let frameId: number;
 
     if (open && !node.open) {
       opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       node.showModal();
       document.documentElement.dataset.discoveryDialogOpen = "true";
       window.dispatchEvent(new CustomEvent("rama:discovery-dialog-state", { detail: { open: true } }));
-      requestAnimationFrame(() => (initialFocusRef?.current ?? titleElement.current)?.focus({ preventScroll: true }));
-      return;
+      frameId = requestAnimationFrame(() => (initialFocusRef?.current ?? titleElement.current)?.focus({ preventScroll: true }));
+      return () => cancelAnimationFrame(frameId);
     }
 
     if (!open && node.open) node.close();
@@ -70,8 +71,11 @@ export function VoiceDiscoveryDialog({
     const update = () => setBodyHasMore(node.scrollHeight - node.scrollTop - node.clientHeight > 4);
     const resizeObserver = new ResizeObserver(update);
     resizeObserver.observe(node);
-    requestAnimationFrame(update);
-    return () => resizeObserver.disconnect();
+    const frameId = requestAnimationFrame(update);
+    return () => {
+      cancelAnimationFrame(frameId);
+      resizeObserver.disconnect();
+    };
   }, [children, open]);
 
   function restoreFocus() {

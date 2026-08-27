@@ -90,6 +90,7 @@ export function VoiceConversation({
   const activeRef = useRef(active);
   const onCloseRef = useRef(onClose);
   const onStopRef = useRef(onStop);
+  const openerRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const detailId = useId();
 
@@ -114,6 +115,19 @@ export function VoiceConversation({
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
+  }, [isOpen, variant]);
+
+  useEffect(() => {
+    if (variant === "dialog") return;
+    if (isOpen) {
+      if (!openerRef.current) openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    } else {
+      if (openerRef.current) {
+        const node = openerRef.current;
+        requestAnimationFrame(() => node.focus({ preventScroll: true }));
+        openerRef.current = null;
+      }
+    }
   }, [isOpen, variant]);
 
   if (state.phase === "idle") return null;

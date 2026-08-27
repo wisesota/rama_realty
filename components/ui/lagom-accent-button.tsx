@@ -17,7 +17,7 @@ const LagomAccentButton = React.forwardRef<HTMLButtonElement, LagomAccentButtonP
           "rounded-tl-full rounded-tr-none rounded-br-none rounded-bl-none",
           // impeccable-disable-next-line bounce-easing -- rejected Archivanta exploration; never imported by an active route or registry item
           "transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-110",
-          "px-8 py-4 pb-3",
+          "px-2 py-1.5 pb-1.5",
           className
         )}
         {...props}

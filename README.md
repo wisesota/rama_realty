@@ -73,7 +73,7 @@ Hosted migrations create:
 - opaque hashed buyer sessions, restorable search runs, candidate fact snapshots, and redacted tool telemetry;
 - published property documents and deterministic child-record selection;
 - consented, idempotent inquiry creation and a CRM outbox; and
-- service-role-only operational RPCs plus role-scoped CRM reads and audited inquiry transitions.
+- service-role-only operational RPCs, JWT/RLS-authorized buyer endpoints (e.g. decision ledger), role-scoped CRM reads, and audited inquiry transitions.
 
 `pnpm verify:supabase` uses a service-only posture RPC to verify RLS is enabled and the anonymous role has no `SELECT` grant on buyer sessions, search briefs/runs, tool runs, inquiries, and audit events. It then probes each table anonymously and accepts only a response exposing no rows or an explicit authorization denial. `pnpm verify:supabase-identities` signs in two dedicated preview/staging users, creates temporary owner-scoped briefs, proves own reads and cross-owner read/insert denial, then removes the temporary rows with the server-only client. For a development-only one-off probe, set `RAMA_RLS_TEST_EPHEMERAL=true`; the verifier provisions and deletes two disposable confirmed users without printing identities or credentials. Never enable ephemeral provisioning against production.
 
@@ -81,7 +81,7 @@ The buyer-facing repository always uses a cookieless anonymous client, so an adm
 
 ## Current production gates
 
-- Keep Supabase on the Free plan. Leaked-password protection is intentionally out of scope and is not a staging or production gate; retain the existing application password validation, rate limiting, native Supabase authentication, and staff MFA/step-up gate.
+- Require leaked-password protection for production; retain the existing application password validation, rate limiting, native Supabase authentication, and staff MFA/step-up gate.
 - Load licensed, provenance-complete inventory, payment schedules, floor plans, and documents.
 - Set independent production `BUYER_SESSION_SECRET` and `RATE_LIMIT_SECRET` values.
 - Approve retention windows, consent copy, privacy terms, advisor response expectations, and staff MFA/step-up policy.

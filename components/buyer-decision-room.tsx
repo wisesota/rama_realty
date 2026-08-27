@@ -77,7 +77,23 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
   const [ledger, setLedger] = useState(initialLedger);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [ledgerStatus, setLedgerStatus] = useState("");
+  const [prevSearchRunId, setPrevSearchRunId] = useState(envelope.searchRunId);
 
+  if (envelope.searchRunId !== prevSearchRunId) {
+    setPrevSearchRunId(envelope.searchRunId);
+    setSelectedId(properties[0]?.id ?? "");
+    setCompareIds(properties.slice(0, Math.min(2, properties.length)).map((property) => property.id));
+    setDetailsExpanded(false);
+    setBlocks([]);
+    setToolStatus("");
+    setLoadingTool(null);
+    setHandoffOpen(false);
+    setHandoffStatus("");
+    setHandoffSubmitting(false);
+    setLedger(envelope.schemaVersion === "2" ? envelope.decisionLedger.events : []);
+    setDismissedIds([]);
+    setLedgerStatus("");
+  }
   useEffect(() => {
     if (!modal) return;
     const returnSource = sessionStorage.getItem("rama:decision-room-return-focus");

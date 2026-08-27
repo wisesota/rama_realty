@@ -17,6 +17,10 @@ describe("enterprise foreign-key indexes", () => {
     "provider_reconciliation_events (provider_source_id)",
     "provider_records_staging (published_property_id)",
   ])("indexes %s", (target) => {
-    expect(migration).toContain(`on public.${target}`);
+    const [table, column] = target.replace(")", "").split(" (");
+    const normalized = migration.toLowerCase().replace(/\s+/g, " ");
+    expect(normalized).toMatch(
+      new RegExp(`create index[^;]*on public\\.${table} \\([^)]*${column}`),
+    );
   });
 });

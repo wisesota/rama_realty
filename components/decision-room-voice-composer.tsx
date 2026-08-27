@@ -120,6 +120,7 @@ export function DecisionRoomVoiceComposer({
           sessionRef.current = null;
           setError(message);
           setPhase("error");
+          void session.dispose();
         },
         onComplete: () => {
           if (attempt !== attemptRef.current) return;

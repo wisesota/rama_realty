@@ -145,7 +145,6 @@ after insert on public.search_candidates
 for each row execute function private.capture_candidate_evidence();
 
 create or replace function public.append_buyer_ledger_event(
-  p_token_hash text,
   p_search_run_id uuid,
   p_event_type text,
   p_summary text,
@@ -154,15 +153,13 @@ create or replace function public.append_buyer_ledger_event(
 )
 returns uuid
 language plpgsql
-security definer
 set search_path = ''
 as $$
 declare
   buyer_id uuid;
   event_id uuid;
 begin
-  if p_token_hash !~ '^[a-f0-9]{64}$'
-    or p_event_type not in ('criterion_revised', 'candidate_dismissed', 'open_question')
+  if p_event_type not in ('criterion_revised', 'candidate_dismissed', 'open_question')
     or (p_event_type = 'candidate_dismissed' and p_property_id is null)
     or char_length(btrim(p_summary)) not between 1 and 500
     or char_length(p_idempotency_key) not between 16 and 128
@@ -171,7 +168,7 @@ begin
   select session.id into buyer_id
   from public.buyer_sessions session
   join public.search_runs run on run.buyer_session_id = session.id
-  where session.token_hash = p_token_hash
+  where session.user_id = auth.uid()
     and session.revoked_at is null
     and session.expires_at > now()
     and run.id = p_search_run_id;
@@ -193,10 +190,20 @@ begin
 end;
 $$;
 
-revoke all on function public.append_buyer_ledger_event(text, uuid, text, text, text, text)
+revoke all on function public.append_buyer_ledger_event(uuid, text, text, text, text)
   from public, anon, authenticated;
-grant execute on function public.append_buyer_ledger_event(text, uuid, text, text, text, text)
-  to service_role;
+grant execute on function public.append_buyer_ledger_event(uuid, text, text, text, text)
+  to authenticated, service_role;
+
+alter table public.decision_ledger_events enable row level security;
+
+create policy "Authenticated users can insert ledger events" on public.decision_ledger_events
+  for insert to authenticated
+  with check (
+    buyer_session_id in (
+      select id from public.buyer_sessions where user_id = auth.uid()
+    )
+  );
 
 create or replace function public.read_buyer_ledger_events(
   p_token_hash text,

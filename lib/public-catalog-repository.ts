@@ -75,14 +75,16 @@ function criterionList(brief: string): BuyerCriterion[] {
   const hard = extractHardConstraints(brief);
   const labels = parsePropertyBrief(brief);
   return labels.map((label, index) => {
-    const hardCriterion = (hard.location && label === hard.location)
-      || (hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms)))
-      || (hard.maximumPriceAed !== undefined && label.startsWith("Up to"));
-    const key = hard.location && label === hard.location
+    const isLocation = Boolean(hard.location && label === hard.location);
+    const isBedrooms = Boolean(hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms)));
+    const isBudget = Boolean(hard.maximumPriceAed !== undefined && label.startsWith("Up to"));
+
+    const hardCriterion = isLocation || isBedrooms || isBudget;
+    const key = isLocation
       ? "location"
-      : hard.bedrooms !== undefined && label.startsWith(String(hard.bedrooms))
+      : isBedrooms
         ? "bedrooms"
-        : hard.maximumPriceAed !== undefined && label.startsWith("Up to")
+        : isBudget
           ? "budget"
           : ["Penthouse", "Villa", "Townhouse", "Apartment"].includes(label)
             ? "property-type"

@@ -3,6 +3,7 @@
   "name": "criteria-slip",
   "title": "Rama Criteria Slip",
   "description": "A direction-aware required, preferred, unknown, and contradiction summary for buyer briefs.",
+  "dependencies": ["@/lib/agent/buyer-contracts", "@/lib/brief-confirmation", "@/lib/i18n", "@/lib/utils"],
   "files": [
     {
       "path": "components/rama/criteria-slip.tsx",

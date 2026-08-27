@@ -66,9 +66,9 @@ export function validateProviderRecord(
   if (policy.mediaRightsRequired && !input.mediaRightsConfirmed) errors.push("Media publication rights are not confirmed.");
   if (!input.attribution.trim()) errors.push("Provider attribution is required.");
   if (!policy.allowedLocations.some((location) => location.toLowerCase() === input.property.location.toLowerCase())) errors.push("The record is outside the approved geography.");
-  if (!Number.isSafeInteger(input.property.priceAed) || input.property.priceAed <= 0) errors.push("A positive whole-number AED price is required.");
+  if (!Number.isInteger(input.property.priceAed) || input.property.priceAed <= 0 || input.property.priceAed > 2147483647) errors.push("A positive whole-number AED price is required.");
   if (![input.property.beds, input.property.baths].every((value) => Number.isInteger(value) && value >= 0 && value <= 30)
-    || !Number.isSafeInteger(input.property.areaSqFt) || input.property.areaSqFt <= 0) errors.push("Bedrooms and bathrooms must be whole numbers from 0 to 30, and area must be a positive whole number.");
+    || !Number.isInteger(input.property.areaSqFt) || input.property.areaSqFt <= 0 || input.property.areaSqFt > 2147483647) errors.push("Bedrooms and bathrooms must be whole numbers from 0 to 30, and area must be a positive whole number.");
   if (!validHttpUrl(input.property.imageUrl) || !input.property.imageAlt.trim()) errors.push("A rights-cleared HTTPS image and alt text are required.");
   if (!input.sourceRecordId.trim() || !input.property.name.trim() || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.property.slug.trim().toLowerCase())) errors.push("Stable provider and property identifiers are required.");
   if (input.property.description.trim().length < 40) errors.push("A factual property description of at least 40 characters is required.");
