@@ -1,25 +1,20 @@
 import { createStore } from "zustand/vanilla";
-import {
-  initialBrief,
-  initialCriteria,
-  type PropertySearchSource,
-} from "@/lib/property-search";
+import type { PropertySearchSource } from "@/lib/property-search";
 import { type SampleProperty, sampleProperties } from "@/lib/sample-properties";
 import {
   isBuyerDecisionEnvelope,
-  type BuyerDecisionEnvelopeV1,
+  type BuyerDecisionEnvelope,
   type BuyerPropertySummary,
 } from "@/lib/agent/buyer-contracts";
 import type { VoiceExperienceState } from "@/lib/voice/types";
-import {
-  propertySearchBlocks,
-  type AgentBlock,
-} from "@/lib/agent/contracts";
+import { isPreparedBrief, type PreparedBrief } from "@/lib/brief-confirmation";
+import type { AgentBlock } from "@/lib/agent/contracts";
 import {
   defaultGeminiVoiceName,
   type GeminiVoiceMode,
   type GeminiVoiceName,
 } from "@/lib/voice/gemini-live-contracts";
+import type { PublicLocale } from "@/lib/i18n";
 
 export type SearchPhase = "idle" | "loading" | "success" | "error";
 export type AccountPhase = "checking" | "guest" | "authenticated" | "link-sent" | "error";
@@ -32,7 +27,7 @@ export type LandingState = {
   searchStatus: string;
   searchError: string | null;
   resultSource: string;
-  decisionEnvelope: BuyerDecisionEnvelopeV1 | null;
+  decisionEnvelope: BuyerDecisionEnvelope | null;
   agentBlocks: AgentBlock[];
   lastSearchSource: PropertySearchSource | null;
   accountPhase: AccountPhase;
@@ -43,6 +38,8 @@ export type LandingState = {
   voiceName: GeminiVoiceName;
   favoriteIds: string[];
   selectedProperty: SampleProperty | null;
+  preparedBrief: PreparedBrief | null;
+  briefRecalculating: boolean;
 };
 
 export type LandingActions = {
@@ -51,42 +48,51 @@ export type LandingActions = {
   setVoiceMode: (voiceMode: GeminiVoiceMode) => void;
   setVoiceName: (voiceName: GeminiVoiceName) => void;
   setSearchStatus: (searchStatus: string) => void;
+  reportBriefError: (message: string) => void;
   setAgentBlocks: (agentBlocks: AgentBlock[]) => void;
-  setDecisionEnvelope: (envelope: BuyerDecisionEnvelopeV1) => void;
+  setDecisionEnvelope: (envelope: BuyerDecisionEnvelope) => void;
   setAccountPhase: (accountPhase: AccountPhase) => void;
   setAccountStatus: (accountStatus: string) => void;
   hydrateAccount: () => Promise<void>;
   saveCurrentBrief: () => Promise<boolean>;
-  searchProperties: (brief: string, source: PropertySearchSource) => Promise<string | null>;
+  prepareBrief: (brief: string, source: PropertySearchSource, draftId?: string) => Promise<boolean>;
+  updatePreparedBrief: (brief: string) => Promise<void>;
+  cancelPreparedBrief: () => void;
+  confirmPreparedBrief: () => Promise<string | null>;
   toggleFavorite: (id: string) => void;
   selectProperty: (property: SampleProperty | null) => void;
 };
 
 export type LandingStore = LandingState & LandingActions;
 
-const initialState: LandingState = {
-  brief: initialBrief,
-  criteria: initialCriteria,
+function initialState(locale: PublicLocale): LandingState {
+  const isArabic = locale === "ar";
+
+  return {
+  brief: "",
+  criteria: [],
   properties: sampleProperties,
   searchPhase: "idle",
-  searchStatus: "Five sample criteria are ready to review.",
+  searchStatus: isArabic
+    ? "ابدأ بالصوت، أو اكتب موجزاً ثم راجعه قبل البحث."
+    : "Start with voice, or type a brief and review it before searching.",
   searchError: null,
   resultSource: "Illustrative local records — no live listing feed",
   decisionEnvelope: null,
-  agentBlocks: propertySearchBlocks({
-    properties: sampleProperties,
-    summary: "Three sample residences are ready for transparent review.",
-  }),
+  agentBlocks: [],
   lastSearchSource: null,
   accountPhase: "checking",
-  accountStatus: "Checking saved-search access…",
+  accountStatus: isArabic ? "جارٍ التحقق من إمكانية حفظ البحث…" : "Checking saved-search access…",
   savedBriefCount: 0,
   voiceState: { phase: "idle" },
   voiceMode: "live",
   voiceName: defaultGeminiVoiceName,
   favoriteIds: [],
   selectedProperty: null,
-};
+  preparedBrief: null,
+  briefRecalculating: false,
+  };
+}
 
 function formatAed(value: number) {
   return new Intl.NumberFormat("en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 0 }).format(value).replace(/\s+/g, " ");
@@ -108,12 +114,45 @@ function toSampleProperty(property: BuyerPropertySummary): SampleProperty {
   };
 }
 
-export function createLandingStore() {
+export function createLandingStore(locale: PublicLocale = "en") {
   let activeSearch = 0;
+  let activePreparation = 0;
+  let preparationController: AbortController | null = null;
+  let preparationTimer: ReturnType<typeof setTimeout> | null = null;
+  let queuedPreparationResolve: (() => void) | null = null;
+  let confirmationPromise: Promise<string | null> | null = null;
   const favoriteMutations = new Map<string, number>();
+  const searchCopy = locale === "ar" ? {
+    governedReady: (count: number) => `${count} ${count === 1 ? "مسكن منضبط جاهز" : "مساكن منضبطة جاهزة"} في غرفة القرار.`,
+    noExact: "لا يوجد مسكن مطابق تماماً للموجز الحالي.",
+    review: "راجع الموجز المكتوب وأكّده. لم يتم حفظ أي شيء بعد.",
+    prepareFailed: "تعذر إعداد الموجز. حاول مرة أخرى.",
+    cancelled: "أُلغيت مراجعة الموجز. لم يتم حفظ أي شيء.",
+    opening: "جارٍ حفظ الموجز المؤكد وفتح غرفة القرار…",
+    discoveryFailed: "البحث عن العقارات غير متاح مؤقتاً.",
+    invalidResponse: "أعاد البحث عن العقارات استجابة غير صالحة.",
+    retry: "يبقى موجزك المؤكد متاحاً لإعادة المحاولة.",
+  } : {
+    governedReady: (count: number) => `${count} governed ${count === 1 ? "residence" : "residences"} ready in your Decision Room.`,
+    noExact: "No exact residence matched the current brief.",
+    review: "Review and confirm the written brief. Nothing has been saved yet.",
+    prepareFailed: "The brief could not be prepared.",
+    cancelled: "Brief review cancelled. Nothing was saved.",
+    opening: "Saving the confirmed brief and opening the Decision Room…",
+    discoveryFailed: "Property search is unavailable.",
+    invalidResponse: "Property search returned an invalid response.",
+    retry: "Your confirmed draft remains available to retry.",
+  };
+
+  function responseError(payload: unknown, fallback: string) {
+    if (locale === "ar") return fallback;
+    return payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
+      ? payload.error
+      : fallback;
+  }
 
   return createStore<LandingStore>()((set, get) => ({
-    ...initialState,
+    ...initialState(locale),
     setBrief: (brief) =>
       set((state) => ({
         brief,
@@ -124,6 +163,7 @@ export function createLandingStore() {
     setVoiceMode: (voiceMode) => set({ voiceMode }),
     setVoiceName: (voiceName) => set({ voiceName }),
     setSearchStatus: (searchStatus) => set({ searchStatus }),
+    reportBriefError: (message) => set({ searchPhase: "error", searchError: message, searchStatus: message }),
     setAgentBlocks: (agentBlocks) => set({ agentBlocks }),
     setDecisionEnvelope: (decisionEnvelope) => {
       const governedProperties = Object.values(decisionEnvelope.entities.properties).map(toSampleProperty);
@@ -134,10 +174,11 @@ export function createLandingStore() {
         properties: governedProperties,
         searchPhase: "success",
         searchStatus: governedProperties.length
-          ? `${governedProperties.length} governed ${governedProperties.length === 1 ? "residence" : "residences"} ready in your Decision Room.`
-          : "No exact residence matched the current brief.",
+          ? searchCopy.governedReady(governedProperties.length)
+          : searchCopy.noExact,
         searchError: null,
         resultSource: decisionEnvelope.sourceSummary.label,
+        preparedBrief: null,
       });
     },
     setAccountPhase: (accountPhase) => set({ accountPhase }),
@@ -221,77 +262,103 @@ export function createLandingStore() {
         return false;
       }
     },
-    searchProperties: async (brief, source) => {
-      const trimmedBrief = brief.trim();
-      if (trimmedBrief.length < 3) {
-        set({
-          searchPhase: "error",
-          searchError: "Describe the Dubai home or lifestyle you want.",
-          searchStatus: "Describe a Dubai home or lifestyle to shape the search.",
-        });
-        return null;
-      }
-
-      const searchId = ++activeSearch;
-      set({
-        brief: trimmedBrief,
-        searchPhase: "loading",
-        searchError: null,
-        searchStatus:
-          source === "voice"
-            ? "Voice brief captured. Fetching matching property content…"
-            : "Fetching matching property content…",
-      });
-
+    prepareBrief: async (brief, source, draftId) => {
+      const preparationId = ++activePreparation;
+      preparationController?.abort();
+      const controller = new AbortController();
+      preparationController = controller;
+      set({ briefRecalculating: true });
       try {
-        const response = await fetch("/api/discovery/query", {
+        const response = await fetch("/api/discovery/prepare", {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ brief: trimmedBrief, source }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ brief, source, draftId }),
+          signal: controller.signal,
         });
         const payload: unknown = await response.json();
-
-        if (!response.ok) {
-          const message = payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string" ? payload.error : null;
-          throw new Error(message || "Property search is unavailable.");
+        if (!response.ok || !isPreparedBrief(payload)) {
+          throw new Error(responseError(payload, searchCopy.prepareFailed));
         }
-
-        if (!isBuyerDecisionEnvelope(payload)) {
-          throw new Error("Property search returned an invalid response.");
-        }
-
-        if (searchId !== activeSearch) return null;
-
-        const governedProperties = Object.values(payload.entities.properties).map(toSampleProperty);
-        set({
-          decisionEnvelope: payload,
-          brief: payload.brief.original,
-          criteria: payload.brief.criteria.map((criterion) => criterion.label),
-          properties: governedProperties,
-          searchPhase: "success",
-          searchStatus: governedProperties.length
-            ? `${governedProperties.length} governed ${governedProperties.length === 1 ? "residence" : "residences"} ready in your Decision Room.`
-            : "No exact residence matched the current brief.",
-          searchError: null,
-          resultSource: payload.sourceSummary.label,
-          agentBlocks: propertySearchBlocks({ properties: governedProperties, summary: payload.sourceSummary.label }),
-          lastSearchSource: source,
-        });
-        return payload.searchRunId;
+        if (preparationId !== activePreparation) return false;
+        set({ brief: payload.transcript, preparedBrief: payload, searchPhase: "idle", searchStatus: searchCopy.review, briefRecalculating: false });
+        return true;
       } catch (error) {
-        if (searchId !== activeSearch) return null;
-
-        const message = error instanceof Error ? error.message : "Property search is unavailable.";
-        set({
-          searchPhase: "error",
-          searchError: message,
-          searchStatus: `${message} Your previous results remain in place.`,
-        });
-        return null;
+        if (controller.signal.aborted || preparationId !== activePreparation) return false;
+        const message = error instanceof Error ? error.message : searchCopy.prepareFailed;
+        set({ searchPhase: "error", searchError: message, searchStatus: message, briefRecalculating: false });
+        return false;
+      } finally {
+        if (preparationController === controller) preparationController = null;
       }
+    },
+    updatePreparedBrief: (brief) => {
+      const current = get().preparedBrief;
+      if (!current) return Promise.resolve();
+      if (preparationTimer) clearTimeout(preparationTimer);
+      preparationTimer = null;
+      queuedPreparationResolve?.();
+      queuedPreparationResolve = null;
+      preparationController?.abort();
+      set({
+        brief,
+        preparedBrief: { ...current, transcript: brief },
+        briefRecalculating: true,
+        searchError: null,
+      });
+      return new Promise<void>((resolve) => {
+        queuedPreparationResolve = resolve;
+        preparationTimer = setTimeout(() => {
+          preparationTimer = null;
+          queuedPreparationResolve = null;
+          void get().prepareBrief(brief, current.source, current.draftId).finally(resolve);
+        }, 350);
+      });
+    },
+    cancelPreparedBrief: () => {
+      activePreparation += 1;
+      activeSearch += 1;
+      if (preparationTimer) clearTimeout(preparationTimer);
+      preparationTimer = null;
+      queuedPreparationResolve?.();
+      queuedPreparationResolve = null;
+      preparationController?.abort();
+      preparationController = null;
+      confirmationPromise = null;
+      set({ preparedBrief: null, briefRecalculating: false, searchPhase: "idle", searchError: null, searchStatus: searchCopy.cancelled });
+    },
+    confirmPreparedBrief: async () => {
+      if (confirmationPromise) return confirmationPromise;
+      if (get().briefRecalculating) return null;
+      const draft = get().preparedBrief;
+      if (!draft) return null;
+      confirmationPromise = (async () => {
+        const searchId = ++activeSearch;
+        set({ searchPhase: "loading", searchError: null, searchStatus: searchCopy.opening });
+        try {
+          const response = await fetch("/api/discovery/query", {
+            method: "POST",
+            headers: { Accept: "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({ brief: draft.transcript, source: draft.source, idempotencyKey: draft.draftId, locale }),
+          });
+          const payload: unknown = await response.json();
+          if (!response.ok) {
+            throw new Error(responseError(payload, searchCopy.discoveryFailed));
+          }
+          if (!isBuyerDecisionEnvelope(payload)) throw new Error(searchCopy.invalidResponse);
+          if (searchId !== activeSearch || get().preparedBrief?.draftId !== draft.draftId) return null;
+          get().setDecisionEnvelope(payload);
+          set({ lastSearchSource: draft.source });
+          return payload.searchRunId;
+        } catch (error) {
+          if (searchId !== activeSearch) return null;
+          const message = error instanceof Error ? error.message : searchCopy.discoveryFailed;
+          set({ searchPhase: "error", searchError: message, searchStatus: `${message} ${searchCopy.retry}` });
+          return null;
+        } finally {
+          confirmationPromise = null;
+        }
+      })();
+      return confirmationPromise;
     },
     toggleFavorite: (id) => {
       const state = get();

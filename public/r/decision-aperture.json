@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "decision-aperture",
+  "title": "Rama Decision Aperture",
+  "description": "A reduced-motion-safe architectural signal that reflects the bounded voice and brief lifecycle without becoming a working control.",
+  "dependencies": [
+    "motion"
+  ],
+  "files": [
+    {
+      "path": "components/rama/decision-aperture.tsx",
+      "content": "\"use client\";\n\nimport { motion, useReducedMotion } from \"motion/react\";\nimport { useSyncExternalStore } from \"react\";\n\nexport type DecisionApertureState =\n  | \"resting\"\n  | \"requesting\"\n  | \"listening\"\n  | \"processing\"\n  | \"complete\"\n  | \"error\";\n\nfunction subscribeToClientReady(onStoreChange: () => void) {\n  const frame = window.requestAnimationFrame(onStoreChange);\n  return () => window.cancelAnimationFrame(frame);\n}\nconst readClientReady = () => true;\nconst readServerReady = () => false;\n\nexport function DecisionAperture({ state = \"resting\" }: { state?: DecisionApertureState }) {\n  const reducedMotion = useReducedMotion();\n  const mounted = useSyncExternalStore(subscribeToClientReady, readClientReady, readServerReady);\n  const animate = mounted && !reducedMotion;\n  const listening = state === \"listening\";\n  const processing = state === \"processing\" || state === \"requesting\";\n\n  return (\n    <div className=\"decision-aperture\" data-state={state} aria-hidden=\"true\">\n      <svg viewBox=\"0 0 120 120\" role=\"presentation\">\n        <rect className=\"decision-aperture__frame\" x=\"18\" y=\"18\" width=\"84\" height=\"84\" rx=\"8\" />\n        <path className=\"decision-aperture__rail\" d=\"M36 42h48M36 60h48M36 78h48\" />\n        <motion.path\n          className=\"decision-aperture__aperture\"\n          d=\"M36 60h48\"\n          initial={false}\n          animate={animate && listening ? { pathLength: [0.25, 1, 0.45], opacity: [0.55, 1, 0.7] } : { pathLength: 1, opacity: 1 }}\n          transition={listening ? { duration: 1.6, ease: \"easeInOut\", repeat: Number.POSITIVE_INFINITY } : { duration: 0.2 }}\n        />\n        {[42, 60, 78].map((y, index) => (\n          <motion.circle\n            key={y}\n            className=\"decision-aperture__criterion\"\n            cx={state === \"complete\" ? 84 : state === \"error\" ? 42 : 60}\n            cy={y}\n            r=\"3.5\"\n            initial={false}\n            animate={animate && processing ? { cx: [42, 78, 60], opacity: [0.48, 1, 0.72] } : undefined}\n            transition={processing ? { duration: 1.8, delay: index * 0.12, ease: \"easeInOut\", repeat: Number.POSITIVE_INFINITY } : { duration: 0.2 }}\n          />\n        ))}\n        <motion.path\n          className=\"decision-aperture__confirmation\"\n          d=\"M50 61l7 7 15-18\"\n          pathLength=\"1\"\n          initial={false}\n          animate={{ pathLength: state === \"complete\" ? 1 : 0, opacity: state === \"complete\" ? 1 : 0 }}\n          transition={{ duration: animate ? 0.35 : 0 }}\n        />\n        <motion.path\n          className=\"decision-aperture__error\"\n          d=\"M54 54l12 12m0-12L54 66\"\n          initial={false}\n          animate={{ opacity: state === \"error\" ? 1 : 0 }}\n          transition={{ duration: animate ? 0.15 : 0 }}\n        />\n      </svg>\n    </div>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

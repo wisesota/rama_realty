@@ -3,67 +3,75 @@
 import { Keyboard, Square, X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { StateTransition } from "@/components/ui/state-transition";
 import type { VoiceExperienceState } from "@/lib/voice/types";
+import type { LandingCopy } from "@/lib/i18n";
+
+type VoicePanelCopy = LandingCopy["architecture"]["voice"]["panel"];
 
 type VoiceConversationProps = {
   state: VoiceExperienceState;
   onStop: () => void;
   onClose: () => void;
+  returnFocus?: () => void;
+  copy: VoicePanelCopy;
+  variant?: "inline" | "dialog";
+  announceStatus?: boolean;
 };
 
-function getVoiceCopy(state: Exclude<VoiceExperienceState, { phase: "idle" }>) {
+function getVoiceCopy(state: Exclude<VoiceExperienceState, { phase: "idle" }>, copy: VoicePanelCopy) {
   switch (state.phase) {
     case "requesting":
       return {
-        label: "Microphone permission",
-        title: "Preparing the secure voice session",
-        detail: "Your browser will ask before Rama can listen.",
+        label: copy.requestingLabel,
+        title: copy.requestingTitle,
+        detail: copy.requestingDetail,
       };
     case "connecting":
       return {
-        label: "Connecting",
-        title: "Opening a protected Gemini Live session",
-        detail: "The server key stays private; this browser receives a short-lived session token.",
+        label: copy.connectingLabel,
+        title: copy.connectingTitle,
+        detail: copy.connectingDetail,
       };
     case "listening":
       return {
-        label: state.mode === "recorded" ? "Recorded voice" : "Listening live",
-        title: state.transcript || "Describe the Dubai home and lifestyle you want…",
+        label: state.mode === "recorded" ? copy.listeningRecordedLabel : copy.listeningLiveLabel,
+        title: state.transcript || copy.listeningPlaceholder,
         detail:
           state.mode === "recorded"
-            ? "Speak naturally, then choose stop. Gemini processes this bounded audio turn securely."
-            : "Speak naturally. Pause when finished, or choose stop to end microphone input.",
+            ? copy.listeningRecordedDetail
+            : copy.listeningLiveDetail,
       };
     case "thinking":
       return {
-        label: "Understanding",
-        title: state.transcript || "Turning your conversation into a property brief…",
-        detail: "Rama is extracting your criteria and preparing a concise response.",
+        label: copy.thinkingLabel,
+        title: state.transcript || copy.thinkingPlaceholder,
+        detail: copy.thinkingDetail,
       };
     case "speaking":
       return {
-        label: "Rama is responding",
-        title: state.agentTranscript || "Preparing the spoken response…",
+        label: copy.speakingLabel,
+        title: state.agentTranscript || copy.speakingPlaceholder,
         detail: state.transcript
-          ? `Your brief: “${state.transcript}”`
-          : "You can speak again to interrupt or refine the brief.",
+          ? `${copy.speakingBriefPrefix}: ${state.transcript}`
+          : copy.speakingDetail,
       };
     case "complete":
       return {
-        label: "Brief captured",
+        label: copy.completeLabel,
         title: state.transcript,
-        detail: "The final transcript used the same fetched property-search path as typed input.",
+        detail: copy.completeDetail,
       };
     case "error":
       return {
-        label: "Text mode ready",
+        label: copy.errorLabel,
         title:
           state.code === "permission-denied"
-            ? "Microphone access is blocked in this browser."
+            ? copy.permissionErrorTitle
             : state.code === "connection-failed"
-              ? "The live voice session could not stay connected."
-              : "Voice mode is unavailable here.",
-        detail: "Type the same request in the search field; every search feature remains available.",
+              ? copy.connectionErrorTitle
+              : copy.unavailableErrorTitle,
+        detail: copy.errorDetail,
       };
   }
 }
@@ -72,16 +80,19 @@ export function VoiceConversation({
   state,
   onStop,
   onClose,
+  returnFocus,
+  copy,
+  variant = "inline",
+  announceStatus = true,
 }: VoiceConversationProps) {
   const isOpen = state.phase !== "idle";
   const active = ["requesting", "connecting", "listening", "thinking", "speaking"].includes(
     state.phase,
   );
-  const panelRef = useRef<HTMLElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
   const activeRef = useRef(active);
   const onCloseRef = useRef(onClose);
   const onStopRef = useRef(onStop);
+  const openerRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const detailId = useId();
 
@@ -92,108 +103,88 @@ export function VoiceConversation({
   }, [active, onClose, onStop]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || variant === "dialog") return;
 
-    previousFocusRef.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const focusFrame = window.requestAnimationFrame(() => {
-      const firstAction = panelRef.current?.querySelector<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      (firstAction ?? panelRef.current)?.focus();
-    });
-
-    const keepFocusInDialog = (event: KeyboardEvent) => {
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         if (activeRef.current) onStopRef.current();
-        else onCloseRef.current();
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-      const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable?.length) {
-        event.preventDefault();
-        panelRef.current?.focus();
-        return;
-      }
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
+        else {
+          returnFocus?.();
+          onCloseRef.current();
+        }
       }
     };
 
-    document.addEventListener("keydown", keepFocusInDialog);
+    document.addEventListener("keydown", handleEscape);
     return () => {
-      window.cancelAnimationFrame(focusFrame);
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", keepFocusInDialog);
-      previousFocusRef.current?.focus();
+      document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen]);
+  }, [isOpen, variant, returnFocus]);
+
+  useEffect(() => {
+    if (variant === "dialog") return;
+    if (isOpen) {
+      if (!openerRef.current) openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    } else {
+      if (openerRef.current) {
+        const node = openerRef.current;
+        requestAnimationFrame(() => node.focus({ preventScroll: true }));
+        openerRef.current = null;
+      }
+    }
+  }, [isOpen, variant]);
 
   if (state.phase === "idle") return null;
 
-  const copy = getVoiceCopy(state);
+  const panelCopy = getVoiceCopy(state, copy);
 
   return (
-    <div className="voice-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) { if (active) onStop(); else onClose(); } }}>
-      <section
-        ref={panelRef}
-        id="voice-conversation-panel"
-        className="voice-dialog-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={detailId}
-        tabIndex={-1}
-      >
-        <div className="voice-conversation__copy">
-          <div className="voice-conversation__status">
-            <span data-active={active} aria-hidden="true" />
-            <p>{copy.label}</p>
-          </div>
-          <p id={titleId} className="voice-conversation__transcript">{copy.title}</p>
-          <p id={detailId} className="voice-conversation__detail">{copy.detail}</p>
-          <p className="sr-only" aria-live="polite">
-            {state.announcement}
-          </p>
+    <section
+      id="voice-conversation-panel"
+      className="voice-dialog-panel"
+      role={variant === "inline" ? "region" : undefined}
+      aria-labelledby={titleId}
+      aria-describedby={detailId}
+      data-variant={variant}
+    >
+      <StateTransition state={state.phase} className="voice-conversation__copy">
+        <div className="voice-conversation__status">
+          <span data-active={active} aria-hidden="true" />
+          <p>{panelCopy.label}</p>
         </div>
+        <p id={titleId} className="voice-conversation__transcript">{panelCopy.title}</p>
+        <p id={detailId} className="voice-conversation__detail">{panelCopy.detail}</p>
+      </StateTransition>
 
-        <div className="voice-conversation__actions">
-          {active ? (
-            <Button className="voice-stop" type="button" variant="outline" onPress={onStop}>
-              <Square aria-hidden="true" />
-              Stop
-            </Button>
-          ) : (
-            <Button
-              className="voice-close"
-              type="button"
-              variant="ghost"
-              aria-label="Close voice conversation"
-              onPress={onClose}
-            >
-              <X aria-hidden="true" />
-            </Button>
-          )}
-          <span className="voice-text-fallback">
-            <Keyboard aria-hidden="true" /> Text always works
-          </span>
-        </div>
-      </section>
-    </div>
+      <p className="sr-only" aria-live={announceStatus ? "polite" : undefined}>
+        {state.announcement}
+      </p>
+
+      <div className="voice-conversation__actions">
+        {active ? (
+          <Button className="voice-stop" type="button" variant="outline" onPress={onStop}>
+            <Square aria-hidden="true" />
+            {copy.stop}
+          </Button>
+        ) : variant === "inline" ? (
+          <Button
+            className="voice-close"
+            type="button"
+            variant="ghost"
+            aria-label={copy.close}
+            onPress={() => {
+              returnFocus?.();
+              onClose();
+            }}
+          >
+            <X aria-hidden="true" />
+          </Button>
+        ) : null}
+        <span className="voice-text-fallback">
+          <Keyboard aria-hidden="true" /> {copy.textFallback}
+        </span>
+      </div>
+    </section>
   );
 }

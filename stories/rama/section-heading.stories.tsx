@@ -8,7 +8,7 @@ const meta: Meta<typeof SectionHeading> = {
   argTypes: {
     align: {
       control: 'select',
-      options: ['left', 'center'],
+      options: ['start', 'center'],
     },
   },
 };
@@ -16,20 +16,18 @@ const meta: Meta<typeof SectionHeading> = {
 export default meta;
 type Story = StoryObj<typeof SectionHeading>;
 
-export const LeftAligned: Story = {
+export const StartAligned: Story = {
   args: {
-    eyebrow: 'Private Catalog',
-    title: 'Curated architectural residences across prime Dubai districts.',
-    description: 'Each property is verified for title deeds, private amenities, and architectural provenance.',
-    align: 'left',
+    title: 'Keep evidence and open questions aligned for inspection.',
+    description: 'Operational decision content follows the logical reading edge.',
+    align: 'start',
   },
 };
 
 export const CenterAligned: Story = {
   args: {
-    eyebrow: 'Client Methodology',
-    title: 'Precision discovery through spoken intent and verified records.',
-    description: 'Direct speech-to-speech interaction without intermediary forms or inaccurate MLS listings.',
+    title: 'Say what matters.',
+    description: 'Rama turns your voice into a clear Dubai home brief.',
     align: 'center',
   },
 };

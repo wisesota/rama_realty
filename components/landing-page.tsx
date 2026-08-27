@@ -1,43 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowRight,
-  Bath,
-  BedDouble,
-  Building2,
-  Check,
   Database,
-  Eye,
-  Heart,
   LockKeyhole,
   MessageCircle,
-  Ruler,
   Search,
   ShieldCheck,
-  SlidersHorizontal,
-  X,
 } from "lucide-react";
-import { type FormEvent, useEffect, useRef } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useLandingStore } from "@/components/providers/landing-store-provider";
-import { Button, LinkButton } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { MediaFrame } from "@/components/rama/media-frame";
-import { SectionHeading } from "@/components/rama/section-heading";
+import { Button } from "@/components/ui/button";
 import { SectionShell } from "@/components/rama/section-shell";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { SavedBriefControl } from "@/components/saved-brief-control";
-import { AgentResponseBlocks } from "@/components/agent-response-blocks";
+import { SiteFooter } from "@/components/site-footer";
 import { VoiceConversation } from "@/components/voice-conversation";
 import { VoiceSignal } from "@/components/voice-signal";
-import { sampleProperties, type SampleProperty } from "@/lib/sample-properties";
+import { BriefConfirmation } from "@/components/brief-confirmation";
+import { DecisionAperture } from "@/components/rama/decision-aperture";
+import type { GeminiLiveSignalState } from "@/components/rama/gemini-live-signal";
+import { VoiceAction } from "@/components/rama/voice-action";
+import { VoiceDiscoveryDialog } from "@/components/rama/voice-discovery-dialog";
+import { elapsedBucket, emitProductEvent } from "@/lib/product-events";
 import type {
   GeminiLiveVoiceSession,
   GeminiVoiceStatus,
@@ -48,6 +34,8 @@ import type {
 } from "@/lib/voice/gemini-live-contracts";
 import type { RecordedVoiceSession } from "@/lib/voice/recorded-voice-session";
 import type { BrowserSpeechSession } from "@/lib/voice/browser-speech-session";
+import { localizedPath, type PublicLocale } from "@/lib/i18n";
+import type { LandingRuntimeCopy } from "@/lib/discovery-composer-contract";
 
 function stopMediaStream(stream: MediaStream | null) {
   stream?.getTracks().forEach((track) => track.stop());
@@ -76,164 +64,38 @@ function isRecordedVoiceResponse(value: unknown): value is GeminiRecordedVoiceRe
   );
 }
 
-type PropertyCardProps = {
-  index: number;
-  property: SampleProperty;
-  favorite: boolean;
-  onFavorite: (id: string) => void;
-  onSelect: (property: SampleProperty, trigger: HTMLElement) => void;
-};
-
-const discoverySteps = [
-  {
-    number: "01",
-    title: "Speak naturally",
-    copy: "Describe a school run, waterfront walk, morning light, or a real budget in your own words.",
-  },
-  {
-    number: "02",
-    title: "Inspect the brief",
-    copy: "Rama turns the conversation into criteria you can review, remove, and reprioritize.",
-  },
-  {
-    number: "03",
-    title: "Compare with context",
-    copy: "Every illustrative home retains the visible reason it appeared in the shortlist.",
-  },
-] as const;
-
-const decisionPath = [
-  ["01", "Describe", "Start with the life, routine, and constraints that matter."],
-  ["02", "Structure", "Review the criteria Rama understood before any comparison."],
-  ["03", "Compare", "See illustrative candidates with their match reasons attached."],
-  ["04", "Refine", "Change one priority without rebuilding the entire search."],
-] as const;
-
-const frequentlyAsked = [
-  {
-    question: "Are these live Dubai listings?",
-    answer:
-      "No. The current residences and prices are explicitly illustrative samples used to demonstrate the decision flow. A licensed inventory connector is not yet active.",
-  },
-  {
-    question: "Does text search work without the microphone?",
-    answer:
-      "Yes. Text is a complete path through the same brief extraction and property-search experience. Voice is an optional, user-initiated layer.",
-  },
-  {
-    question: "What happens after I speak?",
-    answer:
-      "Rama turns the transcript into an editable brief, runs the same property search used by typed input, and explains why each sample candidate appeared.",
-  },
-  {
-    question: "Can I save a property brief?",
-    answer:
-      "Yes. The saved-brief control uses a secure email sign-in flow. Saved application data is designed to remain owner-scoped in Supabase.",
-  },
-] as const;
-
-function PropertyCard({
-  index,
-  property,
-  favorite,
-  onFavorite,
-  onSelect,
-}: PropertyCardProps) {
-  return (
-    <article className="property-card">
-      <div className="property-image corner-frame">
-        <Image
-          src={property.image}
-          alt={property.imageAlt}
-          fill
-          loading={index === 0 ? "eager" : "lazy"}
-          sizes="(max-width: 720px) 100vw, (max-width: 1080px) 50vw, 390px"
-        />
-        <div className="property-image-overlay">
-          <span className="sample-label">Sample search result</span>
-          <span className="property-index" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <Button
-            className="favorite-button"
-            variant="ghost"
-            size="icon"
-            aria-label={`${favorite ? "Remove" : "Add"} ${property.name} ${
-              favorite ? "from" : "to"
-            } favorites`}
-            aria-pressed={favorite}
-            onPress={() => onFavorite(property.id)}
-          >
-            <Heart aria-hidden="true" fill={favorite ? "currentColor" : "none"} />
-          </Button>
-        </div>
-      </div>
-
-      <div className="property-content">
-        <div className="property-heading">
-          <h3>{property.name}</h3>
-          <p className="property-location">{property.location}</p>
-        </div>
-
-        <div className="property-details">
-          <div className="property-facts" aria-label={`${property.name} key facts`}>
-            <span aria-label={`${property.beds} bedrooms`}>
-              <BedDouble aria-hidden="true" /> {property.beds}
-            </span>
-            <span aria-label={`${property.baths} bathrooms`}>
-              <Bath aria-hidden="true" /> {property.baths}
-            </span>
-            <span aria-label={`${property.area} total area`}>
-              <Ruler aria-hidden="true" /> {property.area}
-            </span>
-          </div>
-          <strong>{property.price}</strong>
-        </div>
-
-        <p className="property-feature">{property.feature}</p>
-        
-        <div className="match-reason">
-          <Check aria-hidden="true" />
-          <span>{property.match}</span>
-        </div>
-
-        <Button
-          className="property-action"
-          variant="ghost"
-          onPress={(event) => onSelect(property, event.target as HTMLElement)}
-        >
-          Review sample context
-          <ArrowRight aria-hidden="true" />
-        </Button>
-      </div>
-    </article>
-  );
-}
-
-export function LandingPage() {
+export function LandingPage({
+  locale,
+  copy,
+  mode = "legacy",
+}: {
+  locale: PublicLocale;
+  copy: LandingRuntimeCopy;
+  mode?: "legacy" | "composer";
+}) {
   const brief = useLandingStore((state) => state.brief);
-  const criteria = useLandingStore((state) => state.criteria);
-  const properties = useLandingStore((state) => state.properties);
   const searchPhase = useLandingStore((state) => state.searchPhase);
   const searchStatus = useLandingStore((state) => state.searchStatus);
   const searchError = useLandingStore((state) => state.searchError);
-  const resultSource = useLandingStore((state) => state.resultSource);
-  const agentBlocks = useLandingStore((state) => state.agentBlocks);
   const voiceState = useLandingStore((state) => state.voiceState);
   const voiceMode = useLandingStore((state) => state.voiceMode);
   const voiceName = useLandingStore((state) => state.voiceName);
-  const favoriteIds = useLandingStore((state) => state.favoriteIds);
-  const selectedProperty = useLandingStore((state) => state.selectedProperty);
   const setBrief = useLandingStore((state) => state.setBrief);
   const setVoiceState = useLandingStore((state) => state.setVoiceState);
   const setSearchStatus = useLandingStore((state) => state.setSearchStatus);
+  const reportBriefError = useLandingStore((state) => state.reportBriefError);
   const setAgentBlocks = useLandingStore((state) => state.setAgentBlocks);
-  const setDecisionEnvelope = useLandingStore((state) => state.setDecisionEnvelope);
-  const searchProperties = useLandingStore((state) => state.searchProperties);
-  const toggleFavorite = useLandingStore((state) => state.toggleFavorite);
-  const selectProperty = useLandingStore((state) => state.selectProperty);
-  const hydrateAccount = useLandingStore((state) => state.hydrateAccount);
+  const preparedBrief = useLandingStore((state) => state.preparedBrief);
+  const briefRecalculating = useLandingStore((state) => state.briefRecalculating);
+  const prepareBrief = useLandingStore((state) => state.prepareBrief);
+  const updatePreparedBrief = useLandingStore((state) => state.updatePreparedBrief);
+  const cancelPreparedBrief = useLandingStore((state) => state.cancelPreparedBrief);
+  const confirmPreparedBrief = useLandingStore((state) => state.confirmPreparedBrief);
   const router = useRouter();
+  const pathname = usePathname();
+  const voiceCopy = copy.architecture.voice;
+  const [discoveryDialogOpen, setDiscoveryDialogOpen] = useState(false);
+  const [discoveryInputMode, setDiscoveryInputMode] = useState<"voice" | "text">("voice");
 
   const mediaStream = useRef<MediaStream | null>(null);
   const voiceSession = useRef<GeminiLiveVoiceSession | null>(null);
@@ -244,13 +106,72 @@ export function LandingPage() {
   const voiceAttempt = useRef(0);
   const voiceTranscript = useRef("");
   const agentTranscript = useRef("");
-  const propertyTrigger = useRef<HTMLElement | null>(null);
   const propertyBriefInput = useRef<HTMLInputElement | null>(null);
-  const propertyModal = useRef<HTMLDivElement | null>(null);
+  const propertyBriefTextarea = useRef<HTMLTextAreaElement | null>(null);
+  const voiceSignalRef = useRef<HTMLButtonElement | null>(null);
+  const voiceStartedAt = useRef<number | null>(null);
+  const lastVoicePhase = useRef<string>("");
 
   useEffect(() => {
-    void hydrateAccount();
-  }, [hydrateAccount]);
+    if (mode !== "composer") return;
+
+    const openFromEvent = (event: Event) => {
+      const requestedMode = event instanceof CustomEvent && event.detail?.mode === "text" ? "text" : "voice";
+      if (event instanceof CustomEvent && typeof event.detail?.brief === "string") {
+        setBrief(event.detail.brief);
+      }
+      setDiscoveryInputMode(requestedMode);
+      setDiscoveryDialogOpen(true);
+    };
+    const openFromHash = () => {
+      if (window.location.hash !== "#guided-search") return;
+      setDiscoveryInputMode("text");
+      setDiscoveryDialogOpen(true);
+    };
+    const openFromQuery = () => {
+      const requestedMode = new URLSearchParams(window.location.search).get("briefMode");
+      if (requestedMode !== "voice" && requestedMode !== "text") return;
+      setDiscoveryInputMode(requestedMode);
+      setDiscoveryDialogOpen(true);
+      window.history.replaceState(window.history.state, "", `${window.location.pathname}${window.location.hash}`);
+    };
+
+    window.addEventListener("rama:open-discovery", openFromEvent);
+    window.addEventListener("hashchange", openFromHash);
+    openFromQuery();
+    openFromHash();
+    return () => {
+      window.removeEventListener("rama:open-discovery", openFromEvent);
+      window.removeEventListener("hashchange", openFromHash);
+    };
+  }, [mode, setBrief]);
+
+  useEffect(() => {
+    if (mode !== "composer" || pathname !== localizedPath(locale)) return;
+    const returnSource = sessionStorage.getItem("rama:decision-room-restore-focus");
+    if (returnSource !== "voice" && returnSource !== "text") return;
+    sessionStorage.removeItem("rama:decision-room-restore-focus");
+    const frame = window.requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>(`[data-discovery-trigger='${returnSource}']`)?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [locale, mode, pathname]);
+
+  useEffect(() => {
+    if (lastVoicePhase.current === voiceState.phase) return;
+    lastVoicePhase.current = voiceState.phase;
+    if (voiceState.phase === "requesting" || (voiceState.phase !== "idle" && voiceStartedAt.current === null)) voiceStartedAt.current = performance.now();
+    const startedAt = voiceStartedAt.current ?? performance.now();
+    emitProductEvent({
+      event: "voice.lifecycle",
+      state: voiceState.phase,
+      mode: "mode" in voiceState && voiceState.mode ? voiceState.mode : voiceMode === "recorded" ? "recorded" : "live",
+      locale,
+      elapsed: elapsedBucket(performance.now() - startedAt),
+      timestamp: new Date().toISOString(),
+    });
+    if (["complete", "error", "idle"].includes(voiceState.phase)) voiceStartedAt.current = null;
+  }, [locale, voiceMode, voiceState]);
 
   useEffect(() => {
     return () => {
@@ -271,53 +192,26 @@ export function LandingPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!selectedProperty) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const keepFocusInModal = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        selectProperty(null);
-        requestAnimationFrame(() => propertyTrigger.current?.focus());
-        return;
-      }
-      if (event.key !== "Tab") return;
-      const focusable = propertyModal.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable?.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", keepFocusInModal);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", keepFocusInModal);
-    };
-  }, [selectProperty, selectedProperty]);
-
-  async function openDecisionRoom(searchBrief: string, source: "text" | "voice") {
-    const searchRunId = await searchProperties(searchBrief, source);
-    if (searchRunId) router.push(`/discover/${searchRunId}`);
+  async function confirmAndOpenDecisionRoom() {
+    if (voiceState.phase !== "idle") resetVoiceExperience();
+    const source = preparedBrief?.source ?? "text";
+    const searchRunId = await confirmPreparedBrief();
+    if (!searchRunId) return;
+    emitProductEvent({ event: "landing.brief_submit", searchRunId, source, timestamp: new Date().toISOString() });
+    sessionStorage.setItem("rama:decision-room-return-focus", source);
+    setDiscoveryDialogOpen(false);
+    document.querySelector<HTMLDialogElement>(".voice-discovery-dialog[open]")?.close();
+    router.push(localizedPath(locale, `/discover/${searchRunId}`));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (brief.trim().length < 3) {
-      requestAnimationFrame(() => propertyBriefInput.current?.focus());
+      reportBriefError(copy.shortBriefError);
+      requestAnimationFrame(() => (propertyBriefTextarea.current ?? propertyBriefInput.current)?.focus());
       return;
     }
-    void openDecisionRoom(brief, "text");
+    void prepareBrief(brief, "text");
   }
 
   function resetVoiceExperience(message?: string) {
@@ -348,25 +242,25 @@ export function LandingPage() {
     if (status === "connecting") {
       setVoiceState({
         phase: "connecting",
-        announcement: "Connecting to the secure Gemini Live voice session.",
+        announcement: voiceCopy.announcements.connecting,
       });
     } else if (status === "listening") {
       setVoiceState({
         phase: "listening",
-        announcement: "Rama is listening for your Dubai property brief.",
+        announcement: voiceCopy.announcements.listening,
         transcript: voiceTranscript.current,
         mode: "live",
       });
     } else if (status === "thinking") {
       setVoiceState({
         phase: "thinking",
-        announcement: "Rama is understanding the property brief.",
+        announcement: voiceCopy.announcements.thinking,
         transcript: voiceTranscript.current,
       });
     } else {
       setVoiceState({
         phase: "speaking",
-        announcement: "Rama is responding to the property brief.",
+        announcement: voiceCopy.announcements.speaking,
         transcript: voiceTranscript.current,
         agentTranscript: agentTranscript.current,
       });
@@ -383,7 +277,7 @@ export function LandingPage() {
     speechTimer.current = null;
     setVoiceState({
       phase: "complete",
-      announcement: "The voice brief is complete and the property results were updated.",
+      announcement: voiceCopy.announcements.complete,
       transcript,
       agentTranscript: agentResponse,
     });
@@ -420,7 +314,7 @@ export function LandingPage() {
     browserSpeechSession.current = null;
     setVoiceState({
       phase: "thinking",
-      announcement: "The recording is complete. Gemini is understanding the property brief.",
+      announcement: voiceCopy.announcements.recordingComplete,
       transcript: "",
     });
 
@@ -430,20 +324,20 @@ export function LandingPage() {
         recorder.stop(),
         browserSpeech?.stop() ?? Promise.resolve(""),
       ]);
+      stopMediaStream(mediaStream.current);
+      mediaStream.current = null;
       if (results[0].status === "rejected") throw results[0].reason;
       const result = results[0].value;
       const browserResult = results[1].status === "fulfilled" ? results[1].value : "";
       browserTranscript = browserResult.trim().slice(0, 500);
-      stopMediaStream(mediaStream.current);
-      mediaStream.current = null;
       if (attempt !== voiceAttempt.current) return;
       if ((!result.hasSpeech || result.durationMs < 300) && browserTranscript.length < 3) {
         setVoiceState({
           phase: "error",
           code: "unavailable",
-          announcement: "No clear speech was detected. Try again or use the text search.",
+          announcement: voiceCopy.announcements.noSpeech,
         });
-        setSearchStatus("No clear speech was detected. Your typed brief remains available.");
+        setSearchStatus(voiceCopy.statuses.noSpeech);
         return;
       }
 
@@ -469,22 +363,32 @@ export function LandingPage() {
       const payload: unknown = await response.json();
       if (!response.ok) {
         const message = (payload as Partial<GeminiRecordedVoiceError>).error;
-        throw new Error(message || "Gemini could not understand this voice turn.");
+        throw new Error(message || voiceCopy.errors.couldNotUnderstand);
       }
       if (!isRecordedVoiceResponse(payload)) {
-        throw new Error("Gemini returned an invalid voice response.");
+        throw new Error(voiceCopy.errors.invalidResponse);
       }
       if (attempt !== voiceAttempt.current) return;
 
       voiceTranscript.current = payload.transcript;
       agentTranscript.current = payload.agentResponse;
+      setBrief(payload.transcript);
       setVoiceState({
         phase: "speaking",
-        announcement: "Rama understood the voice brief and is responding.",
+        announcement: voiceCopy.announcements.understood,
         transcript: payload.transcript,
         agentTranscript: payload.agentResponse,
       });
-      void openDecisionRoom(payload.transcript, "voice");
+      const prepared = await prepareBrief(payload.transcript, "voice");
+      if (attempt !== voiceAttempt.current) return;
+      if (!prepared) {
+        setVoiceState({
+          phase: "error",
+          code: "unavailable",
+          announcement: voiceCopy.announcements.prepareFailed,
+        });
+        return;
+      }
       speakRecordedResponse(
         attempt,
         payload.transcript,
@@ -494,21 +398,27 @@ export function LandingPage() {
     } catch (error) {
       if (attempt !== voiceAttempt.current) return;
       if (browserTranscript.length >= 3) {
-        const agentResponse =
-          "Your request was transcribed in the browser. I’ve updated the illustrative results for you to review.";
+        const agentResponse = voiceCopy.responses.browserFallback;
         voiceTranscript.current = browserTranscript;
         agentTranscript.current = agentResponse;
+        setBrief(browserTranscript);
         setVoiceState({
           phase: "speaking",
-          announcement:
-            "Gemini is unavailable. Browser transcription updated the property results instead.",
+          announcement: voiceCopy.announcements.browserFallbackUsed,
           transcript: browserTranscript,
           agentTranscript: agentResponse,
         });
-        setSearchStatus(
-          "Gemini is unavailable, so browser transcription was used for this voice search.",
-        );
-        void openDecisionRoom(browserTranscript, "voice");
+        setSearchStatus(voiceCopy.statuses.browserFallbackUsed);
+        const prepared = await prepareBrief(browserTranscript, "voice");
+        if (attempt !== voiceAttempt.current) return;
+        if (!prepared) {
+          setVoiceState({
+            phase: "error",
+            code: "unavailable",
+            announcement: voiceCopy.announcements.prepareFailed,
+          });
+          return;
+        }
         speakRecordedResponse(
           attempt,
           browserTranscript,
@@ -520,22 +430,24 @@ export function LandingPage() {
 
       const message =
         error instanceof DOMException && error.name === "AbortError"
-          ? "Gemini voice understanding timed out. Please try a shorter request."
-          : error instanceof Error
-            ? error.message
-            : "Gemini could not understand this voice turn.";
+          ? voiceCopy.errors.timeout
+          : voiceCopy.errors.couldNotUnderstand;
       setVoiceState({
         phase: "error",
         code: "unavailable",
-        announcement: `${message} Text search remains available.`,
+        announcement: `${message} ${voiceCopy.announcements.unavailableWithText}`,
       });
-      setSearchStatus(`${message} Your typed brief and existing results remain available.`);
+      setSearchStatus(`${message} ${voiceCopy.statuses.sessionEnded}`);
     }
   }
 
   async function endVoiceInput() {
     if (recordedSession.current) {
       await finishRecordedVoice(voiceAttempt.current);
+      return;
+    }
+    if (["requesting", "connecting", "thinking"].includes(voiceState.phase)) {
+      resetVoiceExperience(voiceCopy.statuses.sessionEnded);
       return;
     }
     if (voiceSession.current) {
@@ -545,17 +457,17 @@ export function LandingPage() {
       return;
     }
     if (voiceState.phase === "speaking") {
-      resetVoiceExperience("Voice response stopped. Your property results remain available.");
+      resetVoiceExperience(voiceCopy.statuses.responseStopped);
     }
   }
 
-  async function handleVoiceAgent() {
+  async function handleVoiceAgent(forceStart = false) {
     const activePhases = ["requesting", "connecting", "listening", "thinking", "speaking"];
-    if (activePhases.includes(voiceState.phase)) {
+    if (!forceStart && activePhases.includes(voiceState.phase)) {
       if (voiceState.phase === "listening") {
         await endVoiceInput();
       } else {
-        resetVoiceExperience("Voice session ended. Your typed brief remains available.");
+        resetVoiceExperience(voiceCopy.statuses.sessionEnded);
       }
       return;
     }
@@ -570,22 +482,23 @@ export function LandingPage() {
       setVoiceState({
         phase: "error",
         code: "unsupported",
-        announcement: "Voice is not supported here. Text search remains available.",
+        announcement: voiceCopy.announcements.unsupported,
       });
       return;
     }
 
     setVoiceState({
       phase: "requesting",
-      announcement: "Checking microphone permission for the Gemini voice session.",
+      announcement: voiceCopy.announcements.requestingPermission,
     });
 
-    if (await microphonePermissionIsDenied()) {
-      if (attempt !== voiceAttempt.current) return;
+    const permissionDeniedBeforePrompt = await microphonePermissionIsDenied();
+    if (attempt !== voiceAttempt.current) return;
+    if (permissionDeniedBeforePrompt) {
       setVoiceState({
         phase: "error",
         code: "permission-denied",
-        announcement: "Microphone access is blocked. Text search remains available.",
+        announcement: voiceCopy.announcements.permissionBlocked,
       });
       return;
     }
@@ -643,7 +556,7 @@ export function LandingPage() {
             voiceTranscript.current = transcript;
             setVoiceState({
               phase: "listening",
-              announcement: "Browser transcription is capturing the property brief as a fallback.",
+              announcement: voiceCopy.announcements.browserCapture,
               transcript,
               mode: "recorded",
             });
@@ -655,11 +568,11 @@ export function LandingPage() {
       if (voiceMode === "recorded") {
         setVoiceState({
           phase: "listening",
-          announcement: "Gemini voice-turn mode is recording your property brief.",
+          announcement: voiceCopy.announcements.recordedListening,
           transcript: "",
           mode: "recorded",
         });
-        setSearchStatus("Gemini voice-turn mode is active. Speak, then choose stop.");
+        setSearchStatus(voiceCopy.statuses.recordedActive);
         return;
       }
 
@@ -672,7 +585,7 @@ export function LandingPage() {
           voiceTranscript.current = transcript;
           setVoiceState({
             phase: "listening",
-            announcement: "Rama is transcribing the property brief.",
+            announcement: voiceCopy.announcements.transcribing,
             transcript,
             mode: "live",
           });
@@ -682,7 +595,7 @@ export function LandingPage() {
           agentTranscript.current = transcript;
           setVoiceState({
             phase: "speaking",
-            announcement: "Rama is responding to the property brief.",
+            announcement: voiceCopy.announcements.speaking,
             transcript: voiceTranscript.current,
             agentTranscript: transcript,
           });
@@ -692,31 +605,91 @@ export function LandingPage() {
           voiceTranscript.current = transcript;
           setVoiceState({
             phase: "thinking",
-            announcement: "The voice brief is complete. Fetching matching property content.",
+            announcement: voiceCopy.announcements.fetching,
             transcript,
           });
-          setSearchStatus("Rama is matching this brief against the governed catalog.");
+          setSearchStatus(voiceCopy.statuses.matching);
         },
         onToolResult: (result) => {
           if (attempt !== voiceAttempt.current) return;
           setAgentBlocks(result.blocks);
           setSearchStatus(result.summary);
-          if (result.decisionEnvelope) {
-            setDecisionEnvelope(result.decisionEnvelope);
-            router.push(`/discover/${result.decisionEnvelope.searchRunId}`);
+          if (result.preparedBrief) {
+            const draft = result.preparedBrief;
+            setBrief(draft.transcript);
+            void prepareBrief(draft.transcript, "voice", draft.draftId).then((prepared) => {
+              if (attempt !== voiceAttempt.current) return;
+              if (!prepared) {
+                setVoiceState({
+                  phase: "error",
+                  code: "unavailable",
+                  announcement: voiceCopy.announcements.prepareFailed,
+                });
+                return;
+              }
+              resetVoiceExperience();
+            });
           }
         },
-        onError: (message) => {
+        onError: () => {
           if (attempt !== voiceAttempt.current) return;
           voiceSession.current = null;
           if (recordedSession.current && mediaStream.current?.active) {
             setVoiceState({
               phase: "listening",
-              announcement: "Gemini Live is unavailable. Secure recorded voice mode is listening.",
+              announcement: voiceCopy.announcements.liveUnavailableRecorded,
               transcript: "",
               mode: "recorded",
             });
-            setSearchStatus("Recorded Gemini voice mode is active. Speak, then choose stop.");
+            setSearchStatus(voiceCopy.statuses.recordedActive);
+            return;
+          }
+
+          const fallbackStream = mediaStream.current;
+          if (fallbackStream?.active) {
+            const fallbackRecorder = new Recorder({
+              onLimit: () => void finishRecordedVoice(attempt),
+            });
+            recordedSession.current = fallbackRecorder;
+            void fallbackRecorder.start(fallbackStream).then(() => {
+              if (attempt !== voiceAttempt.current || recordedSession.current !== fallbackRecorder) {
+                void fallbackRecorder.dispose();
+                return;
+              }
+              if (BrowserSpeech.isSupported()) {
+                const browserSpeech = new BrowserSpeech({
+                  onTranscript: (transcript) => {
+                    if (attempt !== voiceAttempt.current || recordedSession.current !== fallbackRecorder) return;
+                    voiceTranscript.current = transcript;
+                    setVoiceState({
+                      phase: "listening",
+                      announcement: voiceCopy.announcements.browserCapture,
+                      transcript,
+                      mode: "recorded",
+                    });
+                  },
+                });
+                if (browserSpeech.start()) browserSpeechSession.current = browserSpeech;
+              }
+              setVoiceState({
+                phase: "listening",
+                announcement: voiceCopy.announcements.liveUnavailableRecorded,
+                transcript: "",
+                mode: "recorded",
+              });
+              setSearchStatus(voiceCopy.statuses.recordedActive);
+            }).catch(() => {
+              if (attempt !== voiceAttempt.current) return;
+              if (recordedSession.current === fallbackRecorder) recordedSession.current = null;
+              stopMediaStream(mediaStream.current);
+              mediaStream.current = null;
+              setVoiceState({
+                phase: "error",
+                code: "connection-failed",
+                announcement: voiceCopy.announcements.connectionFailed,
+              });
+              setSearchStatus(voiceCopy.statuses.sessionEnded);
+            });
             return;
           }
 
@@ -725,9 +698,9 @@ export function LandingPage() {
           setVoiceState({
             phase: "error",
             code: "connection-failed",
-            announcement: `${message} Text search remains available.`,
+            announcement: voiceCopy.announcements.connectionFailed,
           });
-          setSearchStatus(`${message} Your typed brief and existing results remain available.`);
+          setSearchStatus(voiceCopy.statuses.sessionEnded);
         },
         onComplete: () => {
           if (attempt !== voiceAttempt.current) return;
@@ -735,7 +708,7 @@ export function LandingPage() {
           mediaStream.current = null;
           setVoiceState({
             phase: "complete",
-            announcement: "The Gemini Live voice session is complete.",
+            announcement: voiceCopy.announcements.liveComplete,
             transcript: voiceTranscript.current,
             agentTranscript: agentTranscript.current || undefined,
           });
@@ -745,27 +718,31 @@ export function LandingPage() {
 
       try {
         await session.start(stream, voiceName);
+        if (attempt !== voiceAttempt.current) {
+          await session.dispose();
+          return;
+        }
         const standbyRecorder = recordedSession.current;
         const standbyBrowserSpeech = browserSpeechSession.current;
         recordedSession.current = null;
         browserSpeechSession.current = null;
         await standbyRecorder?.dispose();
         standbyBrowserSpeech?.dispose();
-        setSearchStatus("Gemini Live voice mode is active. Speak naturally, then choose stop.");
+        setSearchStatus(voiceCopy.statuses.liveActive);
       } catch {
         voiceSession.current = null;
         await session.dispose();
         if (recordedSession.current && mediaStream.current?.active) {
           setVoiceState({
             phase: "listening",
-            announcement: "Secure recorded voice mode is listening for your property brief.",
+            announcement: voiceCopy.announcements.secureRecordedListening,
             transcript: "",
             mode: "recorded",
           });
-          setSearchStatus("Recorded Gemini voice mode is active. Speak, then choose stop.");
+          setSearchStatus(voiceCopy.statuses.recordedActive);
           return;
         }
-        throw new Error("Gemini voice could not start.");
+        throw new Error(voiceCopy.errors.startFailed);
       }
     } catch (error) {
       const session = voiceSession.current;
@@ -785,396 +762,355 @@ export function LandingPage() {
         phase: "error",
         code: permissionDenied ? "permission-denied" : "connection-failed",
         announcement: permissionDenied
-          ? "Microphone access was not granted. Text search remains available."
-          : `${error instanceof Error ? error.message : "Gemini voice could not start."} Text search remains available.`,
+          ? voiceCopy.announcements.permissionNotGranted
+          : voiceCopy.announcements.connectionFailed,
       });
     }
   }
 
-  function openProperty(property: SampleProperty, trigger: HTMLElement) {
-    propertyTrigger.current = trigger;
-    selectProperty(property);
-  }
-
-  function closeProperty() {
-    selectProperty(null);
-    requestAnimationFrame(() => propertyTrigger.current?.focus());
-  }
-
   const briefIsInvalid = searchPhase === "error" && brief.trim().length < 3;
-  const editorialProperties = properties.length > 0 ? properties : sampleProperties;
-  const featuredProperty = editorialProperties[0];
+  const hasSearchError = searchPhase === "error" && Boolean(searchError);
+
+  if (mode === "composer") {
+    const voiceIsActive = ["requesting", "connecting", "listening", "thinking", "speaking"].includes(voiceState.phase);
+    const signalState: GeminiLiveSignalState = preparedBrief
+      ? "complete"
+      : voiceState.phase === "error"
+        ? "error"
+        : voiceState.phase === "requesting" || voiceState.phase === "connecting"
+          ? "requesting"
+          : voiceState.phase === "listening"
+            ? "listening"
+            : voiceState.phase === "thinking" || voiceState.phase === "speaking"
+              ? "processing"
+              : voiceState.phase === "complete"
+                ? "complete"
+                : "resting";
+    const dialogStatus = preparedBrief
+      ? (briefRecalculating ? (locale === "ar" ? "جارٍ إعادة حساب المعايير…" : "Recalculating criteria…") : searchStatus)
+      : voiceState.phase === "idle"
+        ? (discoveryInputMode === "voice" ? copy.architecture.hero.dialogVoiceIntro : copy.architecture.hero.dialogTextIntro)
+        : searchStatus;
+
+    function preserveVoiceDraft() {
+      const transcript = voiceTranscript.current.trim();
+      if (!preparedBrief && transcript.length >= 3) setBrief(transcript);
+    }
+
+    function closeDiscoveryDialog() {
+      preserveVoiceDraft();
+      if (voiceState.phase !== "idle") resetVoiceExperience(voiceCopy.statuses.sessionEnded);
+      setDiscoveryDialogOpen(false);
+    }
+
+    function openVoiceDiscovery() {
+      setDiscoveryInputMode("voice");
+      setDiscoveryDialogOpen(true);
+      if (!preparedBrief) void handleVoiceAgent();
+    }
+
+    function switchToText() {
+      preserveVoiceDraft();
+      if (voiceState.phase !== "idle") resetVoiceExperience(voiceCopy.statuses.sessionEnded);
+      setDiscoveryInputMode("text");
+      requestAnimationFrame(() => propertyBriefTextarea.current?.focus({ preventScroll: true }));
+    }
+
+    function switchToVoice() {
+      setDiscoveryInputMode("voice");
+      void handleVoiceAgent();
+    }
+
+    return (
+      <div id="guided-search" className="quiet-voice-launcher">
+        <div className="quiet-voice-launcher__signal" aria-hidden="true">
+          <DecisionAperture state="resting" />
+        </div>
+        <form className="quiet-voice-launcher__actions" action={localizedPath(locale)} method="get" onSubmit={(event) => event.preventDefault()}>
+          <Button data-discovery-trigger="voice" name="briefMode" value="voice" type="submit" size="lg" onClick={(event) => event.preventDefault()} onPress={openVoiceDiscovery}>
+            {copy.architecture.hero.primaryAction}
+          </Button>
+          <Button data-discovery-trigger="text" name="briefMode" value="text" type="submit" variant="ghost" onClick={(event) => event.preventDefault()} onPress={() => {
+            setDiscoveryInputMode("text");
+            setDiscoveryDialogOpen(true);
+          }}>
+            {copy.architecture.hero.secondaryAction}
+          </Button>
+        </form>
+
+        <VoiceDiscoveryDialog
+          open={discoveryDialogOpen}
+          title={copy.architecture.hero.dialogTitle}
+          description={copy.architecture.hero.dialogDescription}
+          closeLabel={copy.architecture.hero.dialogClose}
+          status={dialogStatus}
+          announceStatus={preparedBrief !== null || discoveryInputMode === "text" || voiceState.phase === "idle"}
+          signalState={signalState}
+          signalSrc="/lottie/ai.json"
+          initialFocusRef={discoveryInputMode === "text" && !preparedBrief ? propertyBriefTextarea : undefined}
+          onRequestClose={closeDiscoveryDialog}
+          footer={preparedBrief ? (
+            <p className="voice-discovery-dialog__boundary"><LockKeyhole aria-hidden="true" />{copy.architecture.hero.dialogBoundary}</p>
+          ) : (
+            <>
+              <div className="voice-discovery-dialog__actions">
+                {discoveryInputMode === "voice" ? (
+                  voiceIsActive ? (
+                    <Button type="button" variant="ghost" onPress={switchToText}>{copy.architecture.hero.dialogTextAlternative}</Button>
+                  ) : (
+                    <>
+                      <VoiceAction
+                        state={voiceState}
+                        label={copy.architecture.hero.voiceIdle}
+                        activeLabel={copy.architecture.hero.voiceActive}
+                        onPress={() => void handleVoiceAgent()}
+                      />
+                      <Button type="button" variant="ghost" onPress={switchToText}>{copy.architecture.hero.dialogTextAlternative}</Button>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <Button type="submit" form="guided-search-form" isDisabled={searchPhase === "loading" || briefRecalculating}>
+                      {searchPhase === "loading" ? copy.opening : copy.architecture.hero.textAction}
+                      <ArrowRight className="logical-forward-icon" aria-hidden="true" />
+                    </Button>
+                    <Button type="button" variant="ghost" onPress={switchToVoice}>{copy.architecture.hero.dialogVoiceAlternative}</Button>
+                  </>
+                )}
+              </div>
+              <p id="property-brief-guidance" className="voice-discovery-dialog__boundary"><LockKeyhole aria-hidden="true" />{copy.architecture.hero.dialogBoundary}</p>
+            </>
+          )}
+        >
+          {preparedBrief ? (
+            <>
+              <BriefConfirmation
+                draft={preparedBrief}
+                busy={searchPhase === "loading"}
+                recalculating={briefRecalculating}
+                locale={locale}
+                onChange={(value) => void updatePreparedBrief(value)}
+                onConfirm={() => void confirmAndOpenDecisionRoom()}
+                onCancel={() => {
+                  if (voiceState.phase !== "idle") resetVoiceExperience();
+                  cancelPreparedBrief();
+                  setDiscoveryInputMode("text");
+                }}
+                onRetry={preparedBrief.source === "voice" ? () => {
+                  resetVoiceExperience();
+                  cancelPreparedBrief();
+                  setDiscoveryInputMode("voice");
+                  void handleVoiceAgent(true);
+                } : undefined}
+              />
+              {hasSearchError ? <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p> : null}
+            </>
+          ) : discoveryInputMode === "voice" ? (
+            voiceState.phase === "idle" ? (
+              <div className="voice-discovery-dialog__idle">
+                <p>{copy.architecture.hero.dialogVoiceIntro}</p>
+              </div>
+            ) : (
+              <VoiceConversation
+                state={voiceState}
+                copy={voiceCopy.panel}
+                variant="dialog"
+                announceStatus={!hasSearchError}
+                onStop={() => void endVoiceInput()}
+                onClose={closeDiscoveryDialog}
+              />
+            )
+          ) : (
+            <form
+              id="guided-search-form"
+              className="voice-discovery-dialog__form"
+              aria-busy={searchPhase === "loading" || briefRecalculating}
+              onSubmit={handleSubmit}
+            >
+              <label htmlFor="property-brief">{copy.architecture.hero.composerLabel}</label>
+              <textarea
+                ref={propertyBriefTextarea}
+                id="property-brief"
+                value={brief}
+                onChange={(event) => setBrief(event.target.value)}
+                placeholder={copy.placeholder}
+                maxLength={500}
+                rows={4}
+                aria-invalid={briefIsInvalid}
+                aria-describedby={briefIsInvalid ? "property-brief-guidance property-brief-error" : "property-brief-guidance"}
+              />
+              <p className="voice-discovery-dialog__count">{brief.length} / 500 {copy.architecture.hero.characterCount}</p>
+              {hasSearchError ? <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p> : null}
+            </form>
+          )}
+          {discoveryInputMode === "voice" && !preparedBrief && hasSearchError ? (
+            <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p>
+          ) : null}
+        </VoiceDiscoveryDialog>
+      </div>
+    );
+  }
 
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader />
+      <a className="skip-link" href="#main-content">
+        {copy.skip}
+      </a>
+      <SiteHeader locale={locale} copy={copy.header} />
 
       <main id="main-content">
-        <section id="top" className="hero-stage" aria-labelledby="hero-title">
-          <SectionShell className="hero-stage__inner">
-            <MediaFrame className="hero-media">
-              <Image
-                src="/images/rama-hero-editorial-daylight.png"
-                alt="Contemporary Dubai residence in a desert-edge landscape with the skyline beyond"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 1280px"
-              />
-              <div className="hero-media__veil" aria-hidden="true" />
-              <p className="hero-wordmark" aria-hidden="true">RAMA REALTY</p>
-
-              <div className="hero-copy hero-reveal">
-                <VoiceSignal state={voiceState} onPress={() => void handleVoiceAgent()} />
-                <p className="eyebrow eyebrow--hero">Voice-led Dubai property discovery</p>
-                <h1 id="hero-title">Describe the life. We’ll shape the search.</h1>
-                <p className="hero-subtitle">Speak naturally or type a brief. Rama keeps every criterion visible.</p>
-
-                <form
-                  id="guided-search"
-                  className="hero-search"
-                  aria-busy={searchPhase === "loading"}
-                  onSubmit={handleSubmit}
-                >
-                  <label className="sr-only" htmlFor="property-brief">
-                    Describe the Dubai property and lifestyle you want
-                  </label>
-                  <div className="hero-search__control">
-                    <Search aria-hidden="true" />
-                    <input
-                      ref={propertyBriefInput}
-                      id="property-brief"
-                      value={brief}
-                      onChange={(event) => setBrief(event.target.value)}
-                      placeholder="A two-bedroom apartment in Dubai Marina near the waterfront"
-                      maxLength={500}
-                      aria-invalid={briefIsInvalid}
-                      aria-describedby={
-                        briefIsInvalid
-                          ? "property-brief-guidance property-brief-error"
-                          : "property-brief-guidance"
-                      }
-                    />
-                    <Button
-                      className="search-submit"
-                      type="submit"
-                      isDisabled={searchPhase === "loading"}
-                      aria-label={searchPhase === "loading" ? "Searching properties" : "Search properties"}
-                    >
-                      <span>{searchPhase === "loading" ? "Searching" : "Search"}</span>
-                      <ArrowRight aria-hidden="true" />
-                    </Button>
-                  </div>
-
-
-
-                  {briefIsInvalid ? (
-                    <p id="property-brief-error" className="hero-search__error" role="alert">{searchError}</p>
-                  ) : null}
-
-                  <div className="hero-search__meta">
-                    <span id="property-brief-guidance">
-                      <LockKeyhole aria-hidden="true" /> Text always works · illustrative inventory
-                    </span>
-                  </div>
-                </form>
-              </div>
-
-              <div className="hero-caption" aria-hidden="true">
-                <span>Dubai, UAE</span>
-                <span>Conversation to shortlist</span>
-              </div>
-            </MediaFrame>
-            
-            <div className="hero-stage__footer">
-              <div className="hero-thumbnails" aria-hidden="true">
-                {sampleProperties.slice(0, 3).map((property, i) => (
-                  <MediaFrame key={property.id} className={`hero-thumb hero-thumb--${i}`}>
-                    <Image src={property.image} alt="" fill sizes="260px" />
-                  </MediaFrame>
-                ))}
-              </div>
-              <div className="hero-intro">
-                <p>Start with how you want to live. Rama keeps the brief, the trade-offs, and every sample match visible.</p>
-              </div>
-            </div>
-          </SectionShell>
-        </section>
-
-        <section id="current-brief" className="brief-summary" aria-label="Current sample property brief">
-          <SectionShell className="brief-summary__inner">
-            <div className="brief-summary__status">
-              <span>Current brief</span>
-              <p className="search-status" aria-live="polite">{searchStatus}</p>
-            </div>
-            <div className="criteria-list" aria-label="Extracted sample criteria">
-              {criteria.map((criterion) => <span key={criterion}>{criterion}</span>)}
-            </div>
-            <SavedBriefControl />
-          </SectionShell>
-        </section>
-
-        <section className="agent-canvas" aria-label="Live Rama response">
-          <SectionShell>
-            <AgentResponseBlocks blocks={agentBlocks} />
-          </SectionShell>
-        </section>
-
-        <section className="context-section section-block" aria-labelledby="context-title">
-          <SectionShell className="context-section__inner">
-            <div className="context-content">
-              <SectionHeading
-                id="context-title"
-                eyebrow="A better starting point"
-                title="The useful part of a filter—without the form."
-                description="The conversation becomes a calm, reviewable decision brief before Rama shows any illustrative property."
-              />
-              <div className="discovery-steps">
-                {discoverySteps.map((step) => (
-                  <article key={step.number} className="discovery-step">
-                    <span>{step.number}</span>
-                    <h3>{step.title}</h3>
-                    <p>{step.copy}</p>
-                  </article>
-                ))}
-              </div>
-            </div>
-            <div className="context-media-collage" aria-hidden="true">
-              {sampleProperties.slice(0, 3).map((prop, i) => (
-                <MediaFrame key={prop.id} className={`collage-item collage-item--${i}`}>
-                  <Image src={prop.image} alt="" fill sizes="(max-width: 768px) 50vw, 30vw" />
-                </MediaFrame>
-              ))}
-            </div>
-          </SectionShell>
-        </section>
-
-        <section
-          id="residences"
-          className="residences section-block"
-          aria-labelledby="residences-title"
-          aria-busy={searchPhase === "loading"}
-        >
-          <SectionShell>
-            <div className="section-intro">
-              <SectionHeading
-                id="residences-title"
-                eyebrow="Illustrative Dubai shortlist"
-                title="Residences with their reasons attached."
-                description={
-                  properties.length === 0
-                    ? "No illustrative sample satisfies every hard constraint in this brief. Adjust one criterion to widen the sample set."
-                    : "Each sample demonstrates the intended decision flow; no live listing feed is connected."
-                }
-              />
-              <div className="results-meta">
-                <span>{String(properties.length).padStart(2, "0")} sample homes</span>
-                <span>Sorted by brief match</span>
-              </div>
-            </div>
-
-            {properties.length > 0 ? (
-              <div className="property-grid">
-                {properties.map((property, index) => (
-                  <PropertyCard
-                    key={property.id}
-                    index={index}
-                    property={property}
-                    favorite={favoriteIds.includes(property.id)}
-                    onFavorite={toggleFavorite}
-                    onSelect={openProperty}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="empty-results" role="status">
-                <p>No illustrative residence meets every hard constraint.</p>
-                <span>Rama kept the criteria intact. Change one constraint above to run a broader sample search.</span>
-              </div>
-            )}
-          </SectionShell>
-        </section>
-
-        <section id="services" className="services-section section-block" aria-labelledby="services-title">
-          <SectionShell>
-            <SectionHeading
-              id="services-title"
-              eyebrow="Buyer concierge"
-              title="One conversation. Four visible decisions."
-              description="Rama keeps the judgment work of property discovery understandable—without pretending this prototype is a live brokerage feed."
-              align="center"
+        <section id="top" className="relative w-full min-h-[100svh] bg-[var(--rama-ink-dark)] overflow-hidden flex flex-col justify-between" aria-labelledby="hero-title">
+          {/* Architectural Villa Daylight Backdrop */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none select-none">
+            <Image
+              src="/images/rama-hero-editorial-daylight.png"
+              alt={copy.heroAlt}
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
             />
-            <div className="services-layout">
-              <MediaFrame className="services-media">
-                <Image src={featuredProperty.image} alt={featuredProperty.imageAlt} fill sizes="(max-width: 860px) 100vw, 42vw" />
-                <div className="services-media__caption">
-                  <span>Illustrative residence</span>
-                  <strong>{featuredProperty.location}</strong>
+            <div className="hero-veil--vellaro" aria-hidden="true" />
+          </div>
+
+          {/* Main Nordic Voice-First Atelier */}
+          <div className="relative z-10 w-full max-w-4xl mx-auto px-6 lg:px-12 pt-24 md:pt-28 pb-8 flex flex-col justify-between flex-grow items-center text-center">
+            {/* Clean Nordic Editorial Title Lockup */}
+            <div className="flex flex-col items-center gap-1.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 text-xs font-sans font-bold uppercase tracking-[0.2em] text-[var(--rama-ivory)]/90">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse motion-reduce:animate-none" />
+                <span>{copy.badge}</span>
+              </div>
+              <h1 id="hero-title" className="font-heading font-semibold text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] text-white tracking-[-0.025em] leading-tight whitespace-normal lg:whitespace-nowrap">
+                {copy.title}
+              </h1>
+              <p className="font-heading italic text-sm sm:text-base md:text-lg text-white/90 tracking-wide font-normal max-w-lg">
+                {copy.subtitle}
+              </p>
+            </div>
+
+            {/* AI Voice Agent Hero Interaction Centerpiece */}
+            <div className="w-full max-w-xl my-auto py-4">
+              <form
+                id="guided-search"
+                className="w-full relative flex flex-col items-center gap-4"
+                aria-busy={searchPhase === "loading"}
+                onSubmit={handleSubmit}
+              >
+                {/* Central Voice Hub Orb */}
+                <div className="flex flex-col items-center gap-2" data-primary-interaction="voice">
+                  <p className="text-xs font-sans font-bold uppercase tracking-[0.18em] text-white/90">{copy.voiceLead}</p>
+                  <VoiceSignal ref={voiceSignalRef} state={voiceState} locale={locale} onPress={() => void handleVoiceAgent()} />
                 </div>
-              </MediaFrame>
-              <div className="service-list">
-                <article><MessageCircle aria-hidden="true" /><div><h3>Conversational discovery</h3><p>Describe lifestyle, location, routine, and trade-offs naturally.</p></div></article>
-                <article><SlidersHorizontal aria-hidden="true" /><div><h3>Editable criteria</h3><p>Inspect the structured brief and refine one priority at a time.</p></div></article>
-                <article><Building2 aria-hidden="true" /><div><h3>Explainable shortlist</h3><p>See why each illustrative property appeared for this brief.</p></div></article>
-                <article><Eye aria-hidden="true" /><div><h3>Visible source boundaries</h3><p>Sample status and future connector seams remain explicit.</p></div></article>
-              </div>
-            </div>
-          </SectionShell>
-        </section>
 
-        <section className="signature-section section-block" aria-labelledby="signature-title">
-          <SectionShell>
-            <SectionHeading
-              id="signature-title"
-              eyebrow="Featured context"
-              title="A shortlist should feel like a dossier, not a feed."
-              description="The strongest candidate can hold imagery, decision context, and a clear path back to the original brief in one composed view."
-            />
-            <div className="signature-media-layout">
-              <MediaFrame className="signature-media-main" tone="muted">
-                <Image src={featuredProperty.image} alt={featuredProperty.imageAlt} fill sizes="(max-width: 768px) 100vw, 1280px" />
-              </MediaFrame>
-              <MediaFrame className="signature-media-polaroid">
-                <Image src={sampleProperties[1].image} alt="" fill sizes="400px" />
-              </MediaFrame>
-              <div className="signature-dossier">
-                <p className="eyebrow">Lead illustrative match</p>
-                <h3>{featuredProperty.name}</h3>
-                <span>{featuredProperty.location} · {featuredProperty.price}</span>
-                <p>{featuredProperty.match}</p>
-                <Button variant="outline" onPress={(event) => openProperty(featuredProperty, event.target as HTMLElement)}>
-                  Review context <ArrowRight aria-hidden="true" />
-                </Button>
-              </div>
-            </div>
-          </SectionShell>
-        </section>
-
-        <section className="path-section section-block" aria-labelledby="path-title">
-          <SectionShell>
-            <SectionHeading
-              id="path-title"
-              eyebrow="How Rama works"
-              title="A pathway from conversation to context."
-              align="center"
-            />
-            <ol className="services-card-grid">
-              {decisionPath.map(([number, title, copy]) => (
-                <li key={number} className="service-card">
-                  <div className="service-card__header">
-                    <span>{number}</span>
+                {/* Compact Unified Search Bar - Solid Nordic Ink */}
+                <label className="self-start text-xs font-sans font-semibold uppercase tracking-[0.14em] text-white/80" htmlFor="property-brief">
+                  {copy.inputLabel}
+                </label>
+                <div className="landing-search-control w-full min-w-0 bg-[#0c1216]/85 border border-white/25 p-1.5 rounded-[8px] flex items-center gap-2 transition-[border-color,box-shadow] focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/25">
+                  <div className="pl-3.5 pr-1 hidden sm:flex items-center text-white/60">
+                    <Search className="w-4 h-4" aria-hidden="true" />
                   </div>
-                  <div className="service-card__content">
-                    <h3>{title}</h3>
-                    <p>{copy}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="property-mosaic" aria-label="Illustrative Dubai residence imagery">
-              {sampleProperties.map((property, index) => (
-                <MediaFrame key={property.id} className={`property-mosaic__item property-mosaic__item--${index + 1}`}>
-                  <Image src={property.image} alt={property.imageAlt} fill sizes="(max-width: 720px) 100vw, 33vw" />
-                </MediaFrame>
-              ))}
+                  <input
+                    ref={propertyBriefInput}
+                    id="property-brief"
+                    className="min-w-0 w-full bg-transparent border-none outline-none text-white placeholder:text-white/60 px-2 sm:px-1.5 py-1.5 text-base font-sans"
+                    value={brief}
+                    onChange={(event) => setBrief(event.target.value)}
+                    placeholder={copy.placeholder}
+                    maxLength={500}
+                    aria-invalid={briefIsInvalid}
+                    aria-describedby={
+                      briefIsInvalid
+                        ? "property-brief-guidance property-brief-error"
+                        : "property-brief-guidance"
+                    }
+                  />
+                  <Button
+                    className="inline-flex items-center justify-center min-h-[44px] bg-transparent text-white border border-white/35 hover:bg-white/10 px-5 py-2 font-sans font-bold tracking-[0.12em] text-xs uppercase transition-colors rounded-[6px] cursor-pointer shrink-0"
+                    type="submit"
+                    isDisabled={searchPhase === "loading"}
+                    aria-label={
+                      searchPhase === "loading" ? copy.openingLabel : copy.shapeLabel
+                    }
+                  >
+                    <span>{searchPhase === "loading" ? copy.opening : copy.search}</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" aria-hidden="true" />
+                  </Button>
+                </div>
+
+                {hasSearchError ? (
+                  <p id="property-brief-error" className="!bg-red-950/80 !text-red-200 border border-red-500/30 p-2 text-xs rounded-sm" role="alert">
+                    {searchError}
+                  </p>
+                ) : null}
+
+                <div className="flex items-center justify-center gap-2 text-xs text-white/70 tracking-wide">
+                  <LockKeyhole className="w-3 h-3 flex-shrink-0 text-white/40" aria-hidden="true" />
+                  <span id="property-brief-guidance">
+                    {copy.boundary}
+                  </span>
+                </div>
+
+                <VoiceConversation
+                  state={voiceState}
+                  copy={voiceCopy.panel}
+                  onStop={() => void endVoiceInput()}
+                  onClose={() => resetVoiceExperience()}
+                  returnFocus={() => requestAnimationFrame(() => voiceSignalRef.current?.focus())}
+                />
+
+                {preparedBrief ? (
+                  <BriefConfirmation
+                    draft={preparedBrief}
+                    busy={searchPhase === "loading"}
+                    recalculating={briefRecalculating}
+                    locale={locale}
+                    onChange={(value) => void updatePreparedBrief(value)}
+                    onConfirm={() => void confirmAndOpenDecisionRoom()}
+                    onCancel={cancelPreparedBrief}
+                    onRetry={preparedBrief.source === "voice" ? () => { cancelPreparedBrief(); void handleVoiceAgent(); } : undefined}
+                  />
+                ) : null}
+              </form>
             </div>
-          </SectionShell>
+
+            {/* Bottom product boundary */}
+            <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-white/10 pt-3 text-xs tracking-[0.12em] uppercase text-white/70 font-sans">
+              <span>{copy.support}</span>
+              <span>{copy.supply}</span>
+            </div>
+          </div>
         </section>
 
-        <section id="methodology" className="methodology section-block" aria-labelledby="methodology-title">
-          <SectionShell className="methodology-grid">
-            <div className="methodology-copy">
-              <p className="eyebrow">Evidence, not mystery</p>
-              <h2 id="methodology-title">Every result keeps its reason.</h2>
-              <p>Rama holds the buyer’s words, the structured brief, and the sample match logic in one visible chain. Nothing here claims live inventory or hidden certainty.</p>
-              <div className="methodology-note"><ShieldCheck aria-hidden="true" /><span>Local illustrative data only. Licensed supply remains a future connector.</span></div>
+        <section id="trust" className="landing-trust" aria-labelledby="trust-title">
+          <SectionShell className="landing-trust__inner">
+            <div className="landing-trust__heading">
+              <p className="eyebrow">{copy.trustEyebrow}</p>
+              <h2 id="trust-title">{copy.trustTitle}</h2>
             </div>
-            <ol className="evidence-ledger">
-              <li><span>01 · What you said</span><p>“{brief}”</p></li>
-              <li><span>02 · What Rama understood</span><p>{criteria.join(" · ")}</p></li>
-              <li><span>03 · Why these appeared</span><p>{properties[0]?.match ?? "No illustrative property candidates matched the current brief."}</p></li>
-              <li><span>Source status</span><p>{resultSource}. No valuation or market-data feed is connected.</p></li>
-            </ol>
-            <div className="trust-markers" aria-label="Prototype trust boundaries">
-              <div><Database aria-hidden="true" /><span>Source</span><strong>{resultSource}</strong></div>
-              <div><ShieldCheck aria-hidden="true" /><span>Credentials</span><strong>Server held</strong></div>
-              <div><Eye aria-hidden="true" /><span>Match logic</span><strong>Visible</strong></div>
+            <div className="landing-trust__statements">
+              <article>
+                <Database aria-hidden="true" />
+                <p>{copy.trust[0]}</p>
+              </article>
+              <article>
+                <ShieldCheck aria-hidden="true" />
+                <p>{copy.trust[1]}</p>
+              </article>
+              <article>
+                <MessageCircle aria-hidden="true" />
+                <p>{copy.trust[2]}</p>
+              </article>
             </div>
-          </SectionShell>
-        </section>
-
-        <section className="faq-section section-block" aria-labelledby="faq-title">
-          <SectionShell className="faq-layout">
-            <SectionHeading
-              id="faq-title"
-              eyebrow="Before you begin"
-              title="Frequently asked questions"
-              description="Clear boundaries make a better product experience—and a better starting conversation."
-            />
-            <Accordion className="faq-accordion">
-              {frequentlyAsked.map((item) => (
-                <AccordionItem key={item.question} id={item.question}>
-                  <AccordionTrigger>{item.question}</AccordionTrigger>
-                  <AccordionContent><p>{item.answer}</p></AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </SectionShell>
-        </section>
-
-        <section className="closing-cta section-block" aria-labelledby="closing-title">
-          <SectionShell className="closing-cta__inner">
-            <div className="closing-content">
-              <h2 id="closing-title">Ready to start your next discovery?</h2>
-              <LinkButton className="rama-button rama-button--primary" href="#guided-search">
-                Shape your brief <ArrowRight aria-hidden="true" />
-              </LinkButton>
-            </div>
-            <div className="closing-cta__media" aria-hidden="true">
-              <MediaFrame>
-                <Image src={sampleProperties[0].image} alt="" fill sizes="400px" />
-              </MediaFrame>
-            </div>
-            <div className="closing-wordmark" aria-hidden="true">RAMA REALTY</div>
+            <p className="landing-trust__status" aria-live="polite">
+              {searchStatus}
+            </p>
           </SectionShell>
         </section>
       </main>
 
-      <SiteFooter />
-
-      <VoiceConversation
-        state={voiceState}
-        onStop={() => void endVoiceInput()}
-        onClose={() => resetVoiceExperience()}
-      />
-
-      {selectedProperty ? (
-        <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) closeProperty(); }}>
-          <div
-            ref={propertyModal}
-            className="property-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="property-modal-title"
-            aria-describedby="property-modal-description"
-          >
-            <Button className="modal-close" variant="outline" size="icon" aria-label="Close sample property details" autoFocus onPress={closeProperty}>
-              <X aria-hidden="true" />
-            </Button>
-            <div className="modal-image">
-              <Image src={selectedProperty.image} alt={selectedProperty.imageAlt} fill sizes="(max-width: 760px) 100vw, 52vw" />
-            </div>
-            <div className="modal-content">
-              <p className="eyebrow">Sample search result</p>
-              <h2 id="property-modal-title">{selectedProperty.name}</h2>
-              <div className="modal-price-row"><span>{selectedProperty.location}</span><strong>{selectedProperty.price}</strong></div>
-              <p id="property-modal-description">This sample detail demonstrates how a candidate keeps its match reason and search context. No live property record is attached.</p>
-              <div className="match-reason match-reason--modal"><Check aria-hidden="true" /><span>{selectedProperty.match}</span></div>
-              <Button className="rama-button rama-button--primary" onPress={closeProperty}>Return to sample results</Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <SiteFooter copy={copy.footer} />
     </>
   );
 }

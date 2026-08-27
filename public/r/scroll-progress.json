@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "scroll-progress",
+  "title": "Rama Scroll Progress",
+  "description": "A one-pixel Fjord scroll-progress rule with RTL and reduced-motion behavior.",
+  "files": [
+    {
+      "path": "components/ui/scroll-progress.tsx",
+      "content": "import { cn } from \"@/lib/utils\";\n\n/** A one-pixel, direction-aware adaptation of Magic UI's Scroll Progress. */\nexport function ScrollProgress({ className }: { className?: string }) {\n  return (\n    <div\n      aria-hidden=\"true\"\n      className={cn(\"rama-scroll-progress\", className)}\n    />\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

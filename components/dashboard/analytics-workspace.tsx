@@ -17,7 +17,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import type { AnalyticsSummary } from "@/lib/posthog/analytics";
 import {
   calculateInquiryConversionRate,
@@ -32,6 +32,12 @@ type AnalyticsWorkspaceProps = {
 };
 
 const DUBAI_TIME_ZONE = "Asia/Dubai";
+
+type BarScaleStyle = CSSProperties & { "--ops-bar-scale": number };
+
+function barScaleStyle(percent: number): BarScaleStyle {
+  return { "--ops-bar-scale": Math.max(0, Math.min(1, percent / 100)) };
+}
 
 function formatDubaiTime(isoString: string): string {
   try {
@@ -375,7 +381,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                         title={`${formattedDate}: ${point.pageviews} views (${point.visitors} visitors)`}
                       >
                         <div className="ops-trend-bar-track">
-                          <div className="ops-trend-bar-fill" style={{ height: `${heightPercent}%` }}>
+                          <div className="ops-trend-bar-fill" style={barScaleStyle(heightPercent)}>
                             <span className="ops-bar-tooltip">
                               <strong>{point.pageviews} views</strong>
                               <small>{point.visitors} visitors</small>
@@ -416,7 +422,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{data.overview.totalPageviews}</strong>
                   </div>
                   <div className="ops-funnel-bar">
-                    <span style={{ width: "100%" }} />
+                    <span style={barScaleStyle(100)} />
                   </div>
                 </div>
 
@@ -426,7 +432,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{data.funnel.voiceSearches}</strong>
                   </div>
                   <div className="ops-funnel-bar">
-                    <span style={{ width: `${voiceBarPercent}%` }} />
+                    <span style={barScaleStyle(voiceBarPercent)} />
                   </div>
                 </div>
 
@@ -436,7 +442,7 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                     <strong>{data.funnel.shortlists}</strong>
                   </div>
                   <div className="ops-funnel-bar">
-                    <span style={{ width: `${shortlistBarPercent}%` }} />
+                    <span style={barScaleStyle(shortlistBarPercent)} />
                   </div>
                 </div>
 
@@ -447,12 +453,9 @@ export function AnalyticsWorkspace({ data, inquiriesCount, catalogCount }: Analy
                   </div>
                   <div className="ops-funnel-bar ops-bar-success">
                     <span
-                      style={{
-                        width: `${Math.min(
-                          100,
-                          (inquiriesCount / Math.max(1, data.overview.uniqueVisitors)) * 100
-                        )}%`,
-                      }}
+                      style={barScaleStyle(
+                        (inquiriesCount / Math.max(1, data.overview.uniqueVisitors)) * 100,
+                      )}
                     />
                   </div>
                 </div>

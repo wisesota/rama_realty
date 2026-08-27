@@ -7,11 +7,11 @@ import { safeInternalPath } from "@/lib/auth/safe-next-path";
 import "./sign-in.css";
 
 type SignInPageProps = {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; notice?: string }>;
 };
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
-  const { next } = await searchParams;
+  const { next, notice } = await searchParams;
   const nextPath = safeInternalPath(next);
   const verified = await getVerifiedUser();
   if (verified.userId) {
@@ -22,7 +22,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <main className="auth-page">
       <section className="auth-intro" aria-labelledby="sign-in-title">
-        <Link href="/" aria-label="Return to Rama Realty">
+        <Link href="/" aria-label="Return to Rama">
           <Logo />
         </Link>
         <div>
@@ -45,9 +45,14 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           <p>Administrator access</p>
           <h2>Sign in to the CRM</h2>
         </div>
+        {notice === "buyer-revocation-unconfirmed" ? (
+          <p className="auth-message auth-message--error" role="alert">
+            Your account is signed out, but Rama could not confirm buyer-history revocation. Do not reuse a copied Decision Room link until an administrator verifies the database connection.
+          </p>
+        ) : null}
         <SignInForm nextPath={nextPath} />
         <p className="auth-legal">
-          Access is restricted to authorized Rama Realty administrators. Activity
+          Access is restricted to authorized Rama administrators. Activity
           may be logged for security and audit purposes.
         </p>
       </section>

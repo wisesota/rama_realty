@@ -1,0 +1,496 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-08-26T22:34:43.5955612Z",
+  "productionConclusion": "documentary_evidence_open",
+  "assets": [
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero-1280.avif",
+      "sha256": "03d3cfa31cd0f2e62c4ab4d9b051ab922346e25e14bd22a1aca5d0137178767d",
+      "bytes": 62886,
+      "kind": "illustrative_dubai_residential_cityscape_hero_1280_avif",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero above 700px"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the foreground residential terraces and Dubai skyline context; maintain central negative space for copy and never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative blue-hour Dubai residences with planted terraces and a distant city skyline",
+        "ar": "مساكن توضيحية في دبي عند الساعة الزرقاء مع شرفات مزروعة وأفق المدينة البعيد"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; AVIF quality 55; effort 6; chroma 4:2:0"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero-1280.webp",
+      "sha256": "460f81a06378c8a3d7db0ead576223acb89a91f8d54bc24a0da195c614581562",
+      "bytes": 83956,
+      "kind": "illustrative_dubai_residential_cityscape_hero_1280_webp",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero above 700px"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the foreground residential terraces and Dubai skyline context; maintain central negative space for copy and never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative blue-hour Dubai residences with planted terraces and a distant city skyline",
+        "ar": "مساكن توضيحية في دبي عند الساعة الزرقاء مع شرفات مزروعة وأفق المدينة البعيد"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; WebP quality 78; effort 6"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero-1920.avif",
+      "sha256": "3d972960e10868a98bb6ec337bd2eebe716fb8af960e32e16747de98a920d1db",
+      "bytes": 115082,
+      "kind": "illustrative_dubai_residential_cityscape_hero_1920_avif",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero above 700px"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the foreground residential terraces and Dubai skyline context; maintain central negative space for copy and never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative blue-hour Dubai residences with planted terraces and a distant city skyline",
+        "ar": "مساكن توضيحية في دبي عند الساعة الزرقاء مع شرفات مزروعة وأفق المدينة البعيد"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; AVIF quality 55; effort 6; chroma 4:2:0"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero-1920.webp",
+      "sha256": "38a0eba1405e73c1483e8a37b3e5ecbe6e8f6fd71006e971b9db7189b35aba62",
+      "bytes": 157830,
+      "kind": "illustrative_dubai_residential_cityscape_hero_1920_webp",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero above 700px"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the foreground residential terraces and Dubai skyline context; maintain central negative space for copy and never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative blue-hour Dubai residences with planted terraces and a distant city skyline",
+        "ar": "مساكن توضيحية في دبي عند الساعة الزرقاء مع شرفات مزروعة وأفق المدينة البعيد"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; WebP quality 78; effort 6"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero-2560.avif",
+      "sha256": "c37cf7e7a0cf2f0476acc61d6b1b9c12a980dcb526b74a53dc1e1dd300c79b8f",
+      "bytes": 164627,
+      "kind": "illustrative_dubai_residential_cityscape_hero_2560_avif",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero above 700px"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the foreground residential terraces and Dubai skyline context; maintain central negative space for copy and never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative blue-hour Dubai residences with planted terraces and a distant city skyline",
+        "ar": "مساكن توضيحية في دبي عند الساعة الزرقاء مع شرفات مزروعة وأفق المدينة البعيد"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; AVIF quality 55; effort 6; chroma 4:2:0"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero-2560.webp",
+      "sha256": "5a26de8145dd137ea80706b57c5443ae59c59cac1b62888c7aea6da2ad035ae2",
+      "bytes": 216910,
+      "kind": "illustrative_dubai_residential_cityscape_hero_2560_webp",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero above 700px"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the foreground residential terraces and Dubai skyline context; maintain central negative space for copy and never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative blue-hour Dubai residences with planted terraces and a distant city skyline",
+        "ar": "مساكن توضيحية في دبي عند الساعة الزرقاء مع شرفات مزروعة وأفق المدينة البعيد"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; WebP quality 78; effort 6"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-mobile-720.avif",
+      "sha256": "91cdd015bb0fb0dfc8881f00814643530393b210f0e81f403fa958f24b568388",
+      "bytes": 35514,
+      "kind": "illustrative_dubai_residential_cityscape_mobile_720_avif",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero at 700px and below"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the inhabited terrace facade and a readable slice of skyline; never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative close view of a planted Dubai residence with the evening skyline beyond",
+        "ar": "منظر توضيحي قريب لمسكن مزروع في دبي مع أفق المدينة المسائي في الخلفية"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; AVIF quality 55; effort 6; chroma 4:2:0"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-mobile-720.webp",
+      "sha256": "6587e180cddb157e4d2182ce8272d98299bc99586be040a3a12f1bbb6b02c747",
+      "bytes": 44912,
+      "kind": "illustrative_dubai_residential_cityscape_mobile_720_webp",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero at 700px and below"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the inhabited terrace facade and a readable slice of skyline; never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative close view of a planted Dubai residence with the evening skyline beyond",
+        "ar": "منظر توضيحي قريب لمسكن مزروع في دبي مع أفق المدينة المسائي في الخلفية"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; WebP quality 78; effort 6"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-mobile-1080.avif",
+      "sha256": "2d82f94021484bd0850aaac3dfa2b80c7cabb063ec4f231f23487f9d61b48a75",
+      "bytes": 59191,
+      "kind": "illustrative_dubai_residential_cityscape_mobile_1080_avif",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero at 700px and below"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the inhabited terrace facade and a readable slice of skyline; never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative close view of a planted Dubai residence with the evening skyline beyond",
+        "ar": "منظر توضيحي قريب لمسكن مزروع في دبي مع أفق المدينة المسائي في الخلفية"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; AVIF quality 55; effort 6; chroma 4:2:0"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-mobile-1080.webp",
+      "sha256": "5690b3c9f524dcf303a821ee5d781de07d05fc0f56f7bb41ca2281a420363e6d",
+      "bytes": 74746,
+      "kind": "illustrative_dubai_residential_cityscape_mobile_1080_webp",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero at 700px and below"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the inhabited terrace facade and a readable slice of skyline; never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative close view of a planted Dubai residence with the evening skyline beyond",
+        "ar": "منظر توضيحي قريب لمسكن مزروع في دبي مع أفق المدينة المسائي في الخلفية"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; WebP quality 78; effort 6"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-mobile-1440.avif",
+      "sha256": "e473a2b732370c7dc15975527bf6fb469881d566246b56343bcc3c68b6576668",
+      "bytes": 83838,
+      "kind": "illustrative_dubai_residential_cityscape_mobile_1440_avif",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero at 700px and below"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the inhabited terrace facade and a readable slice of skyline; never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative close view of a planted Dubai residence with the evening skyline beyond",
+        "ar": "منظر توضيحي قريب لمسكن مزروع في دبي مع أفق المدينة المسائي في الخلفية"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; AVIF quality 55; effort 6; chroma 4:2:0"
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-mobile-1440.webp",
+      "sha256": "cc3d8a9e8df7c7bca0b92331774f2ea604bb27f64bbf1983cb517c741c155296",
+      "bytes": 109332,
+      "kind": "illustrative_dubai_residential_cityscape_mobile_1440_webp",
+      "runtimeSurfaces": [
+        "/[locale] centered cinematic hero at 700px and below"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; deterministic derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the inhabited terrace facade and a readable slice of skyline; never present the scene as a listing or named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative close view of a planted Dubai residence with the evening skyline beyond",
+        "ar": "منظر توضيحي قريب لمسكن مزروع في دبي مع أفق المدينة المسائي في الخلفية"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings.",
+      "derivativeSettings": "sRGB; metadata stripped; WebP quality 78; effort 6"
+    },
+    {
+      "path": "public/images/rama-hero-editorial-daylight.png",
+      "sha256": "e881cea6aae96ff4e5d4dbdcdf4135d6cae3c76d7c7aa97761aa85a6ec7ef4bc",
+      "bytes": 1942944,
+      "kind": "hero_image",
+      "runtimeSurfaces": [
+        "/[locale] legacy rollback composition",
+        "/auth/sign-in"
+      ],
+      "ownershipBasis": "project_owned_asserted_by_engineering_contract",
+      "documentaryProof": null,
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_documentary_proof",
+      "cropRule": "one restrained decorative context crop in the brief signal strip; preserve the focal mass and skyline context and never imply listing availability",
+      "localizedAlternativeText": {
+        "en": "Contemporary Dubai villa architecture in daylight with skyline views",
+        "ar": "عمارة فيلا معاصرة في دبي نهاراً مع إطلالة على أفق المدينة"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-signal-brise-soleil.webp",
+      "sha256": "6e6677e2bde56cbee431981312b8d72f477a95e4ffaad61c38611d259542edb2",
+      "bytes": 188678,
+      "kind": "illustrative_architectural_facade",
+      "runtimeSurfaces": [
+        "/[locale] decision architecture"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23; optimized WebP derivative",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the vertical shade fins, limestone threshold, and desert planting; never present the scene as an available property.",
+      "localizedAlternativeText": {
+        "en": "Illustrative pale-limestone Dubai residence concept with deep vertical sun screens and desert planting",
+        "ar": "مسكن توضيحي في دبي من الحجر الجيري مع كاسرات شمس عمودية وزراعة صحراوية"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-signal-courtyard-screen.webp",
+      "sha256": "95a659738d4dd596e212696a7a69c50b0d50bb6bb109a1bef630b74e1ad38278",
+      "bytes": 150248,
+      "kind": "illustrative_architectural_courtyard",
+      "runtimeSurfaces": [
+        "/[locale] decision architecture"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23; optimized WebP derivative",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the courtyard opening, timber screen, and planted threshold; never imply inventory or a named development.",
+      "localizedAlternativeText": {
+        "en": "Illustrative residential courtyard concept framed by dark timber screens and drought-tolerant planting",
+        "ar": "فناء سكني هادئ تحيط به شاشات خشبية داكنة ونباتات ملائمة للمناخ الجاف"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-waterfront-daylight-interior.webp",
+      "sha256": "14a242c8f423f34936ea9342998c3919f02a3c6cdeddff1dd56b5bfb57f44e27",
+      "bytes": 151724,
+      "kind": "illustrative_waterfront_interior",
+      "runtimeSurfaces": [
+        "/[locale] example decision patterns"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Retain the shaded balcony depth and open horizon; avoid crops that resemble a listing gallery thumbnail.",
+      "localizedAlternativeText": {
+        "en": "Calm fictional Dubai waterfront apartment with a deeply shaded balcony and open sea horizon",
+        "ar": "شقة توضيحية هادئة على واجهة دبي المائية مع شرفة عميقة مظللة وأفق بحري مفتوح"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-green-courtyard-community.webp",
+      "sha256": "a5b2c7d77fd49ab4f459f9a5459ca088ae62303221c5a8fc03c8e9f14eda1a76",
+      "bytes": 387756,
+      "kind": "illustrative_green_community",
+      "runtimeSurfaces": [
+        "/[locale] example decision patterns"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Keep the shaded lane, private thresholds, and everyday bicycle context visible; do not imply a named community.",
+      "localizedAlternativeText": {
+        "en": "Tree-shaded fictional Dubai townhouse lane with benches, bicycles, and private entrances",
+        "ar": "ممر تاون هاوس توضيحي مظلل بالأشجار في دبي مع مقاعد ودراجات ومداخل خاصة"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-walkable-transit-district.webp",
+      "sha256": "e122ba71fa9e4508acdd830847a0bbde18e36bb2b1b80bb8fec342b50955a353",
+      "bytes": 291814,
+      "kind": "illustrative_walkable_district",
+      "runtimeSurfaces": [
+        "/[locale] example decision patterns"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the shaded colonnade, tactile route, planting, and distant unbranded tram as one mobility context.",
+      "localizedAlternativeText": {
+        "en": "Shaded fictional Dubai residential promenade with planting, cycle parking, and a distant tram",
+        "ar": "ممشى سكني توضيحي مظلل في دبي مع زراعة ومواقف دراجات وترام بعيد"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-urban-shade-tower.webp",
+      "sha256": "fdef829708fd7f45c0a1acfb7806e7a9d930197f312aaed369e5e8a4201657e5",
+      "bytes": 297538,
+      "kind": "illustrative_urban_residence",
+      "runtimeSurfaces": [
+        "/[locale] example decision patterns"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Keep the shaded balconies, pedestrian route, and landscape foreground; exclude the scene from results and listing surfaces.",
+      "localizedAlternativeText": {
+        "en": "Fictional Dubai residential tower with shaded balconies beside a landscaped pedestrian route",
+        "ar": "برج سكني توضيحي في دبي بشرفات مظللة إلى جانب مسار مشاة مزروع"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-inspectable-interior.webp",
+      "sha256": "2d3dd16eeb599bce96160651e774d55e847fb148565c744cb358f3ac479edd43",
+      "bytes": 129422,
+      "kind": "illustrative_inspectable_interior",
+      "runtimeSurfaces": [
+        "/[locale] inspectable capabilities"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Preserve the circulation path, storage wall, daylight, and balcony depth so the image remains a question prompt rather than decoration.",
+      "localizedAlternativeText": {
+        "en": "Fictional Dubai apartment interior showing daylight, circulation, storage, and balcony depth",
+        "ar": "تصميم داخلي توضيحي لشقة في دبي يظهر ضوء النهار والحركة والتخزين وعمق الشرفة"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/images/rama-waterfront-blue-hour.webp",
+      "sha256": "adc9ee00b7b7e694f657481d63cd5050f48cb71640cf6e72acf2efe441dfada4",
+      "bytes": 112872,
+      "kind": "illustrative_closing_panorama",
+      "runtimeSurfaces": [
+        "/[locale] closing invitation"
+      ],
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_legal_review",
+      "cropRule": "Retain the waterfront edge and low-rise residential rhythm; the caption must remain adjacent and no availability action may overlay the image.",
+      "localizedAlternativeText": {
+        "en": "Fictional low-rise Dubai waterfront residences and planted promenade at blue hour",
+        "ar": "مساكن توضيحية منخفضة الارتفاع وممشى مزروع على واجهة دبي المائية في الساعة الزرقاء"
+      },
+      "accessibilityTreatment": "Meaningful alternative text is supplied to screen readers using localized strings."
+    },
+    {
+      "path": "public/lottie/ai.json",
+      "sha256": "8e32bb472ee06217732d78ca38a744a40d764060dbccc61074642b6d9312e5c8",
+      "bytes": 1145059,
+      "kind": "decorative_lottie_signal",
+      "runtimeSurfaces": [
+        "/[locale] hero signal",
+        "/[locale] voice control"
+      ],
+      "ownershipBasis": "project_owned_asserted_by_engineering_contract; six unreachable embedded image records removed in-repository without changing referenced layers or timing",
+      "documentaryProof": null,
+      "legalReview": "pending",
+      "productionEligibility": "blocked_pending_documentary_proof",
+      "accessibilityTreatment": "aria-hidden; idle plays one cycle only, active playback stops with the bounded Gemini Live session, and reduced motion freezes on a state-specific frame; adjacent localized status and actions carry all meaning"
+    }
+  ],
+  "archivedAssets": [
+    {
+      "path": "public/lottie/rama-criterion-weave.json",
+      "sha256": "9aaaffd99ea54bd7ba87df68e50d6f7492c1883328fdfb941943ce95ef808912",
+      "bytes": 5401,
+      "ownershipBasis": "repository_authored_geometric_vector_animation_2026-08-23",
+      "documentaryProof": "Source-authored Rama Criterion Weave JSON in this repository",
+      "retentionReason": "Superseded by public/lottie/ai.json in the active hero; retained for rollback only and not imported by the active experience."
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero.avif",
+      "sha256": "e0566290e7e1113aaab2d68137c4f9c09b3cafb2543e93ad18d5293570be64c8",
+      "bytes": 275279,
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; optimized AVIF derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "retentionReason": "Superseded by responsive deterministic hero derivatives; retained for rollback only and not imported by the active experience."
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-hero.webp",
+      "sha256": "40fb0a9c12ffb8b2ebffeb8e291671bfe6f51a9fa9e0d5045671fb9d441bc57a",
+      "bytes": 470058,
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; optimized WebP derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "retentionReason": "Superseded by responsive deterministic hero derivatives; retained for rollback only and not imported by the active experience."
+    },
+    {
+      "path": "public/images/rama-dubai-residential-cityscape-mobile.webp",
+      "sha256": "21944a0fe720433f5bed17f1f7b661d8fe4cef3c35a0965f3c323973c698cf93",
+      "bytes": 268276,
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-24; art-directed mobile WebP derivative from 8K archival master",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "retentionReason": "Superseded by responsive deterministic hero derivatives; retained for rollback only and not imported by the active experience."
+    },
+    {
+      "path": "public/images/rama-signal-brise-soleil.png",
+      "sha256": "6e67cc23195baeb6e967e21d7f8cf21dc1d4de3d174c4ef5dcf149bb31865bf2",
+      "bytes": 2623988,
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "retentionReason": "Retained as the lossless source for the active optimized WebP derivative; not imported at runtime."
+    },
+    {
+      "path": "public/images/rama-signal-courtyard-screen.png",
+      "sha256": "a3de20db636c8ae02a5471750de770c3bb72061b4a951c4e29cefeacbaef2c66",
+      "bytes": 2452534,
+      "ownershipBasis": "generated_for_rama_with_openai_image_tool_2026-08-23",
+      "documentaryProof": "Codex task generation record 01a026d0-8614-7fe2-8156-13dff29e51cb",
+      "retentionReason": "Retained as the lossless source for the active optimized WebP derivative; not imported at runtime."
+    }
+  ],
+  "excludedExploration": [
+    {
+      "paths": [
+        "components/archivanta/**",
+        "public/images/* not explicitly listed in assets",
+        "public/lottie/voice*.json",
+        "public/rive/**"
+      ],
+      "reason": "Unselected design exploration is not imported by the approved public experience and has no release rights assertion.",
+      "productionEligibility": "excluded"
+    }
+  ]
+}

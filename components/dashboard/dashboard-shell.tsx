@@ -82,7 +82,7 @@ export function DashboardShell({ staff, email, active, children }: DashboardShel
       <a className="ops-skip-link" href="#operations-main">Skip to workspace</a>
 
       <aside className="ops-sidebar" aria-label="Rama operations navigation">
-        <Link className="ops-sidebar-brand" href="/" target="_blank" rel="noopener noreferrer" aria-label="Open Rama Realty public site in a new tab"><Logo /></Link>
+        <Link className="ops-sidebar-brand" href="/" target="_blank" rel="noopener noreferrer" aria-label="Open Rama public site in a new tab"><Logo /></Link>
         <div className="ops-sidebar-context"><span>Operations ledger</span><strong>{staff.organizationName}</strong></div>
         <nav className="ops-sidebar-nav" aria-label="Operations">
           {navigation.map((item) => {
@@ -113,7 +113,7 @@ export function DashboardShell({ staff, email, active, children }: DashboardShel
       <div className="ops-workspace">
         <header className="ops-command-bar">
           <button ref={mobileMenuButtonRef} className="ops-menu-trigger" type="button" aria-label="Open navigation" aria-controls="operations-mobile-navigation" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}><Menu aria-hidden="true" /></button>
-          <div className="ops-breadcrumb"><span>Rama Realty</span><strong>{allNavigation.find((item) => item.key === active)?.label}</strong></div>
+          <div className="ops-breadcrumb"><span>Rama</span><strong>{allNavigation.find((item) => item.key === active)?.label}</strong></div>
           <button className="ops-command-trigger" type="button" onClick={() => setCommandOpen(true)}><Search aria-hidden="true" /><span>Ask Rama or search the workspace</span><kbd><Command aria-hidden="true" />K</kbd></button>
           <ProfileMenu staff={staff} email={email} />
         </header>

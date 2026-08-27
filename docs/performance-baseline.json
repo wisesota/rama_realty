@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-25T16:50:36.649Z",
+  "source": "local optimized Next.js production build",
+  "commit": "working-tree-uncommitted",
+  "url": "http://localhost:3100/en",
+  "chrome": "chrome.exe",
+  "lighthouseVersion": "13.4.1",
+  "coldRunsPerProfile": 5,
+  "interactionNote": "Navigation Lighthouse does not create a representative user interaction, so INP remains null when the audit cannot observe one; E2E interaction coverage remains the release evidence for behavior.",
+  "thresholds": {
+    "lcpMs": 2500,
+    "cls": 0.1,
+    "inpMs": 200,
+    "maxRegressionPercent": 10
+  },
+  "profiles": {
+    "desktop": {
+      "label": "Desktop dense 4G",
+      "network": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "viewport": {
+        "mobile": false,
+        "width": 1440,
+        "height": 900,
+        "deviceScaleFactor": 1,
+        "disabled": false
+      },
+      "runs": [
+        {
+          "performanceScore": 99,
+          "fcpMs": 380.75,
+          "lcpMs": 951.88,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 13.12,
+          "ttfbMs": 63,
+          "speedIndexMs": 644.65,
+          "transferBytes": 585847,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 99,
+          "fcpMs": 375.29,
+          "lcpMs": 938.23,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 10.5,
+          "ttfbMs": 74,
+          "speedIndexMs": 587.74,
+          "transferBytes": 585832,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 99,
+          "fcpMs": 365.32,
+          "lcpMs": 934.64,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 19,
+          "ttfbMs": 65,
+          "speedIndexMs": 564.98,
+          "transferBytes": 585832,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 99,
+          "fcpMs": 393.37,
+          "lcpMs": 995.74,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 28,
+          "ttfbMs": 68,
+          "speedIndexMs": 661.78,
+          "transferBytes": 585831,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 99,
+          "fcpMs": 375.87,
+          "lcpMs": 922.73,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 74.57,
+          "ttfbMs": 93,
+          "speedIndexMs": 723.08,
+          "transferBytes": 585830,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        }
+      ],
+      "median": {
+        "performanceScore": 99,
+        "fcpMs": 375.87,
+        "lcpMs": 938.23,
+        "cls": 0,
+        "inpMs": null,
+        "tbtMs": 19,
+        "ttfbMs": 68,
+        "speedIndexMs": 644.65,
+        "transferBytes": 585832,
+        "javascriptBytes": 269305,
+        "cssBytes": 44336
+      }
+    },
+    "mobile-fast3g": {
+      "label": "Mobile Fast 3G",
+      "network": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.56,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "viewport": {
+        "mobile": true,
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2,
+        "disabled": false
+      },
+      "runs": [
+        {
+          "performanceScore": 83,
+          "fcpMs": 1397.85,
+          "lcpMs": 3984.69,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 244.08,
+          "ttfbMs": 61,
+          "speedIndexMs": 1806.76,
+          "transferBytes": 535260,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 85,
+          "fcpMs": 1398.15,
+          "lcpMs": 3997.29,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 178.5,
+          "ttfbMs": 53,
+          "speedIndexMs": 1701.65,
+          "transferBytes": 535260,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 85,
+          "fcpMs": 1390.28,
+          "lcpMs": 3948.56,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 166,
+          "ttfbMs": 53,
+          "speedIndexMs": 1645.38,
+          "transferBytes": 535260,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 83,
+          "fcpMs": 1410.88,
+          "lcpMs": 4100.76,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 224,
+          "ttfbMs": 55,
+          "speedIndexMs": 1750.52,
+          "transferBytes": 535262,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        },
+        {
+          "performanceScore": 84,
+          "fcpMs": 1402.51,
+          "lcpMs": 4110.03,
+          "cls": 0,
+          "inpMs": null,
+          "tbtMs": 183,
+          "ttfbMs": 57,
+          "speedIndexMs": 1739.98,
+          "transferBytes": 535264,
+          "javascriptBytes": 269305,
+          "cssBytes": 44336
+        }
+      ],
+      "median": {
+        "performanceScore": 84,
+        "fcpMs": 1398.15,
+        "lcpMs": 3997.29,
+        "cls": 0,
+        "inpMs": null,
+        "tbtMs": 183,
+        "ttfbMs": 55,
+        "speedIndexMs": 1739.98,
+        "transferBytes": 535260,
+        "javascriptBytes": 269305,
+        "cssBytes": 44336
+      }
+    }
+  }
+}

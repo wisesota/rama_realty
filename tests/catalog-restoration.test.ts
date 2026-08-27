@@ -5,7 +5,7 @@ import { summarizeCatalogRestoration } from "@/lib/catalog-restoration";
 function property(id: string, version: number, observedAt: string | null): BuyerPropertySummary {
   return {
     id,
-    organizationId: null,
+    organizationId: "3f84d54a-26f8-45e1-b29c-938b48e6b143",
     developmentId: null,
     slug: id,
     name: "Residence",

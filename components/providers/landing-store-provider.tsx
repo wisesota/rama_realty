@@ -7,11 +7,18 @@ import {
   type LandingStore,
   type LandingStoreApi,
 } from "@/stores/landing-store";
+import type { PublicLocale } from "@/lib/i18n";
 
 const LandingStoreContext = createContext<LandingStoreApi | null>(null);
 
-export function LandingStoreProvider({ children }: { children: ReactNode }) {
-  const [store] = useState(createLandingStore);
+export function LandingStoreProvider({
+  children,
+  locale,
+}: {
+  children: ReactNode;
+  locale: PublicLocale;
+}) {
+  const [store] = useState(() => createLandingStore(locale));
 
   return <LandingStoreContext.Provider value={store}>{children}</LandingStoreContext.Provider>;
 }

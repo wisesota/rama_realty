@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "decision-specimen",
+  "title": "Rama Decision Specimen",
+  "description": "The signature sticky brief-to-ledger narrative with a reduced-motion static fallback.",
+  "registryDependencies": [
+    "evidence-state"
+  ],
+  "files": [
+    {
+      "path": "components/rama/decision-specimen.tsx",
+      "content": "\"use client\";\n\nimport { useEffect, useRef, useState } from \"react\";\nimport { EvidenceState } from \"@/components/rama/evidence-state\";\n\nexport type DecisionSpecimenStage = \"brief\" | \"fit\" | \"evidence\" | \"open_question\" | \"ledger_change\";\n\nexport type DecisionSpecimenItem = {\n  stage: DecisionSpecimenStage;\n  label: string;\n  title: string;\n  body: string;\n  evidence?: \"source_confirmed\" | \"buyer_confirmed\" | \"inferred\" | \"stale\" | \"disputed\" | \"unknown\";\n  evidenceLabel?: string;\n};\n\nexport function DecisionSpecimen({ items, ariaLabel }: { items: readonly DecisionSpecimenItem[]; ariaLabel: string }) {\n  const [active, setActive] = useState(0);\n  const root = useRef<HTMLDivElement | null>(null);\n\n  useEffect(() => {\n    const nodes = root.current?.querySelectorAll<HTMLElement>(\"[data-specimen-step]\");\n    if (!nodes?.length || !(\"IntersectionObserver\" in window)) return;\n    const observer = new IntersectionObserver((entries) => {\n      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];\n      if (!visible) return;\n      const index = Number((visible.target as HTMLElement).dataset.index ?? \"0\");\n      setActive(index);\n    }, { rootMargin: \"-35% 0px -45%\", threshold: [0.15, 0.5, 0.8] });\n    nodes.forEach((node) => observer.observe(node));\n    return () => observer.disconnect();\n  }, []);\n\n  return (\n    <div ref={root} className=\"decision-specimen\">\n      <div className=\"decision-specimen__sticky\" aria-hidden=\"true\">\n        <span>{items[active]?.label}</span>\n        <h3>{items[active]?.title}</h3>\n        <p>{items[active]?.body}</p>\n        {items[active]?.evidence ? <EvidenceState state={items[active].evidence} label={items[active].evidenceLabel} /> : null}\n        <ol aria-label=\"Decision specimen progress\">\n          {items.map((item, index) => <li key={item.stage} aria-current={index === active ? \"step\" : undefined}>{String(index + 1).padStart(2, \"0\")}</li>)}\n        </ol>\n      </div>\n      <ol className=\"decision-specimen__steps\" aria-label={ariaLabel}>\n        {items.map((item, index) => (\n          <li key={item.stage} data-specimen-step data-index={index}>\n            <span>{String(index + 1).padStart(2, \"0\")} / {item.label}</span>\n            <h3>{item.title}</h3>\n            <p>{item.body}</p>\n            {item.evidence ? <EvidenceState state={item.evidence} label={item.evidenceLabel} /> : null}\n          </li>\n        ))}\n      </ol>\n    </div>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

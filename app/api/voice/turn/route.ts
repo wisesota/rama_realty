@@ -11,8 +11,12 @@ import {
   RateLimitBackendUnavailableError,
 } from "@/lib/rate-limit-server";
 import { isSameOrigin } from "@/lib/supabase/auth";
+import { recordOperationalEvent } from "@/lib/operational-telemetry";
+import { getOrCreateBuyerSessionTokenHash } from "@/lib/buyer-session-server";
+import { decisionOsEnabledForBuyer, publicExperienceEnabled } from "@/lib/rollout-server";
 
 const maximumAudioBytes = 6 * 1024 * 1024;
+const maximumMultipartBytes = 7 * 1024 * 1024;
 const requestWindowMs = 60_000;
 const maximumRequestsPerWindow = 6;
 
@@ -44,7 +48,13 @@ function isVoiceResult(value: unknown): value is Omit<GeminiRecordedVoiceRespons
 }
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   if (!isSameOrigin(request)) return jsonError("Cross-origin voice requests are not allowed.", 403);
+  if (!publicExperienceEnabled()) return jsonError("The public discovery experience is temporarily unavailable.", 503);
+  const buyerTokenHash = await getOrCreateBuyerSessionTokenHash();
+  if (!decisionOsEnabledForBuyer(buyerTokenHash)) {
+    return jsonError("Voice is temporarily unavailable for this rollout cohort.", 503);
+  }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return jsonError("Gemini voice understanding is not configured.", 503);
@@ -67,6 +77,10 @@ export async function POST(request: Request) {
   }
   if (!request.headers.get("content-type")?.startsWith("multipart/form-data")) {
     return jsonError("The voice turn must include an audio recording.", 415);
+  }
+  const contentLength = request.headers.get("content-length");
+  if (contentLength && (!/^\d+$/.test(contentLength) || Number(contentLength) > maximumMultipartBytes)) {
+    return jsonError("Keep each voice turn under 45 seconds.", 413);
   }
 
   let formData: FormData;
@@ -94,6 +108,10 @@ export async function POST(request: Request) {
     const audioData = Buffer.from(await audio.arrayBuffer()).toString("base64");
     const response = await client.models.generateContent({
       model: process.env.GEMINI_VOICE_MODEL || defaultGeminiVoiceModel,
+      // Keep this explicit even though the shared PostHog client is private by
+      // default. It prevents a future client refactor from exposing a buyer's
+      // audio, transcript, prompt, or model response.
+      posthogPrivacyMode: true,
       contents: [
         {
           text: "Transcribe this voice turn into a concise Dubai property brief and respond as Rama.",
@@ -138,11 +156,22 @@ export async function POST(request: Request) {
     if (!transcript) return jsonError("No clear property request was detected. Please try again.", 422);
     if (!agentResponse) return jsonError("Gemini did not return a voice response.", 502);
 
+    recordOperationalEvent({
+      event: "voice.recorded_turn",
+      outcome: "ok",
+      durationMs: Date.now() - startedAt,
+    });
+
     return Response.json(
       { transcript, agentResponse, locale, mode: "recorded" } satisfies GeminiRecordedVoiceResponse,
       { headers: { "Cache-Control": "no-store, max-age=0", Pragma: "no-cache" } },
     );
   } catch (error) {
+    recordOperationalEvent({
+      event: "voice.recorded_turn",
+      outcome: timeout.signal.aborted ? "timeout" : "provider_error",
+      durationMs: Date.now() - startedAt,
+    });
     console.error(
       "Gemini recorded voice turn failed:",
       error instanceof Error ? error.name : "UnknownError",

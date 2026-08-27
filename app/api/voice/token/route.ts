@@ -19,6 +19,8 @@ import {
 } from "@/lib/rate-limit-server";
 import { geminiLiveTools } from "@/lib/agent/contracts";
 import { isSameOrigin } from "@/lib/supabase/auth";
+import { getOrCreateBuyerSessionTokenHash } from "@/lib/buyer-session-server";
+import { decisionOsEnabledForBuyer, publicExperienceEnabled } from "@/lib/rollout-server";
 
 const tokenWindowMs = 60_000;
 const maximumTokensPerWindow = 5;
@@ -32,14 +34,14 @@ ROLE
 - Speak in the buyer's language. Be composed, direct, warm, and commercially knowledgeable without sounding scripted or pushy.
 
 TOOL AND TRUTH CONTRACT
-- For any catalog recommendation, call search_properties first. Its Decision Room is the authoritative visual response for that search.
+- When the buyer has expressed a usable brief, call prepare_brief. It only prepares an editable draft; it never searches or saves a run. The buyer must review and confirm in the interface before discovery.
 - Use get_property_details, compare_properties, get_payment_schedule, get_floor_plans, get_property_documents, get_development_details, and get_area_context whenever the buyer asks for those facts.
 - Use calculate_purchase_scenario only for transparent arithmetic based on explicit assumptions. Never present it as an official developer schedule, mortgage approval, valuation, tax advice, legal advice, or financial advice.
 - Treat tool output as the only source of property, availability, price, developer, area, document, installment, yield, and media facts. Say when a fact or document is not published. Never guess or silently substitute demonstration inventory.
 - Never claim future appreciation, guaranteed yield, guaranteed availability, or regulatory conclusions.
 
 CONVERSATION
-- When enough information is present, briefly confirm the brief and search immediately. Ask only one focused clarification at a time when a decision-changing constraint is missing.
+- When enough information is present, briefly summarize it and call prepare_brief. Ask only one focused clarification at a time when a decision-changing constraint is missing. Never claim the search has run before the buyer confirms the written draft.
 - After a tool call, summarize the strongest insight and tell the buyer that the full evidence is visible in the Decision Room. Do not read every card or document aloud.
 - Explain why a property matches and name one material trade-off when the governed data supports it.
 - Keep ordinary spoken turns concise, usually 40 to 80 words, while allowing a fuller answer when the buyer explicitly asks for detail.
@@ -58,6 +60,11 @@ function jsonError(error: string, status: number) {
 
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return jsonError("Cross-origin token requests are not allowed.", 403);
+  if (!publicExperienceEnabled()) return jsonError("The public discovery experience is temporarily unavailable.", 503);
+  const buyerTokenHash = await getOrCreateBuyerSessionTokenHash();
+  if (!decisionOsEnabledForBuyer(buyerTokenHash)) {
+    return jsonError("Voice is temporarily unavailable for this rollout cohort.", 503);
+  }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return jsonError("Gemini Live is not configured on this server.", 503);

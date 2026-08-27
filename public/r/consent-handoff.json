@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "consent-handoff",
+  "title": "Rama Consent Handoff",
+  "description": "An eligibility and consent boundary for licensed advisor continuity.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "files": [
+    {
+      "path": "components/rama/consent-handoff.tsx",
+      "content": "import { LockKeyhole } from \"lucide-react\";\n\nexport function ConsentHandoff({ eligible, title, body }: { eligible: boolean; title: string; body: string }) {\n  return <section className=\"consent-handoff\" data-eligible={eligible}><LockKeyhole aria-hidden=\"true\" /><div><strong>{title}</strong><p>{body}</p></div></section>;\n}\n\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

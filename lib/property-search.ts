@@ -51,6 +51,41 @@ const specificLocations = [
   "Jumeirah",
 ];
 
+const locationAliases: Array<[string, string]> = [
+  ["palm jumeirah", "Palm Jumeirah"], ["نخلة جميرا", "Palm Jumeirah"],
+  ["downtown dubai", "Downtown Dubai"], ["وسط مدينة دبي", "Downtown Dubai"],
+  ["dubai marina", "Dubai Marina"], ["دبي مارينا", "Dubai Marina"],
+  ["jumeirah", "Jumeirah"], ["جميرا", "Jumeirah"],
+];
+
+function normalizeArabicDigits(value: string) {
+  const digits: Record<string, string> = { "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4", "٥": "5", "٦": "6", "٧": "7", "٨": "8", "٩": "9" };
+  return value.replace(/[٠-٩]/g, (digit) => digits[digit]);
+}
+
+function extractBedroomCount(value: string) {
+  const englishMatches = [...value.matchAll(/\b(one|two|three|four|five|\d+)\s*(?:-|\s)?bed(?:room)?s?\b/g)];
+  const english = englishMatches.at(-1);
+  const englishWords: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5 };
+  if (english) return englishWords[english[1]] ?? Number.parseInt(english[1], 10);
+  const normalized = normalizeArabicDigits(value);
+  const numericArabic = [...normalized.matchAll(/(\d+)\s*(?:غرف|غرفة)/g)].at(-1);
+  if (numericArabic) return Number.parseInt(numericArabic[1], 10);
+  if (/غرف(?:تين|تان|تي|تا)(?:\s+نوم)?/.test(value)) return 2;
+  if (/ثلاث\s+غرف/.test(value)) return 3;
+  if (/أربع\s+غرف/.test(value)) return 4;
+  if (/خمس\s+غرف/.test(value)) return 5;
+  if (/غرفة\s+واحدة/.test(value)) return 1;
+  return undefined;
+}
+
+function extractBudget(value: string) {
+  const normalized = normalizeArabicDigits(value);
+  const match = normalized.match(/(?:under|below|max(?:imum)?(?:\s+of)?|أقل\s+من|بحد\s+أقصى)\s*(?:aed|dh|dhs|درهم)?\s*([\d,.]+)\s*(m|million|مليون|ملايين)?/);
+  if (!match) return undefined;
+  return { amount: parseAedAmount(match[1], match[2]), display: `Up to AED ${match[1].replace(/\.0$/, "")}${match[2] ? "M" : ""}` };
+}
+
 function parseAedAmount(value: string, suffix?: string) {
   const amount = Number.parseFloat(value.replace(/,/g, ""));
   if (!Number.isFinite(amount)) return undefined;
@@ -64,28 +99,15 @@ function propertyPriceAed(property: SampleProperty) {
 
 export function extractHardConstraints(brief: string): PropertyHardConstraints {
   const value = brief.toLowerCase();
-  const location = specificLocations.find((item) => value.includes(item.toLowerCase()));
-  const bedroomMatch = value.match(/\b(one|two|three|four|five|\d+)\s*(?:-|\s)?bed(?:room)?s?\b/);
-  const bedroomWords: Record<string, number> = {
-    one: 1,
-    two: 2,
-    three: 3,
-    four: 4,
-    five: 5,
-  };
-  const bedrooms = bedroomMatch
-    ? bedroomWords[bedroomMatch[1]] ?? Number.parseInt(bedroomMatch[1], 10)
-    : undefined;
-  const budgetMatch = value.match(
-    /(?:under|below|max(?:imum)?(?:\s+of)?)\s*(?:aed|dh|dhs)?\s*([\d,.]+)\s*(m|million)?/,
-  );
+  const location = locationAliases.find(([alias]) => value.includes(alias))?.[1]
+    ?? specificLocations.find((item) => value.includes(item.toLowerCase()));
+  const bedrooms = extractBedroomCount(value);
+  const budget = extractBudget(value);
 
   return {
     location,
     bedrooms: Number.isFinite(bedrooms) ? bedrooms : undefined,
-    maximumPriceAed: budgetMatch
-      ? parseAedAmount(budgetMatch[1], budgetMatch[2])
-      : undefined,
+    maximumPriceAed: budget?.amount,
   };
 }
 
@@ -93,42 +115,24 @@ export function parsePropertyBrief(brief: string) {
   const value = brief.toLowerCase();
   const criteria: string[] = [];
 
-  const locations = [
-    "Palm Jumeirah",
-    "Downtown Dubai",
-    "Dubai Marina",
-    "Jumeirah",
-    "Dubai",
-  ];
-  const location = locations.find((item) => value.includes(item.toLowerCase()));
+  const location = locationAliases.find(([alias]) => value.includes(alias))?.[1]
+    ?? (value.includes("dubai") || value.includes("دبي") ? "Dubai" : undefined);
   if (location) criteria.push(location);
 
-  const bedroomMatch = value.match(/\b(one|two|three|four|five|\d+)\s*(?:-|\s)?bed(?:room)?s?\b/);
-  if (bedroomMatch) {
-    const bedroomWords: Record<string, string> = {
-      one: "1",
-      two: "2",
-      three: "3",
-      four: "4",
-      five: "5",
-    };
-    const bedrooms = bedroomWords[bedroomMatch[1]] ?? bedroomMatch[1];
-    criteria.push(`${bedrooms} ${bedrooms === "1" ? "bedroom" : "bedrooms"}`);
-  }
+  const bedrooms = extractBedroomCount(value);
+  if (bedrooms !== undefined) criteria.push(`${bedrooms} ${bedrooms === 1 ? "bedroom" : "bedrooms"}`);
 
-  const budgetMatch = value.match(
-    /(?:under|below|max(?:imum)?(?:\s+of)?)\s*(?:aed|dh|dhs)?\s*([\d,.]+)\s*(m|million)?/,
-  );
-  if (budgetMatch) {
-    const suffix = budgetMatch[2] ? "M" : "";
-    criteria.push(`Up to AED ${budgetMatch[1].replace(/\.0$/, "")}${suffix}`);
-  }
+  const budget = extractBudget(value);
+  if (budget) criteria.push(budget.display);
 
   const propertyTypes: Array<[string, string]> = [
     ["penthouse", "Penthouse"],
     ["villa", "Villa"],
     ["townhouse", "Townhouse"],
     ["apartment", "Apartment"],
+    ["شقة", "Apartment"],
+    ["فيلا", "Villa"],
+    ["تاون هاوس", "Townhouse"],
   ];
   const propertyType = propertyTypes.find(([keyword]) => value.includes(keyword));
   if (propertyType) criteria.push(propertyType[1]);
@@ -146,6 +150,9 @@ export function parsePropertyBrief(brief: string) {
     ["metro", "Near the metro"],
     ["walk", "Walkable"],
     ["quiet", "Quieter setting"],
+    ["إطلالة بحرية", "Sea view"],
+    ["شرفة", "Balcony"],
+    ["هادئ", "Quieter setting"],
   ];
 
   for (const [keyword, label] of amenities) {

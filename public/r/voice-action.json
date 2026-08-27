@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "voice-action",
+  "title": "Rama Voice Action",
+  "description": "A labeled voice-first action with explicit active state and text-equivalent semantics.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "components/rama/voice-action.tsx",
+      "content": "\"use client\";\n\nimport { Mic, Square } from \"lucide-react\";\nimport { Button } from \"@/components/ui/button\";\nimport type { VoiceExperienceState } from \"@/lib/voice/types\";\nimport { cn } from \"@/lib/utils\";\n\nexport function VoiceAction({\n  state,\n  label,\n  activeLabel,\n  onPress,\n  className,\n}: {\n  state: VoiceExperienceState;\n  label: string;\n  activeLabel: string;\n  onPress: () => void;\n  className?: string;\n}) {\n  const active = [\"requesting\", \"connecting\", \"listening\", \"thinking\", \"speaking\"].includes(state.phase);\n  const visibleLabel = active ? activeLabel : label;\n\n  return (\n    <Button\n      className={cn(\"voice-action\", className)}\n      type=\"button\"\n      variant=\"outline\"\n      aria-pressed={active}\n      aria-expanded={state.phase !== \"idle\"}\n      aria-controls={state.phase !== \"idle\" ? \"voice-conversation-panel\" : undefined}\n      onPress={onPress}\n    >\n      <span className=\"voice-action__icon\" data-active={active} aria-hidden=\"true\">\n        {active ? <Square /> : <Mic />}\n      </span>\n      <span>{visibleLabel}</span>\n      <span className=\"voice-action__bars\" data-active={active} aria-hidden=\"true\"><i /><i /><i /></span>\n    </Button>\n  );\n}\n\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "lib/voice/types.ts",
+      "content": "export type VoiceExperienceState =\r\n  | { phase: \"idle\" }\r\n  | { phase: \"requesting\"; announcement: string }\r\n  | { phase: \"connecting\"; announcement: string }\r\n  | {\r\n      phase: \"listening\";\r\n      announcement: string;\r\n      transcript: string;\r\n      mode?: \"live\" | \"recorded\";\r\n    }\r\n  | { phase: \"thinking\"; announcement: string; transcript: string }\r\n  | {\r\n      phase: \"speaking\";\r\n      announcement: string;\r\n      transcript: string;\r\n      agentTranscript: string;\r\n    }\r\n  | {\r\n      phase: \"complete\";\r\n      announcement: string;\r\n      transcript: string;\r\n      agentTranscript?: string;\r\n    }\r\n  | {\r\n      phase: \"error\";\r\n      announcement: string;\r\n      code: \"permission-denied\" | \"unsupported\" | \"unavailable\" | \"connection-failed\";\r\n    };\r\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:component"
+}
