@@ -13,5 +13,7 @@ allowBuilds:
   core-js-pure: false
   # The package's install hook is a no-op and is not needed at runtime.
   '@google/genai': false
+  core-js: false
+  protobufjs: false
   # Required by Impeccable's rendered URL audits; downloads its managed browser.
   puppeteer: true

@@ -95,16 +95,5 @@
     "vite": "^6.2.1",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.10"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@sentry/cli",
-      "@tailwindcss/oxide",
-      "core-js",
-      "esbuild",
-      "protobufjs",
-      "puppeteer",
-      "unrs-resolver"
-    ]
   }
 }
