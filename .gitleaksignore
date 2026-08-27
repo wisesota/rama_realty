@@ -1,2 +1,5 @@
 # Ignore false positive in CTO plan history
 8242ae09ab27467a3e7c36ea244838c7020d252e:docs/JUMPING_THE_CURVE_CTO_PLAN.md:generic-api-key:444
+
+# Ignore false positive in Chromatic config history
+8383d61bbff3d2565774d1f2ba81210cf23ca8d2:chromatic.config.json:generic-api-key:4
