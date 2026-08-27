@@ -1,4 +1,5 @@
 import { withSentryConfig } from '@sentry/nextjs';
+import { withWorkflow } from 'workflow/next';
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -28,7 +29,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withWorkflow(nextConfig), {
   org: "rama-d2",
   project: "javascript-nextjs",
   silent: !process.env.CI,

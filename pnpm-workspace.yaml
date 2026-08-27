@@ -17,3 +17,5 @@ allowBuilds:
   protobufjs: false
   # Required by Impeccable's rendered URL audits; downloads its managed browser.
   puppeteer: true
+  '@swc/core': true
+  cbor-extract: true
