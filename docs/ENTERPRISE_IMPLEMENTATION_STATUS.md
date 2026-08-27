@@ -75,7 +75,7 @@ Current local gates:
 - `pnpm build`: pass; 23 static page entries generated and all dynamic routes compiled
 - `pnpm e2e`: 17 Chromium tests pass across the route-complete illustrative demo, navigation/refresh and missing-run denial, responsive/RTL/reduced-motion coverage, dossier focus, microphone denial, bilingual confirmation, saved history/comparison, and authenticated deletion step-up
 - `pnpm build-storybook`: pass with upstream Vite sourcemap, module-directive, eval, and bundle-size warnings
-- `pnpm audit --audit-level high`: pass; no known vulnerabilities
+- `pnpm audit --audit-level high`: pass; verified no known vulnerabilities (storybook/nextjs image-size vulnerability is not present/resolved)
 - `pnpm peers check`: pass; no peer dependency issues
 - The full ordered migration chain through `20260822211710_harden_private_trigger_function_privileges.sql` parses and installs in PGlite 0.3.14, including the processor-erasure lease RPCs, defense-in-depth RLS on private operational tables, and explicit revocation of direct client execution on trigger-only functions.
 - `pnpm verify:supabase`: passed against the sole development project after applying the pending plan migrations. The service-only posture RPC confirms RLS and anonymous denial for `search_briefs`, `search_runs`, `buyer_sessions`, `tool_runs`, `inquiries`, and `audit_events`.

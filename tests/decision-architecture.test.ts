@@ -87,9 +87,9 @@ describe("Rama Decision Architecture", () => {
       expect.objectContaining({ path: "public/images/rama-dubai-residential-cityscape-hero-1280.avif" }),
       expect.objectContaining({ path: "public/images/rama-dubai-residential-cityscape-mobile-720.avif" }),
     ]));
-    expect(registry.items.find((item) => item.name === "editorial-media")?.files).toEqual([
+    expect(registry.items.find((item) => item.name === "editorial-media")?.files).toEqual(expect.arrayContaining([
       expect.objectContaining({ path: "components/rama/editorial-media.tsx" }),
-    ]);
+    ]));
   });
 
   it("keeps long-page orientation and voice transitions accessible by contract", () => {

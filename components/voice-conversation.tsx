@@ -13,6 +13,7 @@ type VoiceConversationProps = {
   state: VoiceExperienceState;
   onStop: () => void;
   onClose: () => void;
+  returnFocus?: () => void;
   copy: VoicePanelCopy;
   variant?: "inline" | "dialog";
   announceStatus?: boolean;
@@ -79,6 +80,7 @@ export function VoiceConversation({
   state,
   onStop,
   onClose,
+  returnFocus,
   copy,
   variant = "inline",
   announceStatus = true,
@@ -107,7 +109,10 @@ export function VoiceConversation({
       if (event.key === "Escape") {
         event.preventDefault();
         if (activeRef.current) onStopRef.current();
-        else onCloseRef.current();
+        else {
+          returnFocus?.();
+          onCloseRef.current();
+        }
       }
     };
 
@@ -115,7 +120,7 @@ export function VoiceConversation({
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, variant]);
+  }, [isOpen, variant, returnFocus]);
 
   useEffect(() => {
     if (variant === "dialog") return;
@@ -168,7 +173,10 @@ export function VoiceConversation({
             type="button"
             variant="ghost"
             aria-label={copy.close}
-            onPress={onClose}
+            onPress={() => {
+              returnFocus?.();
+              onClose();
+            }}
           >
             <X aria-hidden="true" />
           </Button>

@@ -24,7 +24,7 @@ async function deployablePublicMedia(root = resolve(process.cwd(), "public")) {
       const path = join(directory, entry.name);
       if (entry.isDirectory()) await walk(path);
       else if (/\.(?:avif|gif|jpe?g|json|png|riv|svg|webp)$/i.test(entry.name)
-        && /^(?:images|lottie|rive)(?:[\\/]|$)/.test(relative(root, path))) {
+        && /^(?:images|lottie|rive|r)(?:[\\/]|$)/.test(relative(root, path))) {
         results.push(`public/${relative(root, path).split(sep).join("/")}`);
       }
     }

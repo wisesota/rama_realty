@@ -2386,7 +2386,7 @@ img {
   .decision-room-modal { max-height: calc(100dvh - .75rem); border-radius: var(--radius-media) var(--radius-media) 0 0; }
   .decision-room__header { min-height: 4.25rem; padding-inline: var(--rama-legacy-dimension-positive-1rem); }
   .decision-room__identity span { max-width: 65vw; }
-  .decision-room-page .decision-room__header-actions a { display: none; }
+  .decision-room-modal .decision-room__header-actions a { display: none; }
   .decision-room__body { padding: var(--rama-legacy-dimension-positive-1rem); }
   .decision-room__brief { grid-template-columns: 1fr; gap: var(--rama-legacy-dimension-positive-0-75rem); }
   .decision-room__source-summary { white-space: normal; }
@@ -3605,7 +3605,7 @@ html[data-discovery-dialog-open="true"] {
 .gemini-live-signal__levels,
 .gemini-live-signal__request {
   display: flex;
-  gap: 0.16rem;
+  gap: var(--rama-legacy-dimension-positive-0-16rem);
   align-items: center;
   justify-content: center;
 }

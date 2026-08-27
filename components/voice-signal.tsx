@@ -2,7 +2,7 @@
 
 import { Mic } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { VoiceExperienceState } from "@/lib/voice/types";
 import type { PublicLocale } from "@/lib/i18n";
@@ -83,7 +83,10 @@ function visibleSignalCopy(state: VoiceExperienceState, locale: PublicLocale) {
     : signalCopy(state, locale);
 }
 
-export function VoiceSignal({ state, locale, onPress }: VoiceSignalProps) {
+export const VoiceSignal = forwardRef<HTMLButtonElement, VoiceSignalProps>(function VoiceSignal(
+  { state, locale, onPress },
+  ref
+) {
   const reducedMotion = useReducedMotion();
   const active = ["requesting", "connecting", "listening", "thinking", "speaking"].includes(
     state.phase,
@@ -95,6 +98,7 @@ export function VoiceSignal({ state, locale, onPress }: VoiceSignalProps) {
   return (
     <div className="voice-signal-wrap" data-active={active} data-phase={state.phase}>
       <Button
+        ref={ref}
         className="voice-signal"
         type="button"
         variant="ghost"
@@ -124,4 +128,4 @@ export function VoiceSignal({ state, locale, onPress }: VoiceSignalProps) {
       <span className="voice-signal__axis" aria-hidden="true" />
     </div>
   );
-}
+});

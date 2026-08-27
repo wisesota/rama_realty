@@ -795,7 +795,7 @@ Before Phase 2 implementation is handed off, documentation must provide:
 - a separate connected-development guide for Supabase and Gemini;
 - a documented running-server requirement for Gemini verification, or one orchestration command that starts, waits, verifies, and stops cleanly;
 - `pnpm env:check` that validates keys/status only and tests accidental `NEXT_PUBLIC_` exposure;
-- `pnpm doctor` that checks runtime, package manager, environment, port, and approved-provider reachability without printing secrets.
+- `pnpm run doctor` that checks runtime, package manager, environment, port, and approved-provider reachability without printing secrets.
 
 Add a documentation index covering product contract, architecture, quickstart, environment contract, connector profiles, operator/privacy runbooks, this plan, release evidence, and decision history. Link this plan from the README only after the product-identity decision is approved.
 

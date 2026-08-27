@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 const e2ePort = process.env.RAMA_E2E_PORT ?? "3100";
 const e2eOrigin = `http://localhost:${e2ePort}`;
+const storybookPort = process.env.RAMA_STORYBOOK_PORT ?? "6006";
+const storybookOrigin = process.env.STORYBOOK_URL ?? `http://localhost:${storybookPort}`;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -35,8 +37,8 @@ export default defineConfig({
       stderr: "pipe",
     },
     {
-      command: "pnpm storybook -- --ci --no-open",
-      url: "http://localhost:6006/index.json",
+      command: `pnpm storybook -- --ci --no-open -p ${storybookPort}`,
+      url: `${storybookOrigin}/index.json`,
       reuseExistingServer: false,
       timeout: 120_000,
       stdout: "pipe",

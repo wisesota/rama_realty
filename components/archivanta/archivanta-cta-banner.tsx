@@ -38,14 +38,14 @@ export function ArchivantaCtaBanner() {
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
                 <a
                   href="#top"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[var(--rama-ivory)] text-[var(--rama-ink-dark)] text-xs font-sans font-bold uppercase tracking-[0.15em] hover:bg-white transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-2 py-1.5 bg-[var(--rama-ivory)] text-[var(--rama-ink-dark)] text-xs font-sans font-bold uppercase tracking-[0.15em] hover:bg-white transition-colors"
                 >
                   <Mic className="w-4 h-4 text-[var(--rama-ink-dark)]" />
                   <span>Start Voice Discovery</span>
                 </a>
                 <a
                   href="#guided-search"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-transparent border border-white/30 text-white text-xs font-sans font-bold uppercase tracking-[0.15em] hover:bg-white/10 transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-2 py-1.5 bg-transparent border border-white/30 text-white text-xs font-sans font-bold uppercase tracking-[0.15em] hover:bg-white/10 transition-colors"
                 >
                   <span>Type Property Brief</span>
                   <ArrowRight className="w-4 h-4" />

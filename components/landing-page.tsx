@@ -108,6 +108,7 @@ export function LandingPage({
   const agentTranscript = useRef("");
   const propertyBriefInput = useRef<HTMLInputElement | null>(null);
   const propertyBriefTextarea = useRef<HTMLTextAreaElement | null>(null);
+  const voiceSignalRef = useRef<HTMLButtonElement | null>(null);
   const voiceStartedAt = useRef<number | null>(null);
   const lastVoicePhase = useRef<string>("");
 
@@ -999,7 +1000,7 @@ export function LandingPage({
                 {/* Central Voice Hub Orb */}
                 <div className="flex flex-col items-center gap-2" data-primary-interaction="voice">
                   <p className="text-xs font-sans font-bold uppercase tracking-[0.18em] text-white/90">{copy.voiceLead}</p>
-                  <VoiceSignal state={voiceState} locale={locale} onPress={() => void handleVoiceAgent()} />
+                  <VoiceSignal ref={voiceSignalRef} state={voiceState} locale={locale} onPress={() => void handleVoiceAgent()} />
                 </div>
 
                 {/* Compact Unified Search Bar - Solid Nordic Ink */}
@@ -1013,7 +1014,7 @@ export function LandingPage({
                   <input
                     ref={propertyBriefInput}
                     id="property-brief"
-                    className="min-w-0 w-full bg-transparent border-none outline-none text-white placeholder:text-white/60 px-3 sm:px-0 py-2 text-base font-sans"
+                    className="min-w-0 w-full bg-transparent border-none outline-none text-white placeholder:text-white/60 px-2 sm:px-1.5 py-1.5 text-base font-sans"
                     value={brief}
                     onChange={(event) => setBrief(event.target.value)}
                     placeholder={copy.placeholder}
@@ -1056,6 +1057,7 @@ export function LandingPage({
                   copy={voiceCopy.panel}
                   onStop={() => void endVoiceInput()}
                   onClose={() => resetVoiceExperience()}
+                  returnFocus={() => requestAnimationFrame(() => voiceSignalRef.current?.focus())}
                 />
 
                 {preparedBrief ? (

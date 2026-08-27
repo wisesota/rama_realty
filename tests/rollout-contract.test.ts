@@ -110,6 +110,7 @@ describe("Decision OS rollout contract", () => {
   it("keeps durable v2 writes independent from the compatible renderer rollback", async () => {
     vi.resetModules();
     vi.doMock("@/lib/rollout-server", async (importOriginal) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const actual = await importOriginal<any>();
       return {
         ...actual,
@@ -128,6 +129,7 @@ describe("Decision OS rollout contract", () => {
     expect(envelope.schemaVersion).toBe("1");
     // Assert RPC was called with writeEvidenceV2 = true
     const { createAdminClient: mockClient } = await import("@/lib/supabase/admin");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rpcMock = mockClient().rpc as any;
     expect(rpcMock).toHaveBeenCalledWith("persist_buyer_search", expect.objectContaining({ p_write_evidence_v2: true }));
 

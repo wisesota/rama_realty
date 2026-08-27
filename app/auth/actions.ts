@@ -11,6 +11,7 @@ import { resetBuyerSessionCookie, rotateBuyerSessionToken } from "@/lib/buyer-se
 
 export async function signInWithPasswordAction(
   _previous: ActionState,
+
   formData: FormData,
 ): Promise<ActionState> {
   const email = readText(formData, "email", 254).toLowerCase();
@@ -19,6 +20,26 @@ export async function signInWithPasswordAction(
 
   if (!email || !password) {
     return { status: "error", message: "Enter your email and password." };
+  }
+
+  // Leaked-password protection
+  try {
+    const hash = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(password));
+    const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    const prefix = hashHex.slice(0, 5);
+    const suffix = hashHex.slice(5);
+    const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { "Add-Padding": "true" },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (res.ok) {
+      const text = await res.text();
+      if (text.includes(suffix + ":")) {
+        return { status: "error", message: "This password has appeared in a public data breach. Please contact an administrator to reset it." };
+      }
+    }
+  } catch {
+    // Fail open if the API is unreachable
   }
 
   const supabase = await createClient();

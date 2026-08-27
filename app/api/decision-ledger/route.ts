@@ -1,11 +1,10 @@
 import { getOrCreateBuyerSessionTokenHash } from "@/lib/buyer-session-server";
 import { consumeApiRateLimit, RateLimitBackendUnavailableError } from "@/lib/rate-limit-server";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSameOrigin } from "@/lib/supabase/auth";
 import { decisionOsEnabledForBuyer, evidenceV2WriterEnabled, publicExperienceEnabled } from "@/lib/rollout-server";
 
 const eventTypes = ["criterion_revised", "candidate_dismissed", "open_question"] as const;
-const maximumBodyBytes = 4_096;
 
 function errorResponse(error: string, status: number) {
   return Response.json({ error }, { status, headers: { "Cache-Control": "no-store" } });
@@ -14,17 +13,15 @@ function errorResponse(error: string, status: number) {
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return errorResponse("Cross-origin ledger requests are not allowed.", 403);
   if (!publicExperienceEnabled() || !evidenceV2WriterEnabled()) return errorResponse("Decision Ledger updates are temporarily unavailable.", 503);
-  
   let text: string;
   try {
     text = await request.text();
-    if (new TextEncoder().encode(text).length > maximumBodyBytes) {
+    if (Buffer.byteLength(text, "utf8") > 4_096) {
       return errorResponse("The ledger request is too large.", 413);
     }
   } catch {
     return errorResponse("The request body could not be read.", 400);
   }
-
   try {
     const limit = await consumeApiRateLimit({ request, scope: "decision-ledger", maximumRequests: 60, windowMs: 60_000 });
     if (!limit.allowed) return errorResponse("Too many ledger updates. Try again in a minute.", 429);
@@ -45,8 +42,9 @@ export async function POST(request: Request) {
   }
   const buyerTokenHash = await getOrCreateBuyerSessionTokenHash();
   if (!decisionOsEnabledForBuyer(buyerTokenHash)) return errorResponse("Decision Ledger updates are temporarily unavailable.", 503);
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("append_buyer_ledger_event", {
+  const admin = createAdminClient();
+  const { data, error } = await admin.rpc("append_buyer_ledger_event", {
+    p_token_hash: buyerTokenHash,
     p_search_run_id: searchRunId,
     p_event_type: eventType as (typeof eventTypes)[number],
     p_summary: summary.trim(),
