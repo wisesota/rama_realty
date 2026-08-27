@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
       const existing = config.watchOptions?.ignored;
       const wellKnownPattern = /[/\\]\.well-known[/\\]/;
 
-      let merged: RegExp | string[];
+      let merged: RegExp | string | string[];
       if (existing instanceof RegExp) {
         // Combine both RegExp patterns with alternation
         merged = new RegExp(`(?:${existing.source})|(?:${wellKnownPattern.source})`);
