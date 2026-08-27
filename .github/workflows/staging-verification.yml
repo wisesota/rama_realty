@@ -19,7 +19,8 @@ jobs:
   deployed-matrix:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    environment: staging
+    environment:
+      name: staging
     env:
       RAMA_STAGING_URL: ${{ inputs.staging_url }}
       NEXT_PUBLIC_SITE_URL: ${{ inputs.staging_url }}
