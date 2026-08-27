@@ -48,6 +48,6 @@ describe("provider publication migration", () => {
     expect(migration).toContain("char_length(btrim(staged.normalized_payload ->> 'description')) < 40");
     expect(migration).toContain("(staged.normalized_payload ->> 'completionStatus') not in ('off_plan','under_construction','ready')");
     expect(migration).toContain("(staged.normalized_payload ->> 'slug') !~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'");
-    expect(migration).toContain("(staged.normalized_payload ->> 'beds')::integer > 30");
+    expect(migration).toContain("(staged.normalized_payload ->> 'beds') !~ '^(?:[0-9]|[1-2][0-9]|30)$'");
   });
 });

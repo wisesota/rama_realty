@@ -43,3 +43,9 @@ build-storybook.log
 
 # Agent skills and customizations
 .agents/
+
+# Temporary tools
+fix_minor_comments.py
+gitleaks.zip
+gitleaks/
+gitleaks2/

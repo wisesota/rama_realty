@@ -107,11 +107,9 @@ begin
     or (staged.normalized_payload ->> 'propertyType') not in ('apartment','villa','townhouse','penthouse')
     or (staged.normalized_payload ->> 'completionStatus') not in ('off_plan','under_construction','ready')
     or (staged.normalized_payload ->> 'priceAed') !~ '^[1-9][0-9]{0,9}$'
-    or (staged.normalized_payload ->> 'beds') !~ '^[0-9]{1,2}$'
-    or (staged.normalized_payload ->> 'baths') !~ '^[0-9]{1,2}$'
+    or (staged.normalized_payload ->> 'beds') !~ '^(?:[0-9]|[1-2][0-9]|30)$'
+    or (staged.normalized_payload ->> 'baths') !~ '^(?:[0-9]|[1-2][0-9]|30)$'
     or (staged.normalized_payload ->> 'areaSqFt') !~ '^[1-9][0-9]{0,9}$'
-    or (staged.normalized_payload ->> 'beds')::integer > 30
-    or (staged.normalized_payload ->> 'baths')::integer > 30
     or (staged.normalized_payload ->> 'imageUrl') !~ '^https://'
     or char_length(btrim(staged.normalized_payload ->> 'imageAlt')) not between 2 and 300
   then raise exception 'Provider record does not satisfy the catalog contract' using errcode = '23514'; end if;
