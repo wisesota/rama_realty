@@ -29,16 +29,29 @@ const nextConfig: NextConfig = {
   },
   webpack: (config, { dev }) => {
     if (dev) {
-      const existingIgnored = config.watchOptions?.ignored;
-      const wellKnownGlob = "**/.well-known/**";
+      // Next.js sets watchOptions.ignored to a single RegExp that covers
+      // .git, .next, and node_modules. Webpack 5 schema allows:
+      //   RegExp | string | string[]
+      // but NOT mixed arrays. When the existing value is a RegExp, we must
+      // build a combined RegExp instead of creating [RegExp, string].
+      const existing = config.watchOptions?.ignored;
+      const wellKnownPattern = /[/\\]\.well-known[/\\]/;
+
+      let merged: RegExp | string[];
+      if (existing instanceof RegExp) {
+        // Combine both RegExp patterns with alternation
+        merged = new RegExp(`(?:${existing.source})|(?:${wellKnownPattern.source})`);
+      } else if (typeof existing === "string") {
+        merged = [existing, "**/.well-known/**"];
+      } else if (Array.isArray(existing)) {
+        merged = [...existing, "**/.well-known/**"];
+      } else {
+        merged = "**/.well-known/**";
+      }
 
       config.watchOptions = {
         ...(config.watchOptions || {}),
-        ignored: existingIgnored
-          ? Array.isArray(existingIgnored)
-            ? [...existingIgnored, wellKnownGlob]
-            : [existingIgnored, wellKnownGlob]
-          : [wellKnownGlob],
+        ignored: merged,
       };
     }
     return config;
