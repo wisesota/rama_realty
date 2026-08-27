@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   }
 
   const { email } = body as { email?: unknown };
-  if (typeof email !== "string" || email.trim() === "") {
+  if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
     return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
   }
 

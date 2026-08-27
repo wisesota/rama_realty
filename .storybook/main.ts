@@ -28,10 +28,15 @@ const config: StorybookConfig = {
     
     config.server = config.server || {};
     config.server.watch = config.server.watch || {};
-    config.server.watch.ignored = [
-      ...(Array.isArray(config.server.watch.ignored) ? config.server.watch.ignored : []),
-      '**/.well-known/**',
-    ];
+    
+    const existingIgnored = config.server.watch.ignored;
+    const wellKnownRegex = /[\/\\]\.well-known[\/\\]/;
+    
+    config.server.watch.ignored = existingIgnored
+      ? Array.isArray(existingIgnored)
+        ? [...existingIgnored, wellKnownRegex]
+        : [existingIgnored, wellKnownRegex]
+      : [wellKnownRegex];
 
     return config;
   },
