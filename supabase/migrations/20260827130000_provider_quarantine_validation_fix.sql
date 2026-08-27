@@ -1,82 +1,3 @@
--- Licensed provider records enter a private quarantine. Publication is a
--- separate, fail-closed act that requires an enabled source and current rights.
-
-create table if not exists public.provider_sources (
-  id uuid primary key default gen_random_uuid(),
-  organization_id uuid not null references public.organizations(id) on delete cascade,
-  source_name text not null,
-  external_provider_id text not null,
-  geography text[] not null default '{}',
-  maximum_freshness_hours integer not null default 24,
-  attribution text not null,
-  publication_rights_status text not null default 'pending',
-  rights_reviewed_at timestamptz,
-  rights_expires_at timestamptz,
-  legal_owner text,
-  enabled boolean not null default false,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (organization_id, external_provider_id),
-  constraint provider_sources_freshness_check check (maximum_freshness_hours between 1 and 720),
-  constraint provider_sources_rights_check check (publication_rights_status in ('pending','approved','rejected','expired')),
-  constraint provider_sources_enablement_check check (
-    not enabled or (
-      publication_rights_status = 'approved'
-      and rights_reviewed_at is not null
-      and legal_owner is not null
-      and rights_expires_at is not null
-    )
-  )
-);
-
-create table if not exists public.provider_records_staging (
-  id uuid primary key default gen_random_uuid(),
-  provider_source_id uuid not null references public.provider_sources(id) on delete cascade,
-  source_record_id text not null,
-  source_observed_at timestamptz not null,
-  publication_ends_at timestamptz not null,
-  raw_payload jsonb not null,
-  normalized_payload jsonb,
-  validation_errors jsonb not null default '[]'::jsonb,
-  media_rights_confirmed boolean not null default false,
-  permit_number text,
-  status text not null default 'quarantined',
-  content_hash text not null,
-  published_property_id text references public.properties(id) on delete set null,
-  received_at timestamptz not null default now(),
-  validated_at timestamptz,
-  published_at timestamptz,
-  unique (provider_source_id, source_record_id, content_hash),
-  constraint provider_records_status_check check (status in ('quarantined','validated','rejected','published')),
-  constraint provider_records_hash_check check (content_hash ~ '^[a-f0-9]{32,64}$'),
-  constraint provider_records_window_check check (publication_ends_at > source_observed_at)
-);
-
-create index if not exists provider_records_staging_queue_idx
-  on public.provider_records_staging (provider_source_id, status, received_at);
-
-create table if not exists public.provider_reconciliation_events (
-  id uuid primary key default gen_random_uuid(),
-  provider_source_id uuid not null references public.provider_sources(id) on delete cascade,
-  source_record_id text,
-  event_type text not null,
-  severity text not null,
-  details jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now(),
-  resolved_at timestamptz,
-  constraint provider_reconciliation_type_check check (event_type in ('missing','stale','rights_expired','ownership_mismatch','price_changed','provider_unavailable')),
-  constraint provider_reconciliation_severity_check check (severity in ('info','warning','critical'))
-);
-
-alter table public.properties
-  add column if not exists provider_source_id uuid references public.provider_sources(id) on delete set null;
-
-alter table public.provider_sources enable row level security;
-alter table public.provider_records_staging enable row level security;
-alter table public.provider_reconciliation_events enable row level security;
-revoke all on public.provider_sources, public.provider_records_staging, public.provider_reconciliation_events from public, anon, authenticated;
-grant select, insert, update on public.provider_sources, public.provider_records_staging, public.provider_reconciliation_events to service_role;
-
 create or replace function public.publish_validated_provider_record(p_staging_id uuid)
 returns text
 language plpgsql
@@ -107,11 +28,11 @@ begin
     or (staged.normalized_payload ->> 'propertyType') not in ('apartment','villa','townhouse','penthouse')
     or (staged.normalized_payload ->> 'completionStatus') not in ('off_plan','under_construction','ready')
     or (staged.normalized_payload ->> 'priceAed') !~ '^[1-9][0-9]{0,9}$'
-    or (staged.normalized_payload ->> 'beds') !~ '^[0-9]{1,2}$'
-    or (staged.normalized_payload ->> 'baths') !~ '^[0-9]{1,2}$'
+    or staged.normalized_payload ->> 'beds' is null
+    or (staged.normalized_payload ->> 'beds') !~ '^(?:[0-9]|[1-2][0-9]|30)$'
+    or staged.normalized_payload ->> 'baths' is null
+    or (staged.normalized_payload ->> 'baths') !~ '^(?:[0-9]|[1-2][0-9]|30)$'
     or (staged.normalized_payload ->> 'areaSqFt') !~ '^[1-9][0-9]{0,9}$'
-    or (staged.normalized_payload ->> 'beds')::integer > 30
-    or (staged.normalized_payload ->> 'baths')::integer > 30
     or (staged.normalized_payload ->> 'imageUrl') !~ '^https://'
     or char_length(btrim(staged.normalized_payload ->> 'imageAlt')) not between 2 and 300
   then raise exception 'Provider record does not satisfy the catalog contract' using errcode = '23514'; end if;
@@ -206,31 +127,3 @@ $$;
 
 revoke all on function public.publish_validated_provider_record(uuid) from public, anon, authenticated;
 grant execute on function public.publish_validated_provider_record(uuid) to service_role;
-
-create or replace function private.withdraw_provider_properties()
-returns trigger
-language plpgsql
-security definer
-set search_path = ''
-as $$
-begin
-  update public.properties property
-  set status = case when new.enabled and new.publication_rights_status = 'approved' and new.rights_expires_at > now() then property.status else 'withdrawn' end,
-      availability_status = case when new.enabled and new.publication_rights_status = 'approved' and new.rights_expires_at > now() then property.availability_status else 'unavailable' end,
-      publication_ends_at = least(
-        property.publication_ends_at,
-        new.rights_expires_at,
-        property.source_updated_at + make_interval(hours => new.maximum_freshness_hours),
-        case when new.enabled and new.publication_rights_status = 'approved' then 'infinity'::timestamptz else now() end
-      )
-  where property.provider_source_id = new.id;
-  return new;
-end;
-$$;
-
-revoke all on function private.withdraw_provider_properties() from public, anon, authenticated;
-drop trigger if exists provider_sources_withdraw_properties on public.provider_sources;
-create trigger provider_sources_withdraw_properties
-after update of enabled, publication_rights_status, rights_expires_at, maximum_freshness_hours
-on public.provider_sources
-for each row execute function private.withdraw_provider_properties();
