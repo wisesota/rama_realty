@@ -27,6 +27,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = config.watchOptions || {};
+      const existingIgnored = config.watchOptions.ignored;
+      const wellKnownRegex = /[\/\\]\.well-known[\/\\]/;
+
+      config.watchOptions.ignored = existingIgnored
+        ? Array.isArray(existingIgnored)
+          ? [...existingIgnored, wellKnownRegex]
+          : [existingIgnored, wellKnownRegex]
+        : [wellKnownRegex];
+    }
+    return config;
+  },
 };
 
 export default withSentryConfig(withWorkflow(nextConfig), {
