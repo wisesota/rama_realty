@@ -9,6 +9,10 @@ const governedRevisionHotfix = readFileSync(
   new URL("../supabase/migrations/20260822223000_allow_governed_provider_revisions.sql", import.meta.url),
   "utf8",
 );
+const validationFixMigration = readFileSync(
+  new URL("../supabase/migrations/20260827130000_provider_quarantine_validation_fix.sql", import.meta.url),
+  "utf8",
+);
 
 describe("provider publication migration", () => {
   it("reuses the stable listing id across content-hash revisions", () => {
@@ -49,5 +53,12 @@ describe("provider publication migration", () => {
     expect(migration).toContain("(staged.normalized_payload ->> 'completionStatus') not in ('off_plan','under_construction','ready')");
     expect(migration).toContain("(staged.normalized_payload ->> 'slug') !~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'");
     expect(migration).toContain("(staged.normalized_payload ->> 'beds')::integer > 30");
+  });
+
+  it("enforces bounded validation and null rejection for beds and baths", () => {
+    expect(validationFixMigration).toContain("staged.normalized_payload ->> 'beds' is null");
+    expect(validationFixMigration).toContain("(staged.normalized_payload ->> 'beds') !~ '^(?:[0-9]|[1-2][0-9]|30)$'");
+    expect(validationFixMigration).toContain("staged.normalized_payload ->> 'baths' is null");
+    expect(validationFixMigration).toContain("(staged.normalized_payload ->> 'baths') !~ '^(?:[0-9]|[1-2][0-9]|30)$'");
   });
 });
