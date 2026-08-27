@@ -441,7 +441,7 @@ additive tables/columns + RLS
         -> later cleanup after retention window
 ```
 
-Each migration design names ownership keys, uniqueness/idempotency constraints, foreign-key deletion behavior, indexes, backfill behavior, source-rights expiry behavior, and RPC versioning. Rollback disables the new writer/renderer and returns to the compatible reader; it never depends on reversing a destructive data migration.
+Each migration design specifies ownership policies, uniqueness and idempotency constraints, foreign-key deletion behavior, indexes, backfill behavior, source-rights expiry behavior, and RPC versioning. Rollback disables the new writer/renderer and returns to the compatible reader; it never depends on reversing a destructive data migration.
 
 ## MCP and connector strategy
 
