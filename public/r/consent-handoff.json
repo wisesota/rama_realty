@@ -9,7 +9,7 @@
   "files": [
     {
       "path": "components/rama/consent-handoff.tsx",
-      "content": "import { LockKeyhole } from \"lucide-react\";\n\nexport function ConsentHandoff({ eligible, title, body }: { eligible: boolean; title: string; body: string }) {\n  return <section className=\"consent-handoff\" data-eligible={eligible}><LockKeyhole aria-hidden=\"true\" /><div><strong>{title}</strong><p>{body}</p></div></section>;\n}\n\n",
+      "content": "import { LockKeyhole } from \"lucide-react\";\r\n\r\nexport function ConsentHandoff({ eligible, title, body }: { eligible: boolean; title: string; body: string }) {\r\n  return <section className=\"consent-handoff\" data-eligible={eligible}><LockKeyhole aria-hidden=\"true\" /><div><strong>{title}</strong><p>{body}</p></div></section>;\r\n}\r\n\r\n",
       "type": "registry:component"
     }
   ],

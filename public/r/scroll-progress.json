@@ -6,7 +6,7 @@
   "files": [
     {
       "path": "components/ui/scroll-progress.tsx",
-      "content": "import { cn } from \"@/lib/utils\";\n\n/** A one-pixel, direction-aware adaptation of Magic UI's Scroll Progress. */\nexport function ScrollProgress({ className }: { className?: string }) {\n  return (\n    <div\n      aria-hidden=\"true\"\n      className={cn(\"rama-scroll-progress\", className)}\n    />\n  );\n}\n",
+      "content": "import { cn } from \"@/lib/utils\";\r\n\r\n/** A one-pixel, direction-aware adaptation of Magic UI's Scroll Progress. */\r\nexport function ScrollProgress({ className }: { className?: string }) {\r\n  return (\r\n    <div\r\n      aria-hidden=\"true\"\r\n      className={cn(\"rama-scroll-progress\", className)}\r\n    />\r\n  );\r\n}\r\n",
       "type": "registry:ui"
     }
   ],

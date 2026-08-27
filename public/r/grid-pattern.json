@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "grid-pattern",
+  "title": "Grid Pattern",
+  "description": "A decorative background grid pattern.",
+  "files": [
+    {
+      "path": "components/ui/grid-pattern.tsx",
+      "content": "import { useId } from \"react\"\r\n\r\nimport { cn } from \"@/lib/utils\"\r\n\r\ninterface GridPatternProps extends React.SVGProps<SVGSVGElement> {\r\n  width?: number\r\n  height?: number\r\n  x?: number\r\n  y?: number\r\n  squares?: Array<[x: number, y: number]>\r\n  strokeDasharray?: string\r\n  className?: string\r\n  [key: string]: unknown\r\n}\r\n\r\nexport function GridPattern({\r\n  width = 40,\r\n  height = 40,\r\n  x = -1,\r\n  y = -1,\r\n  strokeDasharray = \"0\",\r\n  squares,\r\n  className,\r\n  ...props\r\n}: GridPatternProps) {\r\n  const id = useId()\r\n\r\n  return (\r\n    <svg\r\n      aria-hidden=\"true\"\r\n      className={cn(\r\n        \"pointer-events-none absolute inset-0 h-full w-full fill-gray-400/30 stroke-gray-400/30\",\r\n        className\r\n      )}\r\n      {...props}\r\n    >\r\n      <defs>\r\n        <pattern\r\n          id={id}\r\n          width={width}\r\n          height={height}\r\n          patternUnits=\"userSpaceOnUse\"\r\n          x={x}\r\n          y={y}\r\n        >\r\n          <path\r\n            d={`M.5 ${height}V.5H${width}`}\r\n            fill=\"none\"\r\n            strokeDasharray={strokeDasharray}\r\n          />\r\n        </pattern>\r\n      </defs>\r\n      <rect width=\"100%\" height=\"100%\" strokeWidth={0} fill={`url(#${id})`} />\r\n      {squares && (\r\n        <svg x={x} y={y} className=\"overflow-visible\">\r\n          {squares.map(([x, y]) => (\r\n            <rect\r\n              strokeWidth=\"0\"\r\n              key={`${x}-${y}`}\r\n              width={width - 1}\r\n              height={height - 1}\r\n              x={x * width + 1}\r\n              y={y * height + 1}\r\n            />\r\n          ))}\r\n        </svg>\r\n      )}\r\n    </svg>\r\n  )\r\n}\r\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

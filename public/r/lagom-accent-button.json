@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "lagom-accent-button",
+  "title": "Lagom Accent Button",
+  "description": "A styled accent button component.",
+  "files": [
+    {
+      "path": "components/ui/lagom-accent-button.tsx",
+      "content": "import * as React from \"react\"\r\nimport { cn } from \"@/lib/utils\"\r\n\r\nexport interface LagomAccentButtonProps\r\n  extends React.ButtonHTMLAttributes<HTMLButtonElement> {\r\n  asChild?: boolean\r\n}\r\n\r\nconst LagomAccentButton = React.forwardRef<HTMLButtonElement, LagomAccentButtonProps>(\r\n  ({ className, children, ...props }, ref) => {\r\n    return (\r\n      <button\r\n        ref={ref}\r\n        className={cn(\r\n          \"inline-flex items-center justify-center gap-4 text-sm font-bold uppercase tracking-[0.2em]\",\r\n          \"bg-[#5889BB] text-white hover:text-white\",\r\n          \"rounded-tl-full rounded-tr-none rounded-br-none rounded-bl-none\",\r\n          // impeccable-disable-next-line bounce-easing -- rejected Archivanta exploration; never imported by an active route or registry item\r\n          \"transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-110\",\r\n          \"px-2 py-1.5 pb-1.5\",\r\n          className\r\n        )}\r\n        {...props}\r\n      >\r\n        {children}\r\n      </button>\r\n    )\r\n  }\r\n)\r\nLagomAccentButton.displayName = \"LagomAccentButton\"\r\n\r\nexport { LagomAccentButton }\r\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

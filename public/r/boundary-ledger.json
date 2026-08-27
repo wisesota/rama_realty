@@ -9,7 +9,7 @@
   "files": [
     {
       "path": "components/rama/boundary-ledger.tsx",
-      "content": "import { Check, CircleHelp, LockKeyhole, Shield } from \"lucide-react\";\n\nexport type BoundaryLedgerItem = {\n  title: string;\n  body: string;\n  state: \"source\" | \"consent\" | \"privacy\" | \"unknown\";\n};\n\nconst icons = {\n  source: Check,\n  consent: Shield,\n  privacy: LockKeyhole,\n  unknown: CircleHelp,\n};\n\nexport function BoundaryLedger({ items }: { items: readonly BoundaryLedgerItem[] }) {\n  return (\n    <dl className=\"boundary-ledger\">\n      {items.map((item) => {\n        const Icon = icons[item.state];\n        return (\n          <div key={item.title} data-state={item.state}>\n            <dt><Icon aria-hidden=\"true\" />{item.title}</dt>\n            <dd>{item.body}</dd>\n          </div>\n        );\n      })}\n    </dl>\n  );\n}\n",
+      "content": "import { Check, CircleHelp, LockKeyhole, Shield } from \"lucide-react\";\r\n\r\nexport type BoundaryLedgerItem = {\r\n  title: string;\r\n  body: string;\r\n  state: \"source\" | \"consent\" | \"privacy\" | \"unknown\";\r\n};\r\n\r\nconst icons = {\r\n  source: Check,\r\n  consent: Shield,\r\n  privacy: LockKeyhole,\r\n  unknown: CircleHelp,\r\n};\r\n\r\nexport function BoundaryLedger({ items }: { items: readonly BoundaryLedgerItem[] }) {\r\n  return (\r\n    <dl className=\"boundary-ledger\">\r\n      {items.map((item) => {\r\n        const Icon = icons[item.state];\r\n        return (\r\n          <div key={item.title} data-state={item.state}>\r\n            <dt><Icon aria-hidden=\"true\" />{item.title}</dt>\r\n            <dd>{item.body}</dd>\r\n          </div>\r\n        );\r\n      })}\r\n    </dl>\r\n  );\r\n}\r\n",
       "type": "registry:component"
     }
   ],
