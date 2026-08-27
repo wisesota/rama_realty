@@ -1027,7 +1027,7 @@ export function LandingPage({
                     }
                   />
                   <Button
-                    className="inline-flex items-center justify-center min-h-[44px] bg-transparent text-white border border-white/35 hover:bg-white/10 px-5 py-2 font-sans font-bold tracking-[0.12em] text-xs uppercase transition-colors rounded-[6px] cursor-pointer shrink-0"
+                    className="inline-flex items-center justify-center min-h-[44px] bg-transparent text-white border border-white/35 hover:bg-white/10 px-2 py-1.5 font-sans font-bold tracking-[0.12em] text-xs uppercase transition-colors rounded-[6px] cursor-pointer shrink-0"
                     type="submit"
                     isDisabled={searchPhase === "loading"}
                     aria-label={

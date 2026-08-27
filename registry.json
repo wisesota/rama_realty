@@ -344,6 +344,34 @@
       "description": "An eligibility and consent boundary for licensed advisor continuity.",
       "dependencies": ["lucide-react"],
       "files": [{ "path": "components/rama/consent-handoff.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "marquee",
+      "type": "registry:ui",
+      "title": "Marquee",
+      "description": "An infinite scrolling marquee component.",
+      "files": [{ "path": "components/ui/marquee.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "grid-pattern",
+      "type": "registry:ui",
+      "title": "Grid Pattern",
+      "description": "A decorative background grid pattern.",
+      "files": [{ "path": "components/ui/grid-pattern.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "lagom-accent-button",
+      "type": "registry:ui",
+      "title": "Lagom Accent Button",
+      "description": "A styled accent button component.",
+      "files": [{ "path": "components/ui/lagom-accent-button.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "bento-grid",
+      "type": "registry:ui",
+      "title": "Bento Grid",
+      "description": "A grid component for displaying content in a bento box layout.",
+      "files": [{ "path": "components/ui/bento-grid.tsx", "type": "registry:ui" }]
     }
   ]
 }
