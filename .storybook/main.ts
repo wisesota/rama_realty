@@ -25,6 +25,19 @@ const config: StorybookConfig = {
       'motion/react',
       'next/dist/shared/lib/app-router-context.shared-runtime',
     ];
+    
+    config.server = config.server || {};
+    config.server.watch = config.server.watch || {};
+    
+    const existingIgnored = config.server.watch.ignored;
+    const wellKnownRegex = /[\/\\]\.well-known[\/\\]/;
+    
+    config.server.watch.ignored = existingIgnored
+      ? Array.isArray(existingIgnored)
+        ? [...existingIgnored, wellKnownRegex]
+        : [existingIgnored, wellKnownRegex]
+      : [wellKnownRegex];
+
     return config;
   },
 };

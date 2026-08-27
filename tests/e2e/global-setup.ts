@@ -10,7 +10,7 @@ async function warmRoute(origin: string, path: string, body?: unknown) {
           Origin: origin,
         },
         body: body === undefined ? undefined : JSON.stringify(body),
-        signal: AbortSignal.timeout(10_000),
+        signal: AbortSignal.timeout(60_000),
       });
       if (response.status < 500 || path === "/api/voice/token") return;
       if (attempt === 3) throw new Error(`E2E route warmup failed for ${path} with ${response.status}.`);

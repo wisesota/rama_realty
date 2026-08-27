@@ -1,0 +1,76 @@
+﻿diff --git a/dist/lib/generate-interception-routes-rewrites.js b/dist/lib/generate-interception-routes-rewrites.js
+index 8e91148..9329080 100644
+--- a/dist/lib/generate-interception-routes-rewrites.js
++++ b/dist/lib/generate-interception-routes-rewrites.js
+@@ -8,6 +8,12 @@ Object.defineProperty(exports, "generateInterceptionRoutesRewrites", {
+         return generateInterceptionRoutesRewrites;
+     }
+ });
++Object.defineProperty(exports, "isInterceptionRouteRewrite", {
++    enumerable: true,
++    get: function() {
++        return isInterceptionRouteRewrite;
++    }
++});
+ const _approuterheaders = require("../client/components/app-router-headers");
+ const _interceptionroutes = require("../shared/lib/router/utils/interception-routes");
+ const _routeregex = require("../shared/lib/router/utils/route-regex");
+@@ -48,5 +54,9 @@ function generateInterceptionRoutesRewrites(appPaths, basePath = '') {
+     }
+     return rewrites;
+ }
++function isInterceptionRouteRewrite(route) {
++    var _route_has;
++    return ((_route_has = route.has) == null ? void 0 : _route_has.some((has)=>has.type === 'header' && has.key === _approuterheaders.NEXT_URL)) ?? false;
++}
+ 
+ //# sourceMappingURL=generate-interception-routes-rewrites.js.map
+\ No newline at end of file
+diff --git a/dist/esm/lib/generate-interception-routes-rewrites.js b/dist/esm/lib/generate-interception-routes-rewrites.js
+index be9852b..72d8447 100644
+--- a/dist/esm/lib/generate-interception-routes-rewrites.js
++++ b/dist/esm/lib/generate-interception-routes-rewrites.js
+@@ -38,5 +38,9 @@ export function generateInterceptionRoutesRewrites(appPaths, basePath = '') {
+     }
+     return rewrites;
+ }
++export function isInterceptionRouteRewrite(route) {
++    var _route_has;
++    return ((_route_has = route.has) == null ? void 0 : _route_has.some((has)=>has.type === 'header' && has.key === NEXT_URL)) ?? false;
++}
+ 
+ //# sourceMappingURL=generate-interception-routes-rewrites.js.map
+\ No newline at end of file
+diff --git a/dist/server/lib/router-utils/setup-dev-bundler.js b/dist/server/lib/router-utils/setup-dev-bundler.js
+index d6bb381..45c0599 100644
+--- a/dist/server/lib/router-utils/setup-dev-bundler.js
++++ b/dist/server/lib/router-utils/setup-dev-bundler.js
+@@ -708,6 +708,7 @@ async function startWatcher(opts) {
+             serverFields.hasAppNotFound = hasRootAppNotFound;
+             opts.fsChecker.middlewareMatcher = ((_serverFields_middleware = serverFields.middleware) == null ? void 0 : _serverFields_middleware.matchers) ? (0, _middlewareroutematcher.getMiddlewareRouteMatcher)((_serverFields_middleware1 = serverFields.middleware) == null ? void 0 : _serverFields_middleware1.matchers) : undefined;
+             const interceptionRoutes = (0, _generateinterceptionroutesrewrites.generateInterceptionRoutesRewrites)(Object.keys(appPaths), opts.nextConfig.basePath).map((item)=>(0, _filesystem.buildCustomRoute)('before_files_rewrite', item, opts.nextConfig.basePath, opts.nextConfig.experimental.caseSensitiveRoutes));
++            opts.fsChecker.rewrites.beforeFiles = opts.fsChecker.rewrites.beforeFiles.filter((r) => !(0, _generateinterceptionroutesrewrites.isInterceptionRouteRewrite)(r));
+             opts.fsChecker.rewrites.beforeFiles.push(...interceptionRoutes);
+             const exportPathMap = typeof nextConfig.exportPathMap === 'function' && await (nextConfig.exportPathMap == null ? void 0 : nextConfig.exportPathMap.call(nextConfig, {}, {
+                 dev: true,
+diff --git a/dist/esm/server/lib/router-utils/setup-dev-bundler.js b/dist/esm/server/lib/router-utils/setup-dev-bundler.js
+index 9dce7fc..3a04ba1 100644
+--- a/dist/esm/server/lib/router-utils/setup-dev-bundler.js
++++ b/dist/esm/server/lib/router-utils/setup-dev-bundler.js
+@@ -20,7 +20,7 @@ import { getRouteMatcher } from '../../../shared/lib/router/utils/route-matcher'
+ import { normalizePathSep } from '../../../shared/lib/page-path/normalize-path-sep';
+ import { createClientRouterFilter } from '../../../lib/create-client-router-filter';
+ import { absolutePathToPage } from '../../../shared/lib/page-path/absolute-path-to-page';
+-import { generateInterceptionRoutesRewrites } from '../../../lib/generate-interception-routes-rewrites';
++import { generateInterceptionRoutesRewrites, isInterceptionRouteRewrite } from '../../../lib/generate-interception-routes-rewrites';
+ import { CLIENT_STATIC_FILES_PATH, DEV_CLIENT_PAGES_MANIFEST, DEV_CLIENT_MIDDLEWARE_MANIFEST, PHASE_DEVELOPMENT_SERVER, TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST, ROUTES_MANIFEST, PRERENDER_MANIFEST } from '../../../shared/lib/constants';
+ import { getMiddlewareRouteMatcher } from '../../../shared/lib/router/utils/middleware-route-matcher';
+ import { isMiddlewareFile, NestedMiddlewareError, isInstrumentationHookFile, getPossibleMiddlewareFilenames, getPossibleInstrumentationHookFilenames } from '../../../build/utils';
+@@ -640,6 +640,7 @@ async function startWatcher(opts) {
+             serverFields.hasAppNotFound = hasRootAppNotFound;
+             opts.fsChecker.middlewareMatcher = ((_serverFields_middleware = serverFields.middleware) == null ? void 0 : _serverFields_middleware.matchers) ? getMiddlewareRouteMatcher((_serverFields_middleware1 = serverFields.middleware) == null ? void 0 : _serverFields_middleware1.matchers) : undefined;
+             const interceptionRoutes = generateInterceptionRoutesRewrites(Object.keys(appPaths), opts.nextConfig.basePath).map((item)=>buildCustomRoute('before_files_rewrite', item, opts.nextConfig.basePath, opts.nextConfig.experimental.caseSensitiveRoutes));
++            opts.fsChecker.rewrites.beforeFiles = opts.fsChecker.rewrites.beforeFiles.filter((r) => !isInterceptionRouteRewrite(r));
+             opts.fsChecker.rewrites.beforeFiles.push(...interceptionRoutes);
+             const exportPathMap = typeof nextConfig.exportPathMap === 'function' && await (nextConfig.exportPathMap == null ? void 0 : nextConfig.exportPathMap.call(nextConfig, {}, {
+                 dev: true,
