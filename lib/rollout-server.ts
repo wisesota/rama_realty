@@ -17,7 +17,9 @@ export {
 // ── Node-only helpers ──────────────────────────────────────────────
 
 function rolloutPercent() {
-  const value = Number(process.env.RAMA_DECISION_OS_ROLLOUT_PERCENT ?? "100");
+  const raw = process.env.RAMA_DECISION_OS_ROLLOUT_PERCENT?.trim();
+  if (raw === undefined || raw === "") return 100;
+  const value = Number(raw);
   return Number.isInteger(value) && value >= 0 && value <= 100 ? value : 0;
 }
 
