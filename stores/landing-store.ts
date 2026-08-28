@@ -268,6 +268,13 @@ export function createLandingStore(locale: PublicLocale = "en") {
       const controller = new AbortController();
       preparationController = controller;
       set({ briefRecalculating: true });
+      
+      let timedOut = false;
+      const timeoutId = setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+      }, 15_000);
+
       try {
         const response = await fetch("/api/discovery/prepare", {
           method: "POST",
@@ -283,11 +290,13 @@ export function createLandingStore(locale: PublicLocale = "en") {
         set({ brief: payload.transcript, preparedBrief: payload, searchPhase: "idle", searchStatus: searchCopy.review, briefRecalculating: false });
         return true;
       } catch (error) {
-        if (controller.signal.aborted || preparationId !== activePreparation) return false;
-        const message = error instanceof Error ? error.message : searchCopy.prepareFailed;
+        if (controller.signal.aborted && !timedOut && preparationId === activePreparation) return false;
+        if (preparationId !== activePreparation) return false;
+        const message = timedOut ? "Brief preparation timed out. Please try again." : (error instanceof Error ? error.message : searchCopy.prepareFailed);
         set({ searchPhase: "error", searchError: message, searchStatus: message, briefRecalculating: false });
         return false;
       } finally {
+        clearTimeout(timeoutId);
         if (preparationController === controller) preparationController = null;
       }
     },

@@ -110,7 +110,7 @@ export async function POST(request: Request) {
     try {
       const client = new GoogleGenAI({
         apiKey,
-        httpOptions: { apiVersion: geminiLiveApiVersion },
+        httpOptions: { apiVersion: geminiLiveApiVersion, timeout: 10_000 },
       });
       const authToken = await client.authTokens.create({
         config: {
