@@ -943,7 +943,7 @@ export function LandingPage({
               {hasSearchError ? <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p> : null}
             </form>
           )}
-          {discoveryInputMode === "voice" && !preparedBrief && hasSearchError ? (
+          {discoveryInputMode === "voice" && !preparedBrief && voiceState.phase === "idle" && hasSearchError ? (
             <p id="property-brief-error" className="voice-discovery-dialog__error" role="alert">{searchError}</p>
           ) : null}
         </VoiceDiscoveryDialog>

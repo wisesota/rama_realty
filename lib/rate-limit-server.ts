@@ -56,9 +56,9 @@ export async function consumeApiRateLimit(options: {
   windowMs: number;
 }): Promise<RateLimitResult> {
   const secret = getRateLimitSecret();
-  if (!secret) throw new RateLimitBackendUnavailableError();
-
-  const bucketKey = buildRateLimitBucketKey(options.request, options.scope, secret);
+  const bucketKey = secret
+    ? buildRateLimitBucketKey(options.request, options.scope, secret)
+    : "anonymous";
   const memoryKey = `${options.scope}:${bucketKey}`;
 
   try {
@@ -88,9 +88,6 @@ export async function consumeApiRateLimit(options: {
       backend: "supabase",
     };
   } catch {
-    if (process.env.NODE_ENV === "production") {
-      throw new RateLimitBackendUnavailableError();
-    }
     return consumeDevelopmentBucket(
       memoryKey,
       options.maximumRequests,

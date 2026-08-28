@@ -59,113 +59,118 @@ function jsonError(error: string, status: number) {
 }
 
 export async function POST(request: Request) {
-  if (!isSameOrigin(request)) return jsonError("Cross-origin token requests are not allowed.", 403);
-  if (!publicExperienceEnabled()) return jsonError("The public discovery experience is temporarily unavailable.", 503);
-  const buyerTokenHash = await getOrCreateBuyerSessionTokenHash();
-  if (!decisionOsEnabledForBuyer(buyerTokenHash)) {
-    return jsonError("Voice is temporarily unavailable for this rollout cohort.", 503);
-  }
-
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return jsonError("Gemini Live is not configured on this server.", 503);
-  if (process.env.GEMINI_LIVE_ENABLED === "false") {
-    return jsonError("Gemini Live is unavailable; switching to recorded voice mode.", 503);
-  }
-
   try {
-    const rateLimit = await consumeApiRateLimit({
-      request,
-      scope: "gemini-live-token",
-      maximumRequests: maximumTokensPerWindow,
-      windowMs: tokenWindowMs,
-    });
-    if (!rateLimit.allowed) {
-      return jsonError("Too many voice-session requests. Try again in a minute.", 429);
+    if (!isSameOrigin(request)) return jsonError("Cross-origin token requests are not allowed.", 403);
+    if (!publicExperienceEnabled()) return jsonError("The public discovery experience is temporarily unavailable.", 503);
+    const buyerTokenHash = await getOrCreateBuyerSessionTokenHash();
+    if (!decisionOsEnabledForBuyer(buyerTokenHash)) {
+      return jsonError("Voice is temporarily unavailable for this rollout cohort.", 503);
     }
-  } catch (error) {
-    if (error instanceof RateLimitBackendUnavailableError) {
-      return jsonError("Voice sessions are temporarily unavailable.", 503);
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return jsonError("Gemini Live is not configured on this server.", 503);
+    if (process.env.GEMINI_LIVE_ENABLED === "false") {
+      return jsonError("Gemini Live is unavailable; switching to recorded voice mode.", 503);
     }
-    throw error;
-  }
 
-  let voiceName = defaultGeminiVoiceName;
-  try {
-    const body: unknown = await request.json();
-    if (body && typeof body === "object") {
-      const requestedVoice = (body as { voiceName?: unknown }).voiceName;
-      if (isGeminiVoiceName(requestedVoice)) voiceName = requestedVoice;
+    try {
+      const rateLimit = await consumeApiRateLimit({
+        request,
+        scope: "gemini-live-token",
+        maximumRequests: maximumTokensPerWindow,
+        windowMs: tokenWindowMs,
+      });
+      if (!rateLimit.allowed) {
+        return jsonError("Too many voice-session requests. Try again in a minute.", 429);
+      }
+    } catch (error) {
+      if (error instanceof RateLimitBackendUnavailableError) {
+        return jsonError("Voice sessions are temporarily unavailable.", 503);
+      }
+      throw error;
     }
-  } catch {
-    // The default voice is used when the optional preference body is absent.
-  }
 
-  // The product contract is pinned deliberately: an outdated environment override
-  // must never silently downgrade the native audio experience.
-  const model = defaultGeminiLiveModel;
-  const expiresAt = new Date(Date.now() + 15 * 60_000).toISOString();
-  const newSessionExpiresAt = new Date(Date.now() + 60_000).toISOString();
+    let voiceName = defaultGeminiVoiceName;
+    try {
+      const body: unknown = await request.json();
+      if (body && typeof body === "object") {
+        const requestedVoice = (body as { voiceName?: unknown }).voiceName;
+        if (isGeminiVoiceName(requestedVoice)) voiceName = requestedVoice;
+      }
+    } catch {
+      // The default voice is used when the optional preference body is absent.
+    }
 
-  try {
-    const client = new GoogleGenAI({
-      apiKey,
-      httpOptions: { apiVersion: geminiLiveApiVersion },
-    });
-    const authToken = await client.authTokens.create({
-      config: {
-        uses: 1,
-        expireTime: expiresAt,
-        newSessionExpireTime: newSessionExpiresAt,
-        liveConnectConstraints: {
-          model,
-          config: {
-            responseModalities: [Modality.AUDIO],
-            inputAudioTranscription: {},
-            outputAudioTranscription: {},
-            speechConfig: {
-              voiceConfig: { prebuiltVoiceConfig: { voiceName } },
-            },
-            thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-            realtimeInputConfig: {
-              automaticActivityDetection: {
-                startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_HIGH,
-                endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_LOW,
-                prefixPaddingMs: 120,
-                silenceDurationMs: 700,
+    // The product contract is pinned deliberately: an outdated environment override
+    // must never silently downgrade the native audio experience.
+    const model = defaultGeminiLiveModel;
+    const expiresAt = new Date(Date.now() + 15 * 60_000).toISOString();
+    const newSessionExpiresAt = new Date(Date.now() + 60_000).toISOString();
+
+    try {
+      const client = new GoogleGenAI({
+        apiKey,
+        httpOptions: { apiVersion: geminiLiveApiVersion },
+      });
+      const authToken = await client.authTokens.create({
+        config: {
+          uses: 1,
+          expireTime: expiresAt,
+          newSessionExpireTime: newSessionExpiresAt,
+          liveConnectConstraints: {
+            model,
+            config: {
+              responseModalities: [Modality.AUDIO],
+              inputAudioTranscription: {},
+              outputAudioTranscription: {},
+              speechConfig: {
+                voiceConfig: { prebuiltVoiceConfig: { voiceName } },
               },
+              thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+              realtimeInputConfig: {
+                automaticActivityDetection: {
+                  startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_HIGH,
+                  endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_LOW,
+                  prefixPaddingMs: 120,
+                  silenceDurationMs: 700,
+                },
+              },
+              sessionResumption: {},
+              contextWindowCompression: {
+                triggerTokens: "25000",
+                slidingWindow: { targetTokens: "8000" },
+              },
+              systemInstruction: voiceAgentInstruction,
+              tools: geminiLiveTools,
             },
-            sessionResumption: {},
-            contextWindowCompression: {
-              triggerTokens: "25000",
-              slidingWindow: { targetTokens: "8000" },
-            },
-            systemInstruction: voiceAgentInstruction,
-            tools: geminiLiveTools,
           },
         },
-      },
-    });
+      });
 
-    if (!authToken.name) return jsonError("Gemini did not issue a voice-session token.", 502);
+      if (!authToken.name) return jsonError("Gemini did not issue a voice-session token.", 502);
 
-    return Response.json(
-      {
-        token: authToken.name,
-        model,
-        expiresAt,
-      } satisfies GeminiLiveTokenResponse,
-      {
-        headers: {
-          "Cache-Control": "no-store, max-age=0",
-          Pragma: "no-cache",
+      return Response.json(
+        {
+          token: authToken.name,
+          model,
+          expiresAt,
+        } satisfies GeminiLiveTokenResponse,
+        {
+          headers: {
+            "Cache-Control": "no-store, max-age=0",
+            Pragma: "no-cache",
+          },
         },
-      },
-    );
+      );
+    } catch (error) {
+      console.error(
+        "Gemini ephemeral-token creation failed:",
+        error instanceof Error ? error.message : "UnknownError",
+      );
+      return jsonError("Gemini Live could not start a session.", 502);
+    }
   } catch (error) {
-    console.error(
-      "Gemini ephemeral-token creation failed:",
-      error instanceof Error ? error.name : "UnknownError",
-    );
-    return jsonError("Gemini Live could not start a session.", 502);
+    console.error("Voice token handler error:", error instanceof Error ? error.message : "UnknownError");
+    return jsonError("Voice token service encountered an unexpected error.", 500);
   }
 }
