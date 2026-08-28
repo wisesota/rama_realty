@@ -48,13 +48,13 @@ export function CinematicHeroMedia() {
           type="image/webp"
         />
         <img
-          src="/images/rama-dubai-residential-cityscape-hero-1280.webp"
+          src="/images/rama-dubai-residential-cityscape-mobile-720.webp"
           width="2560"
           height="1440"
           alt=""
           aria-hidden="true"
           className="cinematic-hero-media__image"
-          decoding="async"
+          decoding="sync"
           draggable={false}
           fetchPriority="high"
           loading="eager"
