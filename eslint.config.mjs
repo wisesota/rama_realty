@@ -14,5 +14,6 @@ export default defineConfig([
     "next-env.d.ts",
     ".agents/**",
     "docs/**",
+    "app/.well-known/**",
   ]),
 ]);

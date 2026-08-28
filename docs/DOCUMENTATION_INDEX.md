@@ -69,5 +69,6 @@ These files are historical inputs or review artifacts. They are not authorizatio
 - [Slides](../.agents/skills/slides/SKILL.md)
 - [UI styling](../.agents/skills/ui-styling/SKILL.md)
 - [UI/UX Pro Max](../.agents/skills/ui-ux-pro-max/SKILL.md)
+- [Workflow init](../.agents/skills/workflow-init/SKILL.md)
 
 Unapproved concept documents and generated design explorations may be retained for review, but cannot override `AGENTS.md`, the approved CTO plan, the claims registry, or governed catalog contracts.

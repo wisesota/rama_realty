@@ -1,14 +1,14 @@
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
 export function getPublicSupabaseEnvironment() {
-  if (!supabaseUrl) throw new Error("NEXT_PUBLIC_SUPABASE_URL is not configured.");
-  if (!supabasePublishableKey) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim();
+
+  if (!url) throw new Error("NEXT_PUBLIC_SUPABASE_URL is not configured.");
+  if (!publishableKey) {
     throw new Error("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not configured.");
   }
 
   return {
-    url: supabaseUrl,
-    publishableKey: supabasePublishableKey,
+    url,
+    publishableKey,
   };
 }
