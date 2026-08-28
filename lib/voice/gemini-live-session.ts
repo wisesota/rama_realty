@@ -171,6 +171,8 @@ export class GeminiLiveVoiceSession {
 
     const controller = new AbortController();
     this.startAbort = controller;
+    const timeoutId = setTimeout(() => controller.abort(), 12_000);
+
     let tokenResponse: Response;
     try {
       tokenResponse = await fetch("/api/voice/token", {
@@ -181,6 +183,7 @@ export class GeminiLiveVoiceSession {
         signal: controller.signal,
       });
     } finally {
+      clearTimeout(timeoutId);
       if (this.startAbort === controller) this.startAbort = null;
     }
     this.assertActive();
