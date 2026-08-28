@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { DecisionArchitectureLanding } from "@/components/decision-architecture-landing";
 import { isPublicLocale, landingCopy, publicLocales } from "@/lib/i18n";
 import { landingCompositionEnabled } from "@/lib/rollout-server";
+import { LandingStoreProvider } from "@/components/providers/landing-store-provider";
 
 export function generateStaticParams() {
   return publicLocales.map((locale) => ({ locale }));
@@ -16,10 +17,7 @@ export default async function LocalizedHome({
   if (!isPublicLocale(locale)) notFound();
   const compositionEnabled = landingCompositionEnabled();
   if (!compositionEnabled) {
-    const [{ LandingPage }, { LandingStoreProvider }] = await Promise.all([
-      import("@/components/landing-page"),
-      import("@/components/providers/landing-store-provider"),
-    ]);
+    const { LandingPage } = await import("@/components/landing-page");
     return (
       <LandingStoreProvider locale={locale}>
         <LandingPage locale={locale} copy={landingCopy[locale]} />
@@ -31,9 +29,9 @@ export default async function LocalizedHome({
     : null;
 
   return (
-    <>
+    <LandingStoreProvider locale={locale}>
       <DecisionArchitectureLanding locale={locale} copy={landingCopy[locale]} />
       {LandingMotion ? <LandingMotion /> : null}
-    </>
+    </LandingStoreProvider>
   );
 }
