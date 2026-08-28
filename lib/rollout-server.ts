@@ -2,44 +2,30 @@ import "server-only";
 
 import { createHmac } from "node:crypto";
 
-function booleanFlag(key: string, defaultValue: boolean) {
-  const value = process.env[key]?.trim();
-  if (value === undefined || value === "") return defaultValue;
-  return value === "true";
-}
+// Re-export all edge-safe flags so existing server-side callers
+// (Server Components, Route Handlers) keep working unchanged.
+export {
+  briefConfirmationEnabled,
+  publicExperienceEnabled,
+  landingCompositionEnabled,
+  cinematicHeroEnabled,
+  evidenceV2WriterEnabled,
+  evidenceV2RendererEnabled,
+  localeRoutesEnabled,
+} from "./rollout-flags";
+
+// ── Node-only helpers ──────────────────────────────────────────────
 
 function rolloutPercent() {
   const value = Number(process.env.RAMA_DECISION_OS_ROLLOUT_PERCENT ?? "100");
   return Number.isInteger(value) && value >= 0 && value <= 100 ? value : 0;
 }
 
-export function briefConfirmationEnabled() {
-  return booleanFlag("RAMA_BRIEF_CONFIRMATION_ENABLED", true);
-}
-
-export function publicExperienceEnabled() {
-  return booleanFlag("RAMA_PUBLIC_EXPERIENCE_ENABLED", true);
-}
-
-export function landingCompositionEnabled() {
-  return booleanFlag("RAMA_LANDING_COMPOSITION_ENABLED", true);
-}
-
-export function cinematicHeroEnabled() {
-  return booleanFlag("RAMA_CINEMATIC_HERO_ENABLED", true);
-}
-
-export function evidenceV2WriterEnabled() {
-  return booleanFlag("RAMA_EVIDENCE_V2_WRITER_ENABLED", true);
-}
-
-export function evidenceV2RendererEnabled() {
-  return booleanFlag("RAMA_EVIDENCE_V2_RENDERER_ENABLED", true);
-}
-
-export function localeRoutesEnabled() {
-  return booleanFlag("RAMA_LOCALE_ROUTES_ENABLED", true);
-}
+// This import is intentionally kept here in rollout-server.ts because
+// it is only required by `publicExperienceEnabled` path; however, the
+// actual `publicExperienceEnabled` boolean check has been moved to the
+// edge-safe module. Only `decisionOsEnabledForBuyer` truly needs crypto.
+import { publicExperienceEnabled } from "./rollout-flags";
 
 export function decisionOsEnabledForBuyer(buyerTokenHash: string) {
   if (!publicExperienceEnabled()) return false;

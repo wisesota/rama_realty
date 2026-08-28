@@ -6,7 +6,7 @@ import {
   preferredPublicLocale,
 } from "@/lib/i18n";
 import { refreshSupabaseSession } from "@/lib/supabase/proxy";
-import { landingCompositionEnabled, localeRoutesEnabled } from "@/lib/rollout-server";
+import { landingCompositionEnabled, localeRoutesEnabled } from "@/lib/rollout-flags";
 
 const cookieOptions = {
   httpOnly: false,
