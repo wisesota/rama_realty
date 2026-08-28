@@ -26,7 +26,7 @@ The executable contract lives in `scripts/env-contract.mjs`. `pnpm env:check` lo
 
 ## Optional and gated
 
-- `GEMINI_VOICE_MODEL` controls only recorded fallback. Live remains code-pinned to `gemini-3.1-flash-live-preview`.
+- `GEMINI_VOICE_MODEL` controls only recorded fallback. Live remains code-pinned to `gemini-3.1-flash-live-preview`. The recorded default is `gemini-3.7-flash`.
 - PostHog public configuration enables consented browser analytics. Personal API credentials are server-only. AI observation always uses privacy mode.
 - Sentry DSN and client trace sample rate are public build inputs. Sentry auth and server sample rate are server-only. Default tracing is 5%; events pass the repository scrubber.
 - `pnpm verify:telemetry` validates configured PostHog and Sentry credentials through read-only/bounded provider APIs and emits provider status only. It never sends a Sentry test event or prints a token, DSN, response body, or project credential.

@@ -25,7 +25,7 @@ export type GeminiLiveTokenError = {
   error: string;
 };
 
-export const defaultGeminiVoiceModel = "gemini-3.6-flash";
+export const defaultGeminiVoiceModel = "gemini-3.7-flash";
 
 export type GeminiRecordedVoiceResponse = {
   transcript: string;
