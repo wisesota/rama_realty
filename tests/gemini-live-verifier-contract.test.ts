@@ -42,4 +42,17 @@ describe("Gemini Live release verifier", () => {
       stages: {},
     }, 0)).toThrow("completed without the full contract");
   });
+
+  it("rejects a generation that never reports turn completion", () => {
+    expect(() => assertCompleteLiveTurn({
+      audioChunks: 1,
+      inputTranscript: "buyer request",
+      outputTranscript: "advisor response",
+      toolCalls: 1,
+      toolResponses: 1,
+      generationComplete: true,
+      turnComplete: false,
+      stages: {},
+    }, 0)).toThrow("completed without the full contract");
+  });
 });

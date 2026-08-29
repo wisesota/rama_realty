@@ -12,6 +12,7 @@ export function isCompleteLiveTokenPayload(payload) {
 export function assertCompleteLiveTurn(result, runIndex) {
   if (
     result.generationComplete
+    && result.turnComplete
     && result.audioChunks > 0
     && result.inputTranscript.trim()
     && result.outputTranscript.trim()

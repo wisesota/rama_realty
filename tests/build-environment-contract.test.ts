@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
-const attestationJob = workflow.slice(workflow.indexOf("\n  attestation:"));
+const attestationJob = workflow.match(/\n  attestation:\n[\s\S]*?(?=\n  [a-z][a-z0-9-]*:\n|$)/)?.[0] ?? "";
 const stagingWorkflow = readFileSync(".github/workflows/staging-verification.yml", "utf8");
 const imageBuilder = readFileSync("scripts/build-public-images.mjs", "utf8");
 const workspace = readFileSync("pnpm-workspace.yaml", "utf8");
