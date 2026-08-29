@@ -62,6 +62,5 @@ for (const [label, widths] of [['hero', desktop], ['mobile', mobile]]) {
   }
 }
 rights.assets.unshift(...records);
-rights.updatedAt = new Date().toISOString();
 fs.writeFileSync(rightsPath, `${JSON.stringify(rights, null, 2)}\n`);
 console.log('✓ Generated deterministic hero derivatives and refreshed the public asset-rights register');
