@@ -1,10 +1,10 @@
 import type { FullConfig } from "@playwright/test";
 
-async function warmRoute(origin: string, path: string, body?: unknown) {
+async function warmRoute(origin: string, path: string, body?: unknown, method = "POST") {
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
       const response = await fetch(`${origin}${path}`, {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
           Origin: origin,
@@ -29,4 +29,10 @@ export default async function globalSetup(config: FullConfig) {
     draftId: "e2e-compiler-warmup",
   });
   await warmRoute(origin, "/api/voice/token", {});
+  await warmRoute(
+    origin,
+    "/en/discover/00000000-0000-4000-8000-000000000000",
+    undefined,
+    "GET",
+  );
 }

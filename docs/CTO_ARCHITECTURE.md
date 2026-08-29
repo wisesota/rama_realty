@@ -107,13 +107,25 @@ PostgreSQL full-text and structured indexes are sufficient for the first license
 5. Transcription and model events update the visible conversation state.
 6. Tool calls are relayed to authenticated application endpoints.
 7. The application returns validated tool results to the live session.
-8. Transcript, structured actions, consent, and retention metadata are stored according to policy; raw audio is not retained by default.
+8. Structured actions, consent, and approved retention metadata are stored according to policy; Rama does not persist raw audio or Live transcripts.
 
 ### Degraded voice path
 
-Live streaming is the default and uses `gemini-3.1-flash-live-preview`; deployments can opt out with `GEMINI_LIVE_ENABLED=false`. One deliberate press on the address signal starts Live with the configured default native voice, while recorded voice remains an automatic fallback rather than permanent hero chrome. Live resamples microphone input to 16 kHz PCM in 80 ms frames and uses low-latency thinking, automatic VAD, barge-in cleanup, bidirectional transcripts, session resumption, context compression, and streamed 24 kHz audio playback. When Live is disabled or a session cannot connect, the browser keeps a maximum 45-second mono WAV turn in memory and submits it to the same-origin voice route backed by `gemini-3.6-flash`. The route enforces origin, MIME type, size, a shared rate budget, timeout, server-only key use, and structured output before returning a concise transcript and response. The app does not persist the audio.
+Live streaming is the default and uses `gemini-3.1-flash-live-preview`; deployments can opt out with `GEMINI_LIVE_ENABLED=false`. One deliberate press on the address signal starts Live with the configured default native voice, while recorded voice remains an automatic fallback rather than permanent hero chrome. Live resamples microphone input to 16 kHz PCM in 80 ms frames and uses low-latency thinking, automatic VAD, barge-in cleanup, bidirectional in-memory transcripts, context compression, and streamed 24 kHz audio playback. Session resumption is an explicit privacy choice and defaults off; `GEMINI_LIVE_SESSION_RESUMPTION_ENABLED=true` requires an approved activation record and disclosure. When Live is disabled or a session cannot connect, the browser keeps a maximum 45-second mono WAV turn in memory and submits it to the same-origin voice route backed by `gemini-3.6-flash`. The route enforces origin, MIME type, size, a shared rate budget, timeout, server-only key use, and structured output before returning a concise transcript and response. The app does not persist the audio.
 
 If provider inference is denied after recording, supported browsers may use the transcript captured concurrently by the browser speech-recognition service. The UI discloses that source and never labels it as Gemini output. Text remains a complete alternative at every stage.
+
+### Live latency and lifecycle contract
+
+Voice latency is measured as separate stages, never as one opaque spinner: microphone permission, ephemeral-token response, WebSocket connection, first turn event, first audio, governed tool calls, and bounded reconnects. The operational envelope accepts only an ephemeral attempt UUID, coarse duration and device/network classes, outcome, reconnect count, provider/API version, and release SHA; transcripts, briefs, contact data, audio, and buyer/session IDs are rejected. The channel is disabled unless explicitly enabled. The attempt owns one root abort signal, while microphone streams, sockets, audio contexts, worklets, timers, and tool controllers are released on success, cancellation, timeout, fallback, route change, and unmount.
+
+The local deadlines are 3 seconds for the Permissions API probe, 12 seconds for microphone acquisition, token response, WebSocket connection, and governed tools, 15 seconds for the first answer event, and 20 seconds for first audio. A timeout ends that resource attempt and moves to the disclosed recorded/text recovery path; it does not leave a late microphone or WebSocket alive. Accepted sockets remain open, while only handshakes that resolve after a failed deadline are closed. When resumption is approved and enabled, GoAway uses the resumable handle and reconnects before the provider deadline, with at most two recovery attempts; otherwise the session takes the bounded fallback path. Audio playback drops an excessive backlog rather than allowing minutes of stale speech to accumulate.
+
+Provider spend has two application circuit breakers: a per-origin session-token budget and one atomic, project-wide rolling daily budget backed by Supabase. `GEMINI_LIVE_DAILY_SESSION_LIMIT` is an explicit production setting and the shared limiter fails closed. The Google project must also carry provider-native quota/budget alerts and a named kill-switch operator; application controls do not replace provider-side caps.
+
+The connected verifier runs a real synthesized utterance through ephemeral-token issuance, Gemini Live input/output transcription, native audio, one allowlisted tool call and response, generation completion, and turn completion. It records cold-candidate and warm-repeat stage timings. This is an entitlement and integration gate, not a universal latency promise; production SLOs still require representative-device P50/P95 evidence.
+
+Authoritative reliability evidence is CI/device-lab produced and bound to the release SHA. `pnpm verify:voice-reliability -- --input <artifact>` rejects fewer than 100 controlled runs, fewer than 60 live-provider runs, missing Chromium/Firefox/Safari, desktop/mobile, Wi-Fi/Fast-3G/lossy, EN/AR, or failure-mode coverage, and any forbidden content-shaped field. Local provider output is marked `local-diagnostic`; it is never an approval artifact.
 
 ### Release gates
 
@@ -129,7 +141,7 @@ The Live API and ephemeral tokens are preview surfaces in the current provider d
 
 ## MCP and plugin operating model
 
-Figma MCP is deliberately excluded. Superdesign is the visual design source for this build, and the repository remains the implementation source of truth.
+Figma MCP is deliberately excluded. Superdesign is a visual exploration source, and the repository remains the implementation source of truth. The pinned-plugin and isolated pnpm design-lab boundary is defined in `docs/DESIGN_TOOLING_POLICY.md`.
 
 No connector is installed merely because it appears in a plugin list. Each addition must have an owner, least-privilege permissions, an environment boundary, a data-retention decision, and a rollback path.
 
@@ -209,6 +221,7 @@ pnpm dev
 pnpm lint
 pnpm typecheck
 pnpm build
+pnpm build:clean
 pnpm check
 ```
 
@@ -220,3 +233,4 @@ pnpm check
 - No live connector, listing, or valuation claim appears in the prototype.
 - Keyboard navigation, focus visibility, contrast, reduced motion, and responsive layouts are checked.
 - `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass.
+- Release-candidate evidence uses `pnpm build:clean` on a fresh CI runner. Local cached builds and mutated pnpm-store output are diagnostic only.

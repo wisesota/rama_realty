@@ -69,6 +69,7 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffStatus, setHandoffStatus] = useState("");
   const [handoffSubmitting, setHandoffSubmitting] = useState(false);
+  const [closing, setClosing] = useState(false);
   const selected = properties.find((property) => property.id === selectedId) ?? properties[0];
   const selectedIdRef = useRef(selected?.id ?? "");
   const restorationNotices = envelope.blocks.filter((block) => block.type === "recoverable_error");
@@ -102,7 +103,10 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
   }, [modal]);
 
   function closeModal() {
+    if (closing) return;
+    setClosing(true);
     sessionStorage.setItem("rama:decision-room-restore-focus", returnFocusSourceRef.current);
+    window.dispatchEvent(new Event("rama:restore-decision-focus"));
     router.back();
   }
 
@@ -347,7 +351,7 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
           <section className="decision-room__empty">
             <p className="eyebrow">{copy.briefPreserved}</p><h1>{copy.noExact}</h1>
             <p>{copy.noExactBody}</p>
-            <Button onPress={() => modal ? router.back() : router.push(`${localizedPath(locale)}#guided-search`)}>{copy.refine}</Button>
+            <Button onPress={() => modal ? closeModal() : router.push(`${localizedPath(locale)}#guided-search`)}>{copy.refine}</Button>
           </section>
         ) : (
           <>
@@ -467,6 +471,7 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
   );
 
   if (!modal) return <div className="decision-room-page">{room}</div>;
+  if (closing) return null;
   return (
     <ModalOverlay isOpen isDismissable onOpenChange={(open) => { if (!open) closeModal(); }} className="decision-room-overlay">
       <Modal className="decision-room-modal"><Dialog aria-label={copy.room} className="decision-room-dialog">{room}</Dialog></Modal>

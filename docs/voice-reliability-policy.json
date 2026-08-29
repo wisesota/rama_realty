@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "2026-08-28",
+  "evidenceMaximumAgeHours": 24,
+  "minimumRuns": 100,
+  "minimumLiveProviderRuns": 60,
+  "minimumRunsPerLiveProfile": 3,
+  "hardMaximumStageMs": 120000,
+  "requiredFailureOutcomes": [
+    "permission-denied",
+    "token-timeout",
+    "socket-timeout",
+    "provider-close",
+    "reconnect-exhausted",
+    "recorded-fallback"
+  ],
+  "requiredLiveProfiles": [
+    { "browser": "chromium", "device": "desktop", "network": "wifi", "locale": "en" },
+    { "browser": "chromium", "device": "desktop", "network": "wifi", "locale": "ar" },
+    { "browser": "firefox", "device": "desktop", "network": "wifi", "locale": "en" },
+    { "browser": "firefox", "device": "desktop", "network": "wifi", "locale": "ar" },
+    { "browser": "safari", "device": "desktop", "network": "wifi", "locale": "en" },
+    { "browser": "safari", "device": "desktop", "network": "wifi", "locale": "ar" },
+    { "browser": "chromium", "device": "mobile", "network": "fast-3g", "locale": "en" },
+    { "browser": "chromium", "device": "mobile", "network": "fast-3g", "locale": "ar" },
+    { "browser": "safari", "device": "mobile", "network": "fast-3g", "locale": "en" },
+    { "browser": "safari", "device": "mobile", "network": "fast-3g", "locale": "ar" },
+    { "browser": "chromium", "device": "mobile", "network": "lossy", "locale": "en" },
+    { "browser": "chromium", "device": "mobile", "network": "lossy", "locale": "ar" },
+    { "browser": "safari", "device": "mobile", "network": "lossy", "locale": "en" },
+    { "browser": "safari", "device": "mobile", "network": "lossy", "locale": "ar" }
+  ],
+  "targets": {
+    "liveProviderSuccessRateMin": 0.98,
+    "unexpectedFallbackRateMax": 0.02,
+    "stageP95MaximumMs": {
+      "tokenMs": 5000,
+      "socketMs": 5000,
+      "firstServerEventMs": 8000,
+      "firstAudioMs": 12000,
+      "totalTurnMs": 30000
+    },
+    "stageP99MaximumMs": {
+      "firstAudioMs": 20000,
+      "totalTurnMs": 45000
+    }
+  }
+}

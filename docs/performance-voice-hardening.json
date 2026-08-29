@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-28T20:08:23.199Z",
+  "source": "Chrome DevTools Protocol with applied network and CPU throttling",
+  "url": "http://localhost:3100/en",
+  "thresholds": {
+    "lcpMs": 2500,
+    "cls": 0.1
+  },
+  "profiles": {
+    "desktop": {
+      "network": {
+        "id": "desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "deviceScaleFactor": 1,
+          "isMobile": false
+        },
+        "latencyMs": 40,
+        "downloadKbps": 10240,
+        "uploadKbps": 10240,
+        "cpuSlowdownMultiplier": 1
+      },
+      "runs": [
+        {
+          "fcpMs": 2340,
+          "lcpMs": 2340,
+          "lcpElement": "h1#hero-title",
+          "cls": 0.002313923182441701,
+          "domContentLoadedMs": 2336.0999999940395,
+          "loadMs": 2685.2999999821186,
+          "transferBytes": 1920464,
+          "javascriptBytes": 687355,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 776,
+          "lcpMs": 776,
+          "lcpElement": "h1#hero-title",
+          "cls": 0.002313923182441701,
+          "domContentLoadedMs": 763.2000000178814,
+          "loadMs": 1026.800000011921,
+          "transferBytes": 1920464,
+          "javascriptBytes": 687355,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 688,
+          "lcpMs": 688,
+          "lcpElement": "h1#hero-title",
+          "cls": 0.002313923182441701,
+          "domContentLoadedMs": 611.5,
+          "loadMs": 894.6000000238419,
+          "transferBytes": 1920464,
+          "javascriptBytes": 687355,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 708,
+          "lcpMs": 708,
+          "lcpElement": "h1#hero-title",
+          "cls": 0.002313923182441701,
+          "domContentLoadedMs": 410.19999998807907,
+          "loadMs": 940.6999999880791,
+          "transferBytes": 1920464,
+          "javascriptBytes": 687355,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 664,
+          "lcpMs": 664,
+          "lcpElement": "h1#hero-title",
+          "cls": 0.002313923182441701,
+          "domContentLoadedMs": 596.9000000059605,
+          "loadMs": 866.5999999940395,
+          "transferBytes": 1920464,
+          "javascriptBytes": 687355,
+          "cssBytes": 37771
+        }
+      ],
+      "median": {
+        "fcpMs": 708,
+        "lcpMs": 708,
+        "cls": 0.002313923182441701,
+        "domContentLoadedMs": 611.5,
+        "loadMs": 940.6999999880791,
+        "transferBytes": 1920464,
+        "javascriptBytes": 687355,
+        "cssBytes": 37771
+      }
+    },
+    "mobile-fast3g": {
+      "network": {
+        "id": "mobile-fast3g",
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "deviceScaleFactor": 2,
+          "isMobile": true
+        },
+        "latencyMs": 150,
+        "downloadKbps": 1638.4,
+        "uploadKbps": 750,
+        "cpuSlowdownMultiplier": 4
+      },
+      "runs": [
+        {
+          "fcpMs": 2188,
+          "lcpMs": 2188,
+          "lcpElement": "h1#hero-title",
+          "cls": 0,
+          "domContentLoadedMs": 1270,
+          "loadMs": 4373.9000000059605,
+          "transferBytes": 593843,
+          "javascriptBytes": 319808,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 2192,
+          "lcpMs": 2192,
+          "lcpElement": "h1#hero-title",
+          "cls": 0,
+          "domContentLoadedMs": 2165,
+          "loadMs": 4269.199999988079,
+          "transferBytes": 739780,
+          "javascriptBytes": 465745,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 2224,
+          "lcpMs": 2224,
+          "lcpElement": "h1#hero-title",
+          "cls": 0,
+          "domContentLoadedMs": 1252.0999999940395,
+          "loadMs": 4075.7999999821186,
+          "transferBytes": 739780,
+          "javascriptBytes": 465745,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 2128,
+          "lcpMs": 2128,
+          "lcpElement": "h1#hero-title",
+          "cls": 0,
+          "domContentLoadedMs": 1259.7000000178814,
+          "loadMs": 4098.700000017881,
+          "transferBytes": 739780,
+          "javascriptBytes": 465745,
+          "cssBytes": 37771
+        },
+        {
+          "fcpMs": 2052,
+          "lcpMs": 2052,
+          "lcpElement": "h1#hero-title",
+          "cls": 0,
+          "domContentLoadedMs": 1219,
+          "loadMs": 4055.199999988079,
+          "transferBytes": 739780,
+          "javascriptBytes": 465745,
+          "cssBytes": 37771
+        }
+      ],
+      "median": {
+        "fcpMs": 2188,
+        "lcpMs": 2188,
+        "cls": 0,
+        "domContentLoadedMs": 1259.7000000178814,
+        "loadMs": 4098.700000017881,
+        "transferBytes": 739780,
+        "javascriptBytes": 465745,
+        "cssBytes": 37771
+      }
+    }
+  }
+}

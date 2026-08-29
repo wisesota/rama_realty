@@ -1,6 +1,7 @@
-import { readFile, readdir } from "node:fs/promises";
-import { join, relative, resolve, sep } from "node:path";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import { inspectEnvironment, loadLocalEnvironment } from "./env-contract.mjs";
+import { deployablePublicMedia } from "./public-asset-inventory.mjs";
 import { assessReleaseReadiness } from "./release-readiness-lib.mjs";
 
 function argumentValue(name, fallback) {
@@ -15,22 +16,6 @@ async function readJson(path) {
     if (error?.code === "ENOENT") return null;
     throw error;
   }
-}
-
-async function deployablePublicMedia(root = resolve(process.cwd(), "public")) {
-  const results = [];
-  async function walk(directory) {
-    for (const entry of await readdir(directory, { withFileTypes: true })) {
-      const path = join(directory, entry.name);
-      if (entry.isDirectory()) await walk(path);
-      else if (/\.(?:avif|gif|jpe?g|json|png|riv|svg|webp)$/i.test(entry.name)
-        && /^(?:images|lottie|rive|r)(?:[\\/]|$)/.test(relative(root, path))) {
-        results.push(`public/${relative(root, path).split(sep).join("/")}`);
-      }
-    }
-  }
-  await walk(root);
-  return results.sort();
 }
 
 const requireProduction = process.argv.includes("--require-production");

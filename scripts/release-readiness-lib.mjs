@@ -1,4 +1,5 @@
 const requiredApprovalRoles = ["cto", "security", "privacy", "legal", "product"];
+const requiredWorkstreams = ["licensedProvider", "assetRights", "hostedOperations", "privacyAndAccessibility", "pilot", "activation"];
 const requiredExternalGates = [
   "licensedSupplyAgreement",
   "advisorOperatingModel",
@@ -23,18 +24,12 @@ const requiredRuntimeFlags = [
   "RAMA_EVIDENCE_V2_WRITER_ENABLED",
   "RAMA_EVIDENCE_V2_RENDERER_ENABLED",
   "GEMINI_LIVE_ENABLED",
+  "RAMA_OPERATIONAL_TELEMETRY_ENABLED",
 ];
+const requiredRuntimeSettings = ["GEMINI_LIVE_SESSION_RESUMPTION_ENABLED"];
 const providerIdPattern = /^[a-z0-9][a-z0-9_-]{1,62}$/;
 const commitPattern = /^[a-f0-9]{40}$/;
 const evidenceMaximumAgeMs = 24 * 60 * 60 * 1_000;
-const sourceAuthoredCriterionWeave = {
-  path: "public/lottie/rama-criterion-weave.json",
-  kind: "original_geometric_lottie_signal",
-  ownershipBasis: "repository_authored_geometric_vector_animation_2026-08-23",
-  documentaryProof: "Source-authored Rama Criterion Weave JSON in this repository",
-  sha256: "9aaaffd99ea54bd7ba87df68e50d6f7492c1883328fdfb941943ce95ef808912",
-  bytes: 5401,
-};
 
 function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -112,10 +107,32 @@ function productionBlockers(releaseEvidence, activationRecord, assetRights, publ
     if (activationRecord.rollout?.flags?.[flag] !== true) blockers.push(`activation_flag_disabled:${flag}`);
     if (runtimeEnvironment?.[flag] !== "true") blockers.push(`runtime_flag_not_enabled:${flag}`);
   }
+  for (const workstream of requiredWorkstreams) {
+    const record = activationRecord.workstreams?.[workstream];
+    const updatedAt = Date.parse(record?.updatedAt);
+    if (!isRecord(record)
+      || record.status !== "complete"
+      || !isNonEmptyString(record.owner)
+      || !/^https:\/\//.test(record.evidenceUri ?? "")
+      || !/^[a-f0-9]{64}$/.test(record.evidenceSha256 ?? "")
+      || Number.isNaN(updatedAt)
+      || updatedAt > currentTime + 5 * 60 * 1_000
+      || currentTime - updatedAt > evidenceMaximumAgeMs) {
+      blockers.push(`workstream_incomplete:${workstream}`);
+    }
+  }
+  for (const setting of requiredRuntimeSettings) {
+    const approvedValue = activationRecord.rollout?.flags?.[setting];
+    if (typeof approvedValue !== "boolean") blockers.push(`activation_setting_missing:${setting}`);
+    if (runtimeEnvironment?.[setting] !== String(approvedValue)) blockers.push(`runtime_setting_mismatch:${setting}`);
+  }
   if (activationRecord.rollout?.flags?.LICENSED_SUPPLY_PUBLICATION_ENABLED !== true) blockers.push("licensed_supply_not_enabled");
   if (runtimeEnvironment?.LICENSED_SUPPLY_PUBLICATION_ENABLED !== "true") blockers.push("runtime_licensed_supply_not_enabled");
   if (runtimeEnvironment?.RAMA_DEMO_MODE !== "false") blockers.push("runtime_demo_mode_not_disabled");
   if (runtimeEnvironment?.RAMA_DECISION_OS_ROLLOUT_PERCENT !== String(cohort)) blockers.push("runtime_rollout_cohort_mismatch");
+  const dailySessionLimit = activationRecord.rollout?.limits?.geminiLiveDailySessions;
+  if (!Number.isInteger(dailySessionLimit) || dailySessionLimit < 1 || dailySessionLimit > 10_000) blockers.push("gemini_daily_limit_invalid");
+  if (runtimeEnvironment?.GEMINI_LIVE_DAILY_SESSION_LIMIT !== String(dailySessionLimit)) blockers.push("runtime_gemini_daily_limit_mismatch");
   try {
     const siteUrl = new URL(runtimeEnvironment?.NEXT_PUBLIC_SITE_URL ?? "");
     if (siteUrl.protocol !== "https:" || siteUrl.hostname === "localhost") blockers.push("production_site_url_invalid");
@@ -141,15 +158,28 @@ function productionBlockers(releaseEvidence, activationRecord, assetRights, publ
     "rollbackOwner",
     "onCallOwner",
     "incidentOwner",
+    "rollbackApprover",
+    "privacyOwner",
+    "accessibilityOwner",
+    "providerOwner",
+    "releaseScribe",
   ]) {
     if (!isNonEmptyString(activationRecord.operations?.[field])) blockers.push(`operation_evidence_missing:${field}`);
   }
   for (const [field, maximumAgeDays] of Object.entries({
     backupRestoreEvidence: 90,
+    storageRestoreEvidence: 90,
+    alertDrillEvidence: 30,
     penetrationTestEvidence: 90,
     privacyCanaryEvidence: 7,
     hostedRlsEvidence: 1,
     credentialRotationEvidence: 1,
+    liveProviderEvidence: 1,
+    buildAttestationEvidence: 1,
+    voiceReliabilityEvidence: 1,
+    providerQuotaEvidence: 7,
+    assistiveTechnologyEvidence: 90,
+    pilotEvidence: 30,
   })) {
     if (!isEvidenceArtifact(activationRecord.operations?.[field], currentTime, maximumAgeDays * 24 * 60 * 60 * 1_000)) blockers.push(`operation_evidence_missing:${field}`);
   }
@@ -161,15 +191,7 @@ function productionBlockers(releaseEvidence, activationRecord, assetRights, publ
     const approvedByReview = asset.legalReview === "approved"
       && asset.productionEligibility === "approved"
       && isEvidenceArtifact(asset.documentaryProof, currentTime, 365 * 24 * 60 * 60 * 1_000);
-    const sourceAuthoredOriginal = asset.path === sourceAuthoredCriterionWeave.path
-      && asset.kind === sourceAuthoredCriterionWeave.kind
-      && asset.legalReview === "not_required_original_geometric_asset"
-      && asset.productionEligibility === "eligible"
-      && asset.ownershipBasis === sourceAuthoredCriterionWeave.ownershipBasis
-      && asset.documentaryProof === sourceAuthoredCriterionWeave.documentaryProof
-      && asset.sha256 === sourceAuthoredCriterionWeave.sha256
-      && asset.bytes === sourceAuthoredCriterionWeave.bytes;
-    return !approvedByReview && !sourceAuthoredOriginal;
+    return !approvedByReview;
   })) {
     blockers.push("asset_rights_incomplete");
   }

@@ -7,6 +7,14 @@
   "heroGaAt": null,
   "heroRollbackRemoveAt": null,
   "heroRollbackWindowDays": 30,
+  "workstreams": {
+    "licensedProvider": { "status": "pending", "owner": null, "updatedAt": null, "evidenceUri": null, "evidenceSha256": null },
+    "assetRights": { "status": "pending", "owner": null, "updatedAt": null, "evidenceUri": null, "evidenceSha256": null },
+    "hostedOperations": { "status": "pending", "owner": null, "updatedAt": null, "evidenceUri": null, "evidenceSha256": null },
+    "privacyAndAccessibility": { "status": "pending", "owner": null, "updatedAt": null, "evidenceUri": null, "evidenceSha256": null },
+    "pilot": { "status": "pending", "owner": null, "updatedAt": null, "evidenceUri": null, "evidenceSha256": null },
+    "activation": { "status": "pending", "owner": null, "updatedAt": null, "evidenceUri": null, "evidenceSha256": null }
+  },
   "approvals": [
     { "role": "cto", "status": "pending", "owner": null, "approvedAt": null },
     { "role": "security", "status": "pending", "owner": null, "approvedAt": null },
@@ -16,6 +24,9 @@
   ],
   "rollout": {
     "cohortPercent": 0,
+    "limits": {
+      "geminiLiveDailySessions": 0
+    },
     "flags": {
       "RAMA_PUBLIC_EXPERIENCE_ENABLED": false,
       "RAMA_LANDING_COMPOSITION_ENABLED": false,
@@ -25,6 +36,8 @@
       "RAMA_EVIDENCE_V2_WRITER_ENABLED": false,
       "RAMA_EVIDENCE_V2_RENDERER_ENABLED": false,
       "GEMINI_LIVE_ENABLED": false,
+      "GEMINI_LIVE_SESSION_RESUMPTION_ENABLED": false,
+      "RAMA_OPERATIONAL_TELEMETRY_ENABLED": false,
       "LICENSED_SUPPLY_PUBLICATION_ENABLED": false
     },
     "providerIds": []
@@ -33,10 +46,23 @@
     "rollbackOwner": null,
     "onCallOwner": null,
     "incidentOwner": null,
+    "rollbackApprover": null,
+    "privacyOwner": null,
+    "accessibilityOwner": null,
+    "providerOwner": null,
+    "releaseScribe": null,
     "backupRestoreEvidence": null,
+    "storageRestoreEvidence": null,
+    "alertDrillEvidence": null,
     "penetrationTestEvidence": null,
     "privacyCanaryEvidence": null,
     "hostedRlsEvidence": null,
-    "credentialRotationEvidence": null
+    "credentialRotationEvidence": null,
+    "liveProviderEvidence": null,
+    "buildAttestationEvidence": null,
+    "voiceReliabilityEvidence": null,
+    "providerQuotaEvidence": null,
+    "assistiveTechnologyEvidence": null,
+    "pilotEvidence": null
   }
 }

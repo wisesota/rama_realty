@@ -49,6 +49,15 @@ const activationRecord = {
   targetEnvironment: "production",
   targetCommit: releaseCommit,
   createdAt: "2026-08-22T15:45:00Z",
+  workstreams: Object.fromEntries([
+    "licensedProvider", "assetRights", "hostedOperations", "privacyAndAccessibility", "pilot", "activation",
+  ].map((workstream) => [workstream, {
+    status: "complete",
+    owner: `${workstream}-owner`,
+    updatedAt: "2026-08-22T15:40:00Z",
+    evidenceUri: `https://evidence.rama.example/${workstream}`,
+    evidenceSha256: "c".repeat(64),
+  }])),
   approvals: ["cto", "security", "privacy", "legal", "product"].map((role) => ({
     role,
     status: "approved",
@@ -57,6 +66,7 @@ const activationRecord = {
   })),
   rollout: {
     cohortPercent: 5,
+    limits: { geminiLiveDailySessions: 500 },
     flags: {
       RAMA_PUBLIC_EXPERIENCE_ENABLED: true,
       RAMA_LANDING_COMPOSITION_ENABLED: true,
@@ -66,6 +76,8 @@ const activationRecord = {
       RAMA_EVIDENCE_V2_WRITER_ENABLED: true,
       RAMA_EVIDENCE_V2_RENDERER_ENABLED: true,
       GEMINI_LIVE_ENABLED: true,
+      GEMINI_LIVE_SESSION_RESUMPTION_ENABLED: true,
+      RAMA_OPERATIONAL_TELEMETRY_ENABLED: true,
       LICENSED_SUPPLY_PUBLICATION_ENABLED: true,
     },
     providerIds: ["licensed-partner-a"],
@@ -74,12 +86,25 @@ const activationRecord = {
     rollbackOwner: "release-operator",
     onCallOwner: "primary-on-call",
     incidentOwner: "incident-commander",
+    rollbackApprover: "rollback-approver",
+    privacyOwner: "privacy-owner",
+    accessibilityOwner: "accessibility-owner",
+    providerOwner: "provider-owner",
+    releaseScribe: "release-scribe",
     ...Object.fromEntries([
     "backupRestoreEvidence",
+    "storageRestoreEvidence",
+    "alertDrillEvidence",
     "penetrationTestEvidence",
     "privacyCanaryEvidence",
     "hostedRlsEvidence",
     "credentialRotationEvidence",
+    "liveProviderEvidence",
+    "buildAttestationEvidence",
+    "voiceReliabilityEvidence",
+    "providerQuotaEvidence",
+    "assistiveTechnologyEvidence",
+    "pilotEvidence",
     ].map((field) => [field, artifact(field)])),
   },
 };
@@ -90,16 +115,6 @@ const assetRights = {
   assets: [
     { path: "public/images/rama-hero-editorial-daylight.png", legalReview: "approved", productionEligibility: "approved", documentaryProof: artifact("hero-rights") },
     { path: "public/lottie/ai.json", legalReview: "approved", productionEligibility: "approved", documentaryProof: artifact("lottie-rights") },
-    {
-      path: "public/lottie/rama-criterion-weave.json",
-      kind: "original_geometric_lottie_signal",
-      legalReview: "not_required_original_geometric_asset",
-      productionEligibility: "eligible",
-      ownershipBasis: "repository_authored_geometric_vector_animation_2026-08-23",
-      documentaryProof: "Source-authored Rama Criterion Weave JSON in this repository",
-      sha256: "9aaaffd99ea54bd7ba87df68e50d6f7492c1883328fdfb941943ce95ef808912",
-      bytes: 5401,
-    },
   ],
 };
 const publicAssets = assetRights.assets.map((asset) => asset.path);
@@ -113,6 +128,9 @@ const runtimeEnvironment = {
   RAMA_EVIDENCE_V2_WRITER_ENABLED: "true",
   RAMA_EVIDENCE_V2_RENDERER_ENABLED: "true",
   GEMINI_LIVE_ENABLED: "true",
+  GEMINI_LIVE_SESSION_RESUMPTION_ENABLED: "true",
+  GEMINI_LIVE_DAILY_SESSION_LIMIT: "500",
+  RAMA_OPERATIONAL_TELEMETRY_ENABLED: "true",
   LICENSED_SUPPLY_PUBLICATION_ENABLED: "true",
   LICENSED_SUPPLY_PROVIDER_IDS: "licensed-partner-a",
   RAMA_DECISION_OS_ROLLOUT_PERCENT: "5",
@@ -130,6 +148,20 @@ describe("release readiness", () => {
     blocked.states.production.status = "not_authorized";
     blocked.externalGates.licensedSupplyAgreement = "not_verified";
     expect(assessReleaseReadiness({ releaseEvidence: blocked }).ok).toBe(true);
+  });
+
+  it("never accepts partially verified evidence for production", () => {
+    const result = assessReleaseReadiness({
+      releaseEvidence: releaseEvidence("partially_verified"),
+      activationRecord,
+      assetRights,
+      publicAssets,
+      environmentResult: { ok: true },
+      runtimeEnvironment,
+      now: evaluationTime,
+      requireProduction: true,
+    });
+    expect(result.blockers).toContain("local_not_verified");
   });
 
   it("does not let a required external gate disappear from the release contract", () => {
@@ -172,11 +204,11 @@ describe("release readiness", () => {
     ]));
   });
 
-  it("rejects an original-asset rights exception without strict source proof", () => {
+  it("rejects an asset without approved documentary proof", () => {
     const malformedRights = {
       ...assetRights,
-      assets: assetRights.assets.map((asset) => asset.path.endsWith("rama-criterion-weave.json")
-        ? { ...asset, documentaryProof: "" }
+      assets: assetRights.assets.map((asset) => asset.path.endsWith("ai.json")
+        ? { ...asset, documentaryProof: "", legalReview: "not_required_original_geometric_asset" }
         : asset),
     };
     expect(assessReleaseReadiness({
@@ -191,13 +223,13 @@ describe("release readiness", () => {
     }).blockers).toContain("asset_rights_incomplete");
   });
 
-  it("does not allow another asset to inherit the Criterion Weave exception", () => {
-    const substitutedRights = {
-      ...assetRights,
-      assets: assetRights.assets.map((asset) => asset.path.endsWith("rama-criterion-weave.json")
-        ? { ...asset, path: "public/images/unreviewed-source.webp" }
-        : asset),
-    };
+  it("requires every registered asset to pass the same documentary review", () => {
+    const substitutedRights = { ...assetRights, assets: [...assetRights.assets, {
+      path: "public/images/unreviewed-source.webp",
+      legalReview: "not_required_original_geometric_asset",
+      productionEligibility: "eligible",
+      documentaryProof: "repository-authored",
+    }] };
     expect(assessReleaseReadiness({
       releaseEvidence: releaseEvidence(),
       activationRecord,
@@ -208,6 +240,26 @@ describe("release readiness", () => {
       now: evaluationTime,
       requireProduction: true,
     }).blockers).toContain("asset_rights_incomplete");
+  });
+
+  it("allows privacy-approved session resumption to remain disabled", () => {
+    const disabledActivation = {
+      ...activationRecord,
+      rollout: {
+        ...activationRecord.rollout,
+        flags: { ...activationRecord.rollout.flags, GEMINI_LIVE_SESSION_RESUMPTION_ENABLED: false },
+      },
+    };
+    expect(assessReleaseReadiness({
+      releaseEvidence: releaseEvidence(),
+      activationRecord: disabledActivation,
+      assetRights,
+      publicAssets,
+      environmentResult: { ok: true },
+      runtimeEnvironment: { ...runtimeEnvironment, GEMINI_LIVE_SESSION_RESUMPTION_ENABLED: "false" },
+      now: evaluationTime,
+      requireProduction: true,
+    }).blockers).toEqual([]);
   });
 
   it("requires production runtime flags, cohort, provider IDs, and demo mode to match the approval", () => {
@@ -274,6 +326,26 @@ describe("release readiness", () => {
     expect(result.blockers).toEqual(expect.arrayContaining([
       "operation_evidence_missing:hostedRlsEvidence",
       "operation_evidence_missing:credentialRotationEvidence",
+    ]));
+  });
+
+  it("requires every named incident, rollback, privacy, accessibility, provider, and scribe role", () => {
+    const result = assessReleaseReadiness({
+      releaseEvidence: releaseEvidence(),
+      activationRecord: {
+        ...activationRecord,
+        operations: { ...activationRecord.operations, rollbackApprover: null, releaseScribe: null },
+      },
+      assetRights,
+      publicAssets,
+      environmentResult: { ok: true },
+      runtimeEnvironment,
+      now: evaluationTime,
+      requireProduction: true,
+    });
+    expect(result.blockers).toEqual(expect.arrayContaining([
+      "operation_evidence_missing:rollbackApprover",
+      "operation_evidence_missing:releaseScribe",
     ]));
   });
 });

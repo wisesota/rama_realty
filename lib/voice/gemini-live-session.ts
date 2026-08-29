@@ -31,7 +31,52 @@ export type GeminiLiveSessionCallbacks = {
   onToolResult: (result: AgentToolResponse) => void;
   onError: (message: string) => void;
   onComplete: () => void;
+  onMetric?: (metric: GeminiVoiceStageMetric) => void;
 };
+
+export type GeminiVoiceStage =
+  | "token"
+  | "socket"
+  | "first_server_event"
+  | "first_audio"
+  | "tool"
+  | "reconnect";
+
+export type GeminiVoiceStageMetric = {
+  stage: GeminiVoiceStage;
+  durationMs: number;
+  outcome: "success" | "timeout" | "error";
+  reconnectCount?: 0 | 1 | 2;
+};
+
+type GeminiLiveClient = Pick<GoogleGenAI, "live">;
+
+export type GeminiLiveSessionOptions = {
+  tokenTimeoutMs?: number;
+  connectTimeoutMs?: number;
+  firstResponseTimeoutMs?: number;
+  firstAudioTimeoutMs?: number;
+  toolTimeoutMs?: number;
+  createClient?: (token: string) => GeminiLiveClient;
+};
+
+const defaultSessionOptions = {
+  tokenTimeoutMs: 12_000,
+  connectTimeoutMs: 12_000,
+  firstResponseTimeoutMs: 15_000,
+  firstAudioTimeoutMs: 20_000,
+  toolTimeoutMs: 12_000,
+} as const;
+
+function monotonicNow() {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
+}
+
+function durationToMilliseconds(value: string | undefined) {
+  if (!value) return 0;
+  const match = value.match(/^([0-9]+(?:\.[0-9]+)?)s$/);
+  return match ? Number(match[1]) * 1_000 : 0;
+}
 
 function isTokenResponse(value: unknown): value is GeminiLiveTokenResponse {
   if (!value || typeof value !== "object") return false;
@@ -39,7 +84,8 @@ function isTokenResponse(value: unknown): value is GeminiLiveTokenResponse {
   return (
     typeof candidate.token === "string" &&
     typeof candidate.model === "string" &&
-    typeof candidate.expiresAt === "string"
+    typeof candidate.expiresAt === "string" &&
+    typeof candidate.sessionResumptionEnabled === "boolean"
   );
 }
 
@@ -89,6 +135,10 @@ class PcmAudioPlayer {
   enqueue(base64Audio: string) {
     if (!this.context) return;
 
+    // Keep a slow device or transient main-thread stall from accumulating an
+    // ever-growing spoken-response queue. Prefer the newest answer audio.
+    if (this.nextStartTime - this.context.currentTime > 8) this.interrupt();
+
     const binary = atob(base64Audio);
     const byteLength = binary.length - (binary.length % 2);
     const samples = new Float32Array(byteLength / 2);
@@ -134,6 +184,8 @@ class PcmAudioPlayer {
 
 export class GeminiLiveVoiceSession {
   private callbacks: GeminiLiveSessionCallbacks;
+  private options: Required<Omit<GeminiLiveSessionOptions, "createClient">> &
+    Pick<GeminiLiveSessionOptions, "createClient">;
   private session: Session | null = null;
   private inputContext: AudioContext | null = null;
   private inputSource: MediaStreamAudioSourceNode | null = null;
@@ -151,19 +203,29 @@ export class GeminiLiveVoiceSession {
   private model = "";
   private voiceName: GeminiVoiceName | null = null;
   private resumptionHandle = "";
+  private sessionResumptionEnabled = false;
   private reconnectAttempts = 0;
   private reconnecting = false;
   private connectionGeneration = 0;
   private disposed = false;
   private startAbort: AbortController | null = null;
   private toolRequests = new Map<string, AbortController>();
+  private responseTimer: ReturnType<typeof setTimeout> | null = null;
+  private audioTimer: ReturnType<typeof setTimeout> | null = null;
+  private goAwayTimer: ReturnType<typeof setTimeout> | null = null;
+  private startedAt = 0;
+  private turnStartedAt = 0;
+  private firstServerEventSeen = false;
+  private firstAudioSeen = false;
 
-  constructor(callbacks: GeminiLiveSessionCallbacks) {
+  constructor(callbacks: GeminiLiveSessionCallbacks, options: GeminiLiveSessionOptions = {}) {
     this.callbacks = callbacks;
+    this.options = { ...defaultSessionOptions, ...options };
   }
 
   async start(stream: MediaStream, voiceName: GeminiVoiceName, initialContext?: string) {
     this.assertActive();
+    this.startedAt = monotonicNow();
     this.inputStream = stream;
     this.callbacks.onStatus("connecting");
     await this.player.prepare();
@@ -171,9 +233,15 @@ export class GeminiLiveVoiceSession {
 
     const controller = new AbortController();
     this.startAbort = controller;
-    const timeoutId = setTimeout(() => controller.abort(), 12_000);
+    let timedOut = false;
+    const tokenStartedAt = monotonicNow();
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, this.options.tokenTimeoutMs);
 
     let tokenResponse: Response;
+    let tokenPayload: unknown;
     try {
       tokenResponse = await fetch("/api/voice/token", {
         method: "POST",
@@ -182,22 +250,31 @@ export class GeminiLiveVoiceSession {
         cache: "no-store",
         signal: controller.signal,
       });
+      // The deadline covers the complete response, not only receipt of headers.
+      tokenPayload = await tokenResponse.json();
+    } catch (error) {
+      this.metric("token", tokenStartedAt, timedOut ? "timeout" : "error");
+      throw error;
     } finally {
       clearTimeout(timeoutId);
       if (this.startAbort === controller) this.startAbort = null;
     }
     this.assertActive();
-    const tokenPayload: unknown = await tokenResponse.json();
-    this.assertActive();
 
     if (!tokenResponse.ok) {
+      this.metric("token", tokenStartedAt, "error");
       const message = (tokenPayload as Partial<GeminiLiveTokenError>).error;
       throw new Error(message || "Gemini Live could not create a session.");
     }
-    if (!isTokenResponse(tokenPayload)) throw new Error("Gemini returned an invalid session token.");
+    if (!isTokenResponse(tokenPayload)) {
+      this.metric("token", tokenStartedAt, "error");
+      throw new Error("Gemini returned an invalid session token.");
+    }
+    this.metric("token", tokenStartedAt, "success");
 
     this.token = tokenPayload.token;
     this.model = tokenPayload.model;
+    this.sessionResumptionEnabled = tokenPayload.sessionResumptionEnabled;
     this.voiceName = voiceName;
     await this.connectSession();
     this.assertActive();
@@ -223,6 +300,11 @@ export class GeminiLiveVoiceSession {
     this.inputEnded = true;
     await this.stopAudioCapture();
     this.session?.sendRealtimeInput({ audioStreamEnd: true });
+    this.turnStartedAt = monotonicNow();
+    this.firstServerEventSeen = false;
+    this.firstAudioSeen = false;
+    this.armFirstResponseWatchdog();
+    this.armFirstAudioWatchdog();
     this.callbacks.onStatus("thinking");
   }
 
@@ -237,6 +319,9 @@ export class GeminiLiveVoiceSession {
     this.toolRequests.clear();
     if (this.sessionTimer) clearTimeout(this.sessionTimer);
     this.sessionTimer = null;
+    this.clearResponseWatchdogs();
+    if (this.goAwayTimer) clearTimeout(this.goAwayTimer);
+    this.goAwayTimer = null;
     await this.stopAudioCapture();
     this.session?.close();
     this.session = null;
@@ -251,11 +336,13 @@ export class GeminiLiveVoiceSession {
     const earlyFailure = new Promise<never>((_, reject) => {
       rejectEarly = reject;
     });
-    const timeout = setTimeout(
-      () => rejectEarly(new Error("Gemini Live took too long to connect.")),
-      12_000,
-    );
-    const client = new GoogleGenAI({
+    let timedOut = false;
+    const connectStartedAt = monotonicNow();
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      rejectEarly(new Error("Gemini Live took too long to connect."));
+    }, this.options.connectTimeoutMs);
+    const client = this.options.createClient?.(this.token) ?? new GoogleGenAI({
       apiKey: this.token,
       httpOptions: { apiVersion: geminiLiveApiVersion },
     });
@@ -278,7 +365,9 @@ export class GeminiLiveVoiceSession {
             silenceDurationMs: 700,
           },
         },
-        sessionResumption: this.resumptionHandle ? { handle: this.resumptionHandle } : {},
+        ...(this.sessionResumptionEnabled
+          ? { sessionResumption: this.resumptionHandle ? { handle: this.resumptionHandle } : {} }
+          : {}),
         contextWindowCompression: {
           triggerTokens: "25000",
           slidingWindow: { targetTokens: "8000" },
@@ -288,6 +377,10 @@ export class GeminiLiveVoiceSession {
       callbacks: {
         onmessage: (message) => {
           if (generation !== this.connectionGeneration) return;
+          if (this.inputEnded && !this.firstServerEventSeen) {
+            this.firstServerEventSeen = true;
+            this.metric("first_server_event", this.turnStartedAt, "success");
+          }
           this.handleMessage(message);
         },
         onerror: (event) => {
@@ -315,6 +408,16 @@ export class GeminiLiveVoiceSession {
       configured = true;
       this.reconnectAttempts = 0;
       this.session = session;
+      this.metric("socket", connectStartedAt, "success");
+    } catch (error) {
+      // Promise.race cannot cancel the SDK handshake. Only after this attempt
+      // has actually failed do we arrange to close a socket that resolves late.
+      // Registering this before acceptance races the await continuation and can
+      // close every healthy connection.
+      void connecting.then((lateSession) => lateSession.close()).catch(() => undefined);
+      this.metric("socket", connectStartedAt, timedOut ? "timeout" : "error");
+      if (generation === this.connectionGeneration) this.connectionGeneration += 1;
+      throw error;
     } finally {
       clearTimeout(timeout);
     }
@@ -333,6 +436,7 @@ export class GeminiLiveVoiceSession {
 
     this.reconnecting = true;
     this.reconnectAttempts += 1;
+    const reconnectStartedAt = monotonicNow();
     this.callbacks.onStatus("connecting");
     const previousSession = this.session;
     this.session = null;
@@ -340,8 +444,20 @@ export class GeminiLiveVoiceSession {
 
     try {
       await this.connectSession();
+      this.callbacks.onMetric?.({
+        stage: "reconnect",
+        durationMs: Math.max(0, monotonicNow() - reconnectStartedAt),
+        outcome: "success",
+        reconnectCount: this.reconnectAttempts as 1 | 2,
+      });
       this.callbacks.onStatus(this.inputEnded ? "thinking" : "listening");
     } catch {
+      this.callbacks.onMetric?.({
+        stage: "reconnect",
+        durationMs: Math.max(0, monotonicNow() - reconnectStartedAt),
+        outcome: "error",
+        reconnectCount: this.reconnectAttempts as 1 | 2,
+      });
       this.reconnecting = false;
       await this.resumeOrFail(closeMessage);
       return;
@@ -398,12 +514,23 @@ export class GeminiLiveVoiceSession {
   }
 
   private handleMessage(message: LiveServerMessage) {
-    const resumption = message.sessionResumptionUpdate;
+    const isTurnEvent = Boolean(message.serverContent || message.toolCall);
+    if (isTurnEvent && this.responseTimer) {
+      clearTimeout(this.responseTimer);
+      this.responseTimer = null;
+    }
+    const resumption = this.sessionResumptionEnabled ? message.sessionResumptionUpdate : undefined;
     if (resumption?.resumable && resumption.newHandle) {
       this.resumptionHandle = resumption.newHandle;
     }
     if (message.goAway && this.resumptionHandle && !this.reconnecting) {
-      void this.resumeOrFail("Gemini Live requested a session reconnect.");
+      const remainingMs = durationToMilliseconds(message.goAway.timeLeft);
+      const reconnectDelay = Math.max(0, remainingMs - 1_000);
+      if (this.goAwayTimer) clearTimeout(this.goAwayTimer);
+      this.goAwayTimer = setTimeout(() => {
+        this.goAwayTimer = null;
+        void this.resumeOrFail("Gemini Live requested a session reconnect.");
+      }, reconnectDelay);
     }
     for (const id of message.toolCallCancellation?.ids ?? []) {
       this.toolRequests.get(id)?.abort();
@@ -451,11 +578,22 @@ export class GeminiLiveVoiceSession {
     for (const part of content.modelTurn?.parts ?? []) {
       const audioData = part.inlineData?.data;
       if (!audioData) continue;
+      if (!this.firstAudioSeen) {
+        this.firstAudioSeen = true;
+        if (this.audioTimer) clearTimeout(this.audioTimer);
+        this.audioTimer = null;
+        this.metric("first_audio", this.turnStartedAt || this.startedAt, "success");
+      }
       this.callbacks.onStatus("speaking");
       this.player.enqueue(audioData);
     }
 
+    if (content.generationComplete && !this.firstAudioSeen && this.inputEnded) {
+      this.armFirstAudioWatchdog();
+    }
+
     if (content.turnComplete) {
+      this.clearResponseWatchdogs();
       this.finalizeTranscript();
       this.agentTranscript = "";
       if (this.inputEnded) {
@@ -481,7 +619,8 @@ export class GeminiLiveVoiceSession {
       const timeout = setTimeout(() => {
         timedOut = true;
         controller.abort();
-      }, 12_000);
+      }, this.options.toolTimeoutMs);
+      const toolStartedAt = monotonicNow();
       this.toolRequests.set(id, controller);
       this.callbacks.onStatus("thinking");
 
@@ -503,7 +642,10 @@ export class GeminiLiveVoiceSession {
             response: payload.ok ? { output: payload } : { error: payload.error || payload.summary },
           },
         });
+        this.metric("tool", toolStartedAt, response.ok && payload.ok ? "success" : "error");
+        if (this.inputEnded && !this.firstAudioSeen) this.armFirstAudioWatchdog();
       } catch (error) {
+        this.metric("tool", toolStartedAt, timedOut ? "timeout" : "error");
         if (controller.signal.aborted && !timedOut) return;
         this.session?.sendToolResponse({
           functionResponses: {
@@ -532,6 +674,43 @@ export class GeminiLiveVoiceSession {
       this.callbacks.onFinalTranscript(transcript);
     }
     this.currentTranscript = "";
+  }
+
+  private armFirstResponseWatchdog() {
+    if (this.responseTimer) clearTimeout(this.responseTimer);
+    this.responseTimer = setTimeout(() => {
+      this.responseTimer = null;
+      this.metric("first_server_event", this.turnStartedAt, "timeout");
+      this.fail("Gemini Live did not respond in time.");
+    }, this.options.firstResponseTimeoutMs);
+  }
+
+  private armFirstAudioWatchdog() {
+    if (this.firstAudioSeen || this.audioTimer) return;
+    this.audioTimer = setTimeout(() => {
+      this.audioTimer = null;
+      this.metric("first_audio", this.turnStartedAt, "timeout");
+      this.fail("Gemini Live did not return audio in time.");
+    }, this.options.firstAudioTimeoutMs);
+  }
+
+  private clearResponseWatchdogs() {
+    if (this.responseTimer) clearTimeout(this.responseTimer);
+    if (this.audioTimer) clearTimeout(this.audioTimer);
+    this.responseTimer = null;
+    this.audioTimer = null;
+  }
+
+  private metric(
+    stage: GeminiVoiceStage,
+    startedAt: number,
+    outcome: GeminiVoiceStageMetric["outcome"],
+  ) {
+    this.callbacks.onMetric?.({
+      stage,
+      durationMs: Math.max(0, monotonicNow() - startedAt),
+      outcome,
+    });
   }
 
   private fail(message: string) {

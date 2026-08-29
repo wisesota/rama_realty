@@ -20,7 +20,7 @@ This packet makes the documentary gate executable. It does not approve an asset,
 
 ## Release-owner procedure
 
-1. Run `pnpm test -- public-asset-rights` to verify inventory, file hashes, runtime reachability, and exclusion rules.
+1. Run `pnpm assets:check` and `pnpm test -- public-asset-rights` to verify the exact deployable inventory, file hashes, runtime reachability, and exclusion rules. Generated registry JSON under `public/r` is not media and is checked separately by `pnpm registry:check`.
 2. Give the reviewer this packet, `PUBLIC_ASSET_RIGHTS.json`, the referenced generation records, and the exact release commit.
 3. Store the signed review artifact outside the application bundle using the organization’s evidence-retention policy.
 4. Only after approval, update each reviewed asset’s `documentaryProof`, `legalReview`, and `productionEligibility`, then set the register conclusion to `approved`.
@@ -28,6 +28,7 @@ This packet makes the documentary gate executable. It does not approve an asset,
 
 ## Current unresolved evidence
 
+- The deployable media set is reduced to the 22 paths registered in `PUBLIC_ASSET_RIGHTS.json`; superseded exploration/source media is retained recoverably under `assets/retired-public/` and is not web-addressable.
 - The generated hero derivatives and editorial scenes have generation identifiers and registered hashes, but no human legal approval.
 - `public/images/rama-hero-editorial-daylight.png` is asserted as project-owned but still lacks documentary proof.
 - Production and staging therefore remain blocked on this gate even when every repository check passes.

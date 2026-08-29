@@ -1,11 +1,13 @@
 import "server-only";
 
 import { posthogServer } from "@/lib/telemetry-server";
+import type { OperationalVoicePayload } from "@/lib/voice/operational-voice-contract";
 
 type DurationBucket = "under_500ms" | "500_1500ms" | "1500_3000ms" | "over_3000ms";
 type ResultCountBucket = "0" | "1" | "2_5" | "6_plus";
 
 export type OperationalEvent =
+  | ({ event: "voice.live_stage" } & OperationalVoicePayload)
   | {
       event: "voice.recorded_turn";
       outcome: "ok" | "timeout" | "provider_error" | "invalid_response";
@@ -34,6 +36,26 @@ function countBucket(resultCount: number): ResultCountBucket {
 }
 
 export function operationalEventProperties(event: OperationalEvent) {
+  if (event.event === "voice.live_stage") {
+    return {
+      schema_version: "2",
+      attempt_id: event.attemptId,
+      stage: event.stage,
+      outcome: event.outcome,
+      duration_bucket: durationBucket(event.durationMs),
+      mode: event.mode,
+      locale: event.locale,
+      browser_class: event.browserClass,
+      network_class: event.networkClass,
+      reconnect_count: event.reconnectCount,
+      release_commit: /^[a-f0-9]{40}$/.test(process.env.RAMA_RELEASE_COMMIT ?? "")
+        ? process.env.RAMA_RELEASE_COMMIT
+        : "unconfigured",
+      provider_model: process.env.GEMINI_VOICE_MODEL || "gemini-3.1-flash-live-preview",
+      provider_api_version: "v1alpha",
+      $process_person_profile: false,
+    };
+  }
   if (event.event === "voice.recorded_turn") {
     return {
       schema_version: "1",

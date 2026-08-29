@@ -19,14 +19,15 @@ Any credential pasted into chat, an issue, a task, a screenshot, a shell command
 
 Required rotation scope for the current incident: Supabase, GitHub, Firecrawl, Sentry, PostHog, registry credentials, and any copied derivatives. This repository cannot prove external revocation; the release gate remains open until provider evidence is attached outside Git.
 
-## Telemetry contract v1
+## Telemetry contracts
 
 Allowed operational events are versioned and allowlisted in `lib/operational-telemetry.ts`:
 
 - `voice.recorded_turn`: outcome and coarse latency bucket;
-- `discovery.query`: source, outcome, coarse latency bucket, and coarse result-count bucket.
+- `discovery.query`: source, outcome, coarse latency bucket, and coarse result-count bucket;
+- `voice.live_stage` (schema v2): ephemeral attempt UUID, allowlisted stage/outcome, coarse latency, mode/locale, coarse browser/network class, bounded reconnect count, provider/API version, and release commit.
 
-They use the non-person distinct identifier `rama-service` and disable person-profile creation. Note: PostHog AI privacy and Sentry redaction are currently NOT enforced. The required privacy flags, Sentry event scrubber, and `telemetry-privacy` module are missing from `app/api/voice/turn/route.ts`, `lib/telemetry-server.ts`, and the active Sentry configuration. These claims are deferred until the implementation and privacy tests are fully reconciled.
+They use the non-person distinct identifier `rama-service` and disable person-profile creation. Live-stage ingestion is same-origin, strictly schema-validated, bounded to 2 KiB, rate-limited, and disabled unless `RAMA_OPERATIONAL_TELEMETRY_ENABLED=true`. PostHog AI privacy mode and the Sentry event scrubber are enforced in code and covered by privacy-contract tests. Hosted provider settings and the synthetic privacy canary still require current external evidence before production.
 
 Never capture raw audio, transcript, brief, prompt, output, email, phone, cookies, authorization data, buyer/session/search/property identifiers, exact budget, or exact location in analytics or error monitoring. Browser product analytics remains consent-gated.
 
@@ -41,11 +42,14 @@ Default retention targets, pending a provider configuration screenshot and legal
 
 Before production and after each telemetry SDK upgrade, submit synthetic canary markers through text, recorded voice, Live voice, inquiry validation, and an induced handled error. Search Sentry and PostHog for every marker. Passing evidence requires zero marker occurrences, privacy-mode tests green, and a reviewer/date. A failed canary triggers both kill switches immediately.
 
+CI also runs `pnpm telemetry:contract`, which compares the operational allowlist with the forbidden content-field policy. The route independently rejects unknown fields and bounds the actual UTF-8 body size rather than trusting `Content-Length`. Schema expansion requires security/privacy review and a new canary artifact.
+
 Kill switches:
 
 - remove/blank the PostHog project token to disable capture;
 - remove/blank the Sentry DSN to disable delivery;
 - set `GEMINI_LIVE_ENABLED=false` to disable Live while retaining text and eligible recorded fallback;
+- set `RAMA_OPERATIONAL_TELEMETRY_ENABLED=false` to stop the operational Live-stage channel;
 - revoke provider keys for suspected credential misuse.
 
 Telemetry is fail-open for buyers and fail-closed for privacy: observability failures never block discovery, but a privacy-control failure blocks release.
@@ -56,7 +60,8 @@ The UAE Personal Data Protection Law covers electronic processing inside and out
 
 Product defaults:
 
-- audio: memory only, deleted on every exit path, never persisted;
+- audio in Rama: memory only, disposed on every exit path, never persisted by the application;
+- Gemini Live session resumption: disabled by default with `GEMINI_LIVE_SESSION_RESUMPTION_ENABLED=false`; enabling it requires privacy/legal approval, buyer disclosure, provider-region/retention review, and a matching production activation record;
 - anonymous buyer session and associated searches: 30 days after last activity, cascade delete unless bound to an authenticated owner or inquiry;
 - authenticated saved decision records: 12 months after last activity, then deletion or irreversible aggregation;
 - inquiry/contact data: 24 months after last interaction, subject to licensed partner/legal obligations;

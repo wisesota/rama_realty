@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Database,
@@ -24,7 +24,9 @@ import type { GeminiLiveSignalState } from "@/components/rama/gemini-live-signal
 import { VoiceAction } from "@/components/rama/voice-action";
 import { VoiceDiscoveryDialog } from "@/components/rama/voice-discovery-dialog";
 import { elapsedBucket, emitProductEvent } from "@/lib/product-events";
+import { emitOperationalVoiceStage } from "@/lib/voice/operational-voice-telemetry";
 import type {
+  GeminiVoiceStageMetric,
   GeminiLiveVoiceSession,
   GeminiVoiceStatus,
 } from "@/lib/voice/gemini-live-session";
@@ -34,24 +36,14 @@ import type {
 } from "@/lib/voice/gemini-live-contracts";
 import type { RecordedVoiceSession } from "@/lib/voice/recorded-voice-session";
 import type { BrowserSpeechSession } from "@/lib/voice/browser-speech-session";
+import {
+  microphonePermissionIsDenied,
+  requestMicrophoneStream,
+  stopMediaStream,
+  type MicrophoneStageMetric,
+} from "@/lib/voice/media-lifecycle";
 import { localizedPath, type PublicLocale } from "@/lib/i18n";
 import type { LandingRuntimeCopy } from "@/lib/discovery-composer-contract";
-
-function stopMediaStream(stream: MediaStream | null) {
-  stream?.getTracks().forEach((track) => track.stop());
-}
-
-async function microphonePermissionIsDenied() {
-  try {
-    if (!navigator.permissions?.query) return false;
-    const permission = await navigator.permissions.query({
-      name: "microphone" as PermissionName,
-    });
-    return permission.state === "denied";
-  } catch {
-    return false;
-  }
-}
 
 function isRecordedVoiceResponse(value: unknown): value is GeminiRecordedVoiceResponse {
   if (!value || typeof value !== "object") return false;
@@ -92,7 +84,6 @@ export function LandingPage({
   const cancelPreparedBrief = useLandingStore((state) => state.cancelPreparedBrief);
   const confirmPreparedBrief = useLandingStore((state) => state.confirmPreparedBrief);
   const router = useRouter();
-  const pathname = usePathname();
   const voiceCopy = copy.architecture.voice;
   const [discoveryDialogOpen, setDiscoveryDialogOpen] = useState(false);
   const [discoveryInputMode, setDiscoveryInputMode] = useState<"voice" | "text">("voice");
@@ -104,6 +95,8 @@ export function LandingPage({
   const recordedTurnAbort = useRef<AbortController | null>(null);
   const speechTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const voiceAttempt = useRef(0);
+  const voiceAttemptId = useRef("");
+  const voiceAttemptAbort = useRef<AbortController | null>(null);
   const voiceTranscript = useRef("");
   const agentTranscript = useRef("");
   const propertyBriefInput = useRef<HTMLInputElement | null>(null);
@@ -147,17 +140,6 @@ export function LandingPage({
   }, [mode, setBrief]);
 
   useEffect(() => {
-    if (mode !== "composer" || pathname !== localizedPath(locale)) return;
-    const returnSource = sessionStorage.getItem("rama:decision-room-restore-focus");
-    if (returnSource !== "voice" && returnSource !== "text") return;
-    sessionStorage.removeItem("rama:decision-room-restore-focus");
-    const frame = window.requestAnimationFrame(() => {
-      document.querySelector<HTMLElement>(`[data-discovery-trigger='${returnSource}']`)?.focus();
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, [locale, mode, pathname]);
-
-  useEffect(() => {
     if (lastVoicePhase.current === voiceState.phase) return;
     lastVoicePhase.current = voiceState.phase;
     if (voiceState.phase === "requesting" || (voiceState.phase !== "idle" && voiceStartedAt.current === null)) voiceStartedAt.current = performance.now();
@@ -182,6 +164,8 @@ export function LandingPage({
       const recorder = recordedSession.current;
       const browserSpeech = browserSpeechSession.current;
       recordedTurnAbort.current?.abort();
+      voiceAttemptAbort.current?.abort();
+      voiceAttemptAbort.current = null;
       recordedTurnAbort.current = null;
       voiceSession.current = null;
       recordedSession.current = null;
@@ -216,6 +200,8 @@ export function LandingPage({
 
   function resetVoiceExperience(message?: string) {
     voiceAttempt.current += 1;
+    voiceAttemptAbort.current?.abort();
+    voiceAttemptAbort.current = null;
     const session = voiceSession.current;
     const recorder = recordedSession.current;
     const browserSpeech = browserSpeechSession.current;
@@ -236,6 +222,39 @@ export function LandingPage({
     agentTranscript.current = "";
     setVoiceState({ phase: "idle" });
     if (message) setSearchStatus(message);
+  }
+
+  function emitVoiceStage(metric: MicrophoneStageMetric | GeminiVoiceStageMetric) {
+    emitProductEvent({
+      event: "voice.stage",
+      stage: metric.stage,
+      outcome: metric.outcome,
+      mode: metric.stage === "permission" ? "unknown" : "live",
+      locale,
+      elapsed: elapsedBucket(metric.durationMs),
+      timestamp: new Date().toISOString(),
+    });
+    emitOperationalVoiceStage({
+      attemptId: voiceAttemptId.current,
+      stage: metric.stage,
+      outcome: metric.outcome,
+      mode: metric.stage === "permission" ? "unknown" : "live",
+      locale,
+      durationMs: metric.durationMs,
+      reconnectCount: "reconnectCount" in metric ? metric.reconnectCount ?? 0 : 0,
+    });
+  }
+
+  function emitVoiceFallback(outcome: "success" | "error") {
+    emitOperationalVoiceStage({
+      attemptId: voiceAttemptId.current,
+      stage: "fallback",
+      outcome,
+      mode: "recorded",
+      locale,
+      durationMs: Math.max(0, performance.now() - (voiceStartedAt.current ?? performance.now())),
+      reconnectCount: 0,
+    });
   }
 
   function applyVoiceStatus(status: GeminiVoiceStatus) {
@@ -473,6 +492,10 @@ export function LandingPage({
     }
 
     const attempt = ++voiceAttempt.current;
+    voiceAttemptId.current = crypto.randomUUID();
+    voiceAttemptAbort.current?.abort();
+    const attemptController = new AbortController();
+    voiceAttemptAbort.current = attemptController;
 
     if (
       !navigator.mediaDevices?.getUserMedia ||
@@ -492,7 +515,23 @@ export function LandingPage({
       announcement: voiceCopy.announcements.requestingPermission,
     });
 
-    const permissionDeniedBeforePrompt = await microphonePermissionIsDenied();
+    let permissionDeniedBeforePrompt = false;
+    try {
+      permissionDeniedBeforePrompt = await microphonePermissionIsDenied({
+        signal: attemptController.signal,
+        onMetric: emitVoiceStage,
+      });
+    } catch {
+      // Closing the dialog or starting a newer attempt intentionally aborts
+      // permission preflight. It is not a buyer-facing failure.
+      if (attemptController.signal.aborted || attempt !== voiceAttempt.current) return;
+      setVoiceState({
+        phase: "error",
+        code: "connection-failed",
+        announcement: voiceCopy.announcements.connectionFailed,
+      });
+      return;
+    }
     if (attempt !== voiceAttempt.current) return;
     if (permissionDeniedBeforePrompt) {
       setVoiceState({
@@ -513,12 +552,15 @@ export function LandingPage({
       voiceTranscript.current = "";
       agentTranscript.current = "";
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
+      const stream = await requestMicrophoneStream({
+        signal: attemptController.signal,
+        constraints: {
+          audio: {
+            channelCount: 1,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
         },
       });
       if (attempt !== voiceAttempt.current) {
@@ -635,6 +677,7 @@ export function LandingPage({
           if (attempt !== voiceAttempt.current) return;
           voiceSession.current = null;
           if (recordedSession.current && mediaStream.current?.active) {
+            emitVoiceFallback("success");
             setVoiceState({
               phase: "listening",
               announcement: voiceCopy.announcements.liveUnavailableRecorded,
@@ -656,6 +699,7 @@ export function LandingPage({
                 void fallbackRecorder.dispose();
                 return;
               }
+              emitVoiceFallback("success");
               if (BrowserSpeech.isSupported()) {
                 const browserSpeech = new BrowserSpeech({
                   onTranscript: (transcript) => {
@@ -681,6 +725,7 @@ export function LandingPage({
             }).catch(() => {
               if (attempt !== voiceAttempt.current) return;
               if (recordedSession.current === fallbackRecorder) recordedSession.current = null;
+              emitVoiceFallback("error");
               stopMediaStream(mediaStream.current);
               mediaStream.current = null;
               setVoiceState({
@@ -694,6 +739,7 @@ export function LandingPage({
           }
 
           stopMediaStream(mediaStream.current);
+          emitVoiceFallback("error");
           mediaStream.current = null;
           setVoiceState({
             phase: "error",
@@ -713,6 +759,7 @@ export function LandingPage({
             agentTranscript: agentTranscript.current || undefined,
           });
         },
+        onMetric: emitVoiceStage,
       });
       voiceSession.current = session;
 
@@ -733,6 +780,7 @@ export function LandingPage({
         voiceSession.current = null;
         await session.dispose();
         if (recordedSession.current && mediaStream.current?.active) {
+          emitVoiceFallback("success");
           setVoiceState({
             phase: "listening",
             announcement: voiceCopy.announcements.secureRecordedListening,

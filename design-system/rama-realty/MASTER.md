@@ -70,7 +70,7 @@ The source token files under `tokens/` are canonical. Avoid gradients, glass pan
 10. Return to the original conversation.
 11. Product-state footer.
 
-The first viewport follows Quiet → Converse → Confirm. It shows Rama identity, a short one-line English desktop heading, one supporting sentence, project-owned `public/lottie/rama-criterion-weave.json`, primary “Talk to Rama,” and equally capable “Type instead.” It does not show a persistent form, transcript, criteria slip, or confirmation plane. Stable illustrative criteria proof starts below the fold; architectural imagery elsewhere is atmospheric and never implies availability.
+The first viewport follows Quiet → Converse → Confirm. It shows Rama identity, a short one-line English desktop heading, one supporting sentence, the rights-registered `public/lottie/ai.json` signal, primary “Talk to Rama,” and equally capable “Type instead.” It does not show a persistent form, transcript, criteria slip, or confirmation plane. Stable illustrative criteria proof starts below the fold; architectural imagery elsewhere is atmospheric and never implies availability.
 
 ## Interaction
 

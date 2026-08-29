@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createHmac } from "node:crypto";
 import { buildRateLimitBucketKey, type RateLimitScope } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -54,10 +55,13 @@ export async function consumeApiRateLimit(options: {
   scope: RateLimitScope;
   maximumRequests: number;
   windowMs: number;
+  bucket?: "request" | "global";
 }): Promise<RateLimitResult> {
   const secret = getRateLimitSecret();
   const bucketKey = secret
-    ? buildRateLimitBucketKey(options.request, options.scope, secret)
+    ? options.bucket === "global"
+      ? createHmac("sha256", secret).update(`${options.scope}\nglobal`).digest("hex")
+      : buildRateLimitBucketKey(options.request, options.scope, secret)
     : "anonymous";
   const memoryKey = `${options.scope}:${bucketKey}`;
 
@@ -87,7 +91,11 @@ export async function consumeApiRateLimit(options: {
       resetAt: result.reset_at,
       backend: "supabase",
     };
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      if (error instanceof RateLimitBackendUnavailableError) throw error;
+      throw new RateLimitBackendUnavailableError();
+    }
     return consumeDevelopmentBucket(
       memoryKey,
       options.maximumRequests,

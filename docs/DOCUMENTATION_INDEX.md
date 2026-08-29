@@ -6,6 +6,7 @@ Rama Realty is the governed voice-first Dubai Buyer Decision OS. The repository 
 
 - [README](../README.md) — product boundary, stack, first run, quality gates, buyer flow, and production gates.
 - [AGENTS](../AGENTS.md) — binding engineering, product, design, pnpm, skill-routing, and verification contract.
+- [Design tooling policy](./DESIGN_TOOLING_POLICY.md) — enforceable Superdesign isolation and pnpm-only execution boundary.
 - [PRODUCT](../PRODUCT.md) — product-level context retained in the checkout.
 - [CLAUDE](../CLAUDE.md) — compatibility instructions for other coding-agent environments; it does not override `AGENTS.md`.
 
@@ -30,11 +31,18 @@ Rama Realty is the governed voice-first Dubai Buyer Decision OS. The repository 
 - [Executable CTO work packages](./cto-work-packages.json) — owners, dependencies, flags, cohort rules, rollback, evidence, and gate state for P0-P8.
 - [Enterprise implementation status](./ENTERPRISE_IMPLEMENTATION_STATUS.md) — implementation evidence and hosted gaps.
 - [Release evidence](./release-evidence.json) — machine-readable local, hosted, deployment, and external gate states.
+- [Release candidate runbook](./RELEASE_CANDIDATE_RUNBOOK.md) — immutable SHA formation, CI authority, branch drift controls, and tag sequence.
+- [External gate execution board](./EXTERNAL_GATE_EXECUTION_BOARD.md) — parallel ownership, dependencies, and exit evidence for hosted/human gates.
+- [Voice reliability policy](./voice-reliability-policy.json) — machine-enforced 100-turn coverage and statistical targets.
+- [Voice reliability evidence](./VOICE_RELIABILITY_EVIDENCE.md) — device-lab matrix, percentile method, privacy-safe schema, and artifact storage.
+- [Superdesign upstream request](./SUPERDESIGN_UPSTREAM_REQUEST.md) — pnpm support requirements and the isolated-wrapper decision trigger.
 - [Production activation record](./production-activation.json) — deliberately draft, fail-closed approval and operations record consumed by `pnpm release:readiness`.
+- [Production go/no-go checklist](./GO_NO_GO_PRODUCTION_CHECKLIST.md) — six external gates, exact evidence requirements, meeting packet, and automatic no-go conditions.
 - [Public asset rights register](./PUBLIC_ASSET_RIGHTS.json) — exact active bytes, localized alternatives, excluded exploration, and deliberately open documentary/legal review state.
 - [Public asset legal review packet](./ASSET_LEGAL_REVIEW_PACKET.md) — reviewer checklist, three-business-day target, release-owner procedure, and unresolved documentary evidence.
 - [Performance baseline](./performance-baseline.json) — five-run optimized-build desktop and Fast 3G mobile Lighthouse medians and transfer budgets.
 - [Post-curation performance comparison](./performance-after-library-curation.json) — fresh five-run production-server medians after the governed UI-library curation slice.
+- [Voice-hardening performance record](./performance-voice-hardening.json) — preliminary five-run Chrome DevTools Protocol medians; useful local evidence, not P75/P95 or a production SLO.
 - [Staging activation checklist](./STAGING_ACTIVATION_CHECKLIST.md) — target provisioning and evidence requirements for migration replay, two-user RLS, restore, privacy, and deployed E2E gates.
 - [gstack workflow](./GSTACK_WORKFLOW.md) — local review and QA workflow.
 

@@ -29,7 +29,6 @@ for (const width of mobile) await render(width, 3 / 4, 'mobile');
 
 const rightsPath = path.join(root, 'docs', 'PUBLIC_ASSET_RIGHTS.json');
 const rights = JSON.parse(fs.readFileSync(rightsPath, 'utf8'));
-const previousHero = rights.assets.filter((asset) => /rama-dubai-residential-cityscape-(?:hero|mobile)(?:\.|-)/.test(asset.path));
 rights.assets = rights.assets.filter((asset) => !/rama-dubai-residential-cityscape-(?:hero|mobile)(?:\.|-)/.test(asset.path));
 const records = [];
 for (const [label, widths] of [['hero', desktop], ['mobile', mobile]]) {
@@ -64,16 +63,5 @@ for (const [label, widths] of [['hero', desktop], ['mobile', mobile]]) {
 }
 rights.assets.unshift(...records);
 rights.updatedAt = new Date().toISOString();
-rights.archivedAssets = [
-  ...previousHero.map((asset) => ({
-    path: asset.path,
-    sha256: asset.sha256,
-    bytes: asset.bytes,
-    ownershipBasis: asset.ownershipBasis,
-    documentaryProof: asset.documentaryProof,
-    retentionReason: 'Superseded by responsive deterministic hero derivatives; retained for rollback only and not imported by the active experience.',
-  })),
-  ...rights.archivedAssets.filter((asset) => !previousHero.some((hero) => hero.path === asset.path)),
-];
 fs.writeFileSync(rightsPath, `${JSON.stringify(rights, null, 2)}\n`);
 console.log('✓ Generated deterministic hero derivatives and refreshed the public asset-rights register');

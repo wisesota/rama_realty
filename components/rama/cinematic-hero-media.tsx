@@ -54,7 +54,7 @@ export function CinematicHeroMedia() {
           alt=""
           aria-hidden="true"
           className="cinematic-hero-media__image"
-          decoding="sync"
+          decoding="async"
           draggable={false}
           fetchPriority="high"
           loading="eager"

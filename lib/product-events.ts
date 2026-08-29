@@ -8,6 +8,15 @@ export type ProductEvent =
       timestamp: string;
     }
   | {
+      event: "voice.stage";
+      stage: "permission" | "token" | "socket" | "first_server_event" | "first_audio" | "tool" | "reconnect";
+      outcome: "success" | "denied" | "timeout" | "error";
+      mode: "live" | "recorded" | "unknown";
+      locale: "en" | "ar";
+      elapsed: "lt_1s" | "1_3s" | "3_10s" | "10_30s" | "30_120s" | "gte_120s";
+      timestamp: string;
+    }
+  | {
       event: "room.search_outcome";
       searchRunId: string;
       outcome: "needs_clarification" | "ready" | "partial" | "empty";
@@ -79,7 +88,7 @@ export function criterionCategoriesFromKeys(keys: string[]): CriterionCategory[]
  * transcripts, contact details, or other buyer-provided text to this payload.
  */
 export function emitProductEvent(event: ProductEvent) {
-  if (event.event === "voice.lifecycle") {
+  if (event.event === "voice.lifecycle" || event.event === "voice.stage") {
     if (typeof window !== "undefined") {
       // Do not initialize analytics or emit an event before the buyer opts in.
       if (window.localStorage.getItem("rama_cookie_consent") !== "accepted") {
@@ -88,8 +97,10 @@ export function emitProductEvent(event: ProductEvent) {
       }
       void import("posthog-js").then(({ default: posthog }) => {
         if (!posthog.__loaded || !posthog.has_opted_in_capturing()) return;
-        posthog.capture("rama_voice_lifecycle", {
-          state: event.state,
+        posthog.capture(event.event === "voice.stage" ? "rama_voice_stage" : "rama_voice_lifecycle", {
+          ...(event.event === "voice.stage"
+            ? { stage: event.stage, outcome: event.outcome }
+            : { state: event.state }),
           mode: event.mode,
           locale: event.locale,
           elapsed: event.elapsed,

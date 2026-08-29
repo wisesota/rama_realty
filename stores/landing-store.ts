@@ -127,6 +127,7 @@ export function createLandingStore(locale: PublicLocale = "en") {
     noExact: "لا يوجد مسكن مطابق تماماً للموجز الحالي.",
     review: "راجع الموجز المكتوب وأكّده. لم يتم حفظ أي شيء بعد.",
     prepareFailed: "تعذر إعداد الموجز. حاول مرة أخرى.",
+    prepareTimedOut: "استغرق إعداد الموجز وقتاً طويلاً. حاول مرة أخرى.",
     cancelled: "أُلغيت مراجعة الموجز. لم يتم حفظ أي شيء.",
     opening: "جارٍ حفظ الموجز المؤكد وفتح غرفة القرار…",
     discoveryFailed: "البحث عن العقارات غير متاح مؤقتاً.",
@@ -137,6 +138,7 @@ export function createLandingStore(locale: PublicLocale = "en") {
     noExact: "No exact residence matched the current brief.",
     review: "Review and confirm the written brief. Nothing has been saved yet.",
     prepareFailed: "The brief could not be prepared.",
+    prepareTimedOut: "Brief preparation took too long. Please try again.",
     cancelled: "Brief review cancelled. Nothing was saved.",
     opening: "Saving the confirmed brief and opening the Decision Room…",
     discoveryFailed: "Property search is unavailable.",
@@ -268,12 +270,12 @@ export function createLandingStore(locale: PublicLocale = "en") {
       const controller = new AbortController();
       preparationController = controller;
       set({ briefRecalculating: true });
-      
+
       let timedOut = false;
       const timeoutId = setTimeout(() => {
         timedOut = true;
         controller.abort();
-      }, 15_000);
+      }, 30_000);
 
       try {
         const response = await fetch("/api/discovery/prepare", {
@@ -292,7 +294,9 @@ export function createLandingStore(locale: PublicLocale = "en") {
       } catch (error) {
         if (controller.signal.aborted && !timedOut && preparationId === activePreparation) return false;
         if (preparationId !== activePreparation) return false;
-        const message = timedOut ? "Brief preparation timed out. Please try again." : (error instanceof Error ? error.message : searchCopy.prepareFailed);
+        const message = timedOut
+          ? searchCopy.prepareTimedOut
+          : (error instanceof Error ? error.message : searchCopy.prepareFailed);
         set({ searchPhase: "error", searchError: message, searchStatus: message, briefRecalculating: false });
         return false;
       } finally {
