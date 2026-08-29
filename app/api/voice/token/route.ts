@@ -90,16 +90,6 @@ export async function POST(request: Request) {
       if (!rateLimit.allowed) {
         return jsonError("Too many voice-session requests. Try again in a minute.", 429);
       }
-      const dailyBudget = await consumeApiRateLimit({
-        request,
-        scope: "gemini-live-daily",
-        maximumRequests: dailySessionLimit(),
-        windowMs: dailyWindowMs,
-        bucket: "global",
-      });
-      if (!dailyBudget.allowed) {
-        return jsonError("Live voice has reached its daily capacity; switching to recorded voice mode.", 503);
-      }
     } catch (error) {
       if (error instanceof RateLimitBackendUnavailableError) {
         return jsonError("Voice sessions are temporarily unavailable.", 503);
@@ -166,6 +156,27 @@ export async function POST(request: Request) {
       });
 
       if (!authToken.name) return jsonError("Gemini did not issue a voice-session token.", 502);
+
+      // Count only tokens that were actually issued. The shared limiter remains
+      // atomic, so concurrent requests cannot deliver more than the daily cap;
+      // tokens created after the cap is reached are discarded and never exposed.
+      try {
+        const dailyBudget = await consumeApiRateLimit({
+          request,
+          scope: "gemini-live-daily",
+          maximumRequests: dailySessionLimit(),
+          windowMs: dailyWindowMs,
+          bucket: "global",
+        });
+        if (!dailyBudget.allowed) {
+          return jsonError("Live voice has reached its daily capacity; switching to recorded voice mode.", 503);
+        }
+      } catch (error) {
+        if (error instanceof RateLimitBackendUnavailableError) {
+          return jsonError("Voice sessions are temporarily unavailable.", 503);
+        }
+        throw error;
+      }
 
       return Response.json(
         {

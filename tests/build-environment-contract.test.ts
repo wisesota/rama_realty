@@ -49,8 +49,12 @@ describe("build environment contract", () => {
 
   it("attests the checked-out PR head SHA and keeps generated asset metadata deterministic", () => {
     expect(workflow).toContain("github.event.pull_request.head.sha");
-    expect(workflow).toContain("ref: ${{ env.RAMA_RELEASE_COMMIT }}");
+    expect(workflow.match(/ref: \$\{\{ env\.RAMA_RELEASE_COMMIT \}\}/g)).toHaveLength(3);
     expect(workflow).toContain("ci-build-attestation-${{ env.RAMA_RELEASE_COMMIT }}");
+    expect(workflow).toMatch(/attestation:\s*\n\s+needs: \[dependency-integrity, quality\]/);
+    expect(workflow).toContain("GITHUB_TOKEN: ${{ github.token }}");
+    expect(workflow).toMatch(/permissions:\s*\n\s+actions: read\s*\n\s+contents: read/);
+    expect(readFileSync("scripts/write-ci-build-attestation.mjs", "utf8")).toContain("authenticated success evidence");
     expect(imageBuilder).not.toContain("rights.updatedAt = new Date().toISOString()");
     expect(packageJson.scripts.prebuild).toContain("verify-public-assets.mjs");
     expect(packageJson.scripts.prebuild).not.toContain("images:build");

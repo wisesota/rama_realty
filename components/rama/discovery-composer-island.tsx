@@ -29,7 +29,13 @@ export function DiscoveryComposerIsland({
   const composerModule = useRef<Promise<typeof import("@/components/rama/loaded-discovery-composer")> | null>(null);
 
   const loadComposerModule = useCallback(() => {
-    composerModule.current ??= import("@/components/rama/loaded-discovery-composer");
+    if (!composerModule.current) {
+      const pendingModule = import("@/components/rama/loaded-discovery-composer");
+      composerModule.current = pendingModule;
+      void pendingModule.catch(() => {
+        if (composerModule.current === pendingModule) composerModule.current = null;
+      });
+    }
     return composerModule.current;
   }, []);
 

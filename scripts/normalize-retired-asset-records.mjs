@@ -8,17 +8,25 @@ const rights = JSON.parse(readFileSync(rightsPath, "utf8"));
 
 rights.archivedAssets = (Array.isArray(rights.archivedAssets) ? rights.archivedAssets : [])
   .flatMap((asset) => {
-    if (typeof asset?.path !== "string" || !asset.path.startsWith("public/")) return [];
-    const retiredPath = `assets/retired-public/${asset.path.slice("public/".length)}`;
+    if (typeof asset?.path !== "string") return [];
+    const retiredPath = asset.path.startsWith("public/")
+      ? `assets/retired-public/${asset.path.slice("public/".length)}`
+      : asset.path.startsWith("assets/retired-public/")
+        ? asset.path
+        : null;
+    if (!retiredPath) return [];
     const absolute = resolve(root, retiredPath);
     if (!existsSync(absolute)) return [];
     const bytes = readFileSync(absolute);
+    const existingReason = typeof asset.retentionReason === "string"
+      ? asset.retentionReason
+      : "Retired public asset.";
     return [{
       ...asset,
       path: retiredPath,
       sha256: createHash("sha256").update(bytes).digest("hex"),
       bytes: bytes.byteLength,
-      retentionReason: `${asset.retentionReason.replace(/\s*not imported[^.]*\.?$/i, "")} Stored outside public and not deployed.`.trim(),
+      retentionReason: `${existingReason.replace(/\s*(?:not imported[^.]*|stored outside public and not deployed)\.?$/i, "")} Stored outside public and not deployed.`.trim(),
     }];
   });
 rights.excludedExploration = [{

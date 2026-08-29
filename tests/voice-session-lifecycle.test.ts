@@ -263,6 +263,38 @@ describe("voice session lifecycle", () => {
     expect(handlers.onError).toHaveBeenCalledWith("closed three times");
   });
 
+  it("cancels a pending GoAway reconnect when a socket close recovers first", async () => {
+    vi.useFakeTimers();
+    const close = vi.fn();
+    const connect = vi.fn().mockResolvedValue({ close });
+    const session = new GeminiLiveVoiceSession(callbacks(), {
+      createClient: () => ({ live: { connect } } as never),
+    });
+    const internals = session as unknown as {
+      token: string;
+      model: string;
+      voiceName: "Kore";
+      resumptionHandle: string;
+      session: { close: () => void } | null;
+      handleMessage: (message: { goAway: { timeLeft: string } }) => void;
+      resumeOrFail: (message: string) => Promise<void>;
+    };
+    internals.token = "ephemeral-token";
+    internals.model = "gemini-live-test";
+    internals.voiceName = "Kore";
+    internals.resumptionHandle = "resume-handle";
+    internals.session = { close };
+
+    internals.handleMessage({ goAway: { timeLeft: "3s" } });
+    await internals.resumeOrFail("socket closed before GoAway deadline");
+    expect(connect).toHaveBeenCalledOnce();
+
+    await vi.advanceTimersByTimeAsync(2_000);
+
+    expect(connect).toHaveBeenCalledOnce();
+    await session.dispose();
+  });
+
   it("records the first server event only for actionable turn content", async () => {
     let onmessage!: (message: unknown) => void;
     const close = vi.fn();
@@ -278,6 +310,7 @@ describe("voice session lifecycle", () => {
       token: string;
       model: string;
       voiceName: "Kore";
+      sessionResumptionEnabled: boolean;
       inputEnded: boolean;
       turnStartedAt: number;
       connectSession: () => Promise<void>;
@@ -285,6 +318,7 @@ describe("voice session lifecycle", () => {
     internals.token = "ephemeral-token";
     internals.model = "gemini-live-test";
     internals.voiceName = "Kore";
+    internals.sessionResumptionEnabled = true;
     internals.inputEnded = true;
     internals.turnStartedAt = performance.now();
     await internals.connectSession();
@@ -298,6 +332,34 @@ describe("voice session lifecycle", () => {
       outcome: "success",
     }));
     await session.dispose();
+  });
+
+  it("clears a pending GoAway timer when the completed turn closes intentionally", async () => {
+    vi.useFakeTimers();
+    const close = vi.fn();
+    const handlers = callbacks();
+    const session = new GeminiLiveVoiceSession(handlers);
+    const internals = session as unknown as {
+      inputEnded: boolean;
+      resumptionHandle: string;
+      goAwayTimer: ReturnType<typeof setTimeout> | null;
+      session: { close: () => void } | null;
+      handleMessage: (message: {
+        goAway?: { timeLeft: string };
+        serverContent?: { turnComplete?: boolean };
+      }) => void;
+    };
+    internals.inputEnded = true;
+    internals.resumptionHandle = "resume-handle";
+    internals.session = { close };
+
+    internals.handleMessage({ goAway: { timeLeft: "3s" } });
+    expect(internals.goAwayTimer).not.toBeNull();
+    internals.handleMessage({ serverContent: { turnComplete: true } });
+
+    expect(internals.goAwayTimer).toBeNull();
+    expect(close).toHaveBeenCalledOnce();
+    expect(handlers.onComplete).toHaveBeenCalledOnce();
   });
 
   it("bounds output audio activation when AudioContext.resume stalls", async () => {

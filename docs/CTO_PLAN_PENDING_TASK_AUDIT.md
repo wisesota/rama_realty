@@ -39,7 +39,7 @@ The repository includes independent rollout flags, credential-free illustrative 
 | --- | --- | --- | --- |
 | P0 | Complete and locally verified | None | production credential rotation record, provider audit-log review, hosted privacy canary |
 | P1 | Operating thesis and claims boundary complete | None | buyer/advisor interviews, partner selection, legal/commercial approval |
-| P2 | Locale, truth-led landing, assets register, responsive/RTL harness, interaction-loaded composer, zero active token findings, and five-run performance harness complete | Local mobile Fast 3G median LCP is 2188 ms against the 2500 ms target | documentary asset rights and assistive-technology device evidence |
+| P2 | Locale, truth-led landing, assets register, responsive/RTL harness, interaction-loaded composer, zero active token findings, and five-run performance harness complete | Local mobile Fast 3G median LCP is 2188 ms against the 2500 ms target | 20-run P75/P95 capture, hosted RUM/field data, documentary asset rights, and assistive-technology device evidence |
 | P3 | Prepare/review/confirm, idempotency, route restoration, and ownership contracts complete; development two-identity/RLS execution passed | None | repeat the identity matrix in deployed staging |
 | P4 | Live/recorded/text resilience, stage deadlines, late-resource cleanup, accepted-socket regression coverage, session resumption, and privacy-safe staged telemetry complete | None | representative-device and network P50/P95 baseline plus failure matrix |
 | P5 | Evidence v2, snapshots, ledger, current/as-seen differences, and rollback complete; development migrations are applied | None | deployed staging v1/v2 shadow validation |

@@ -37,7 +37,11 @@ function readArgument(name) {
 
 function median(values) {
   const ordered = values.filter(Number.isFinite).toSorted((left, right) => left - right);
-  return ordered[Math.floor(ordered.length / 2)] ?? null;
+  if (!ordered.length) return null;
+  const middle = Math.floor(ordered.length / 2);
+  return ordered.length % 2 === 0
+    ? (ordered[middle - 1] + ordered[middle]) / 2
+    : ordered[middle];
 }
 
 function percentile(values, percentage) {
@@ -148,7 +152,7 @@ for (const profile of profiles) {
       transferBytes: summary(runs, (run) => run.transferBytes),
     },
     coldCandidate: runs[0],
-    warmRepeats: runs.slice(1),
+    coldRepeats: runs.slice(1),
   };
 }
 

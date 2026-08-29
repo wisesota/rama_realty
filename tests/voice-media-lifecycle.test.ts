@@ -71,10 +71,12 @@ describe("microphone attempt lifecycle", () => {
     const stop = vi.fn();
     const stream = { getTracks: () => [{ stop }] } as unknown as MediaStream;
     const controller = new AbortController();
+    const onMetric = vi.fn();
     const request = requestMicrophoneStream({
       constraints: { audio: true },
       signal: controller.signal,
       getUserMedia: () => new Promise((resolve) => { resolveStream = resolve; }),
+      onMetric,
     });
     const rejectedRequest = expect(request).rejects.toMatchObject({ name: "AbortError" });
 
@@ -83,5 +85,6 @@ describe("microphone attempt lifecycle", () => {
     resolveStream(stream);
     await Promise.resolve();
     expect(stop).toHaveBeenCalledOnce();
+    expect(onMetric).not.toHaveBeenCalled();
   });
 });

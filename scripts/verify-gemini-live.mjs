@@ -123,6 +123,7 @@ async function verifyTurn(runIndex) {
       else resolve();
     };
   });
+  completedTurn.catch(() => undefined);
 
   async function answerToolCalls(functionCalls) {
     mark("firstToolCall");

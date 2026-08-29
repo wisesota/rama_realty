@@ -454,6 +454,8 @@ export class GeminiLiveVoiceSession {
       return;
     }
 
+    if (this.goAwayTimer) clearTimeout(this.goAwayTimer);
+    this.goAwayTimer = null;
     this.reconnecting = true;
     this.reconnectAttempts += 1;
     const reconnectStartedAt = monotonicNow();
@@ -638,6 +640,8 @@ export class GeminiLiveVoiceSession {
       this.agentTranscript = "";
       if (this.inputEnded) {
         this.intentionalClose = true;
+        if (this.goAwayTimer) clearTimeout(this.goAwayTimer);
+        this.goAwayTimer = null;
         this.session?.close();
         this.callbacks.onComplete();
       } else {

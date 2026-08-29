@@ -122,6 +122,7 @@ export async function requestMicrophoneStream({
     onMetric?.({ stage: "microphone", durationMs: now() - startedAt, outcome: "success" });
     return stream;
   } catch (error) {
+    if (signal.aborted) throw error;
     const denied = error instanceof DOMException && ["NotAllowedError", "SecurityError"].includes(error.name);
     onMetric?.({
       stage: "microphone",

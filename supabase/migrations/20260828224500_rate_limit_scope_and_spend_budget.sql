@@ -13,7 +13,7 @@ alter table public.api_rate_limits add constraint api_rate_limits_scope_check
     'decision-ledger',
     'buyer-deletion-verification',
     'voice-telemetry'
-  ));
+  )) not valid;
 
 create or replace function public.consume_api_rate_limit(
   p_scope text,
