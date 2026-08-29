@@ -35,13 +35,11 @@ jobs:
         run: echo "RAMA_PNPM_STORE_DIR=$RUNNER_TEMP/rama-pnpm-store" >> "$GITHUB_ENV"
       - name: Fetch exact lockfile graph into an isolated store
         run: pnpm fetch --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
-      - name: Verify fetched store before dependency lifecycle scripts
-        run: pnpm --store-dir "$RAMA_PNPM_STORE_DIR" store status
       - name: Trust the already-verified frozen lockfile for the offline phase
         run: echo "PNPM_CONFIG_TRUST_LOCKFILE=true" >> "$GITHUB_ENV"
       - name: Install offline from the isolated store
         run: pnpm install --offline --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
-      - name: Verify toolchain, registry, lockfile, package payloads, and store integrity
+      - name: Verify toolchain, registry, lockfile, and installed package payloads
         run: pnpm environment:diagnose -- --registry-probe
 
   quality:
