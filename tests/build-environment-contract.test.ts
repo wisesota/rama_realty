@@ -28,10 +28,11 @@ describe("build environment contract", () => {
   it("runs an isolated fetch, offline install, and store check before quality", () => {
     expect(workflow).toMatch(/dependency-integrity:/);
     expect(workflow).toMatch(/pnpm fetch --frozen-lockfile --store-dir/);
+    expect(workflow).toMatch(/pnpm --store-dir "\$RAMA_PNPM_STORE_DIR" store status/);
     expect(workflow).toMatch(/PNPM_CONFIG_TRUST_LOCKFILE=true/);
     expect(workflow).toMatch(/pnpm install --offline --frozen-lockfile --store-dir/);
     expect(workflow).toMatch(/needs: dependency-integrity/);
-    expect(workflow).toMatch(/environment:diagnose -- --store-status/);
+    expect(workflow).not.toMatch(/environment:diagnose -- .*store-status/);
     expect(workflow).toMatch(/node-version: 24\.19\.0/);
   });
 
