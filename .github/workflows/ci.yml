@@ -131,7 +131,7 @@ jobs:
       - name: Write exact-SHA CI build attestation from authenticated job evidence
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: pnpm release:attest-ci -- --output artifacts/ci-build-attestation.json
+        run: node scripts/write-ci-build-attestation.mjs --output artifacts/ci-build-attestation.json
       - name: Upload CI build attestation
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

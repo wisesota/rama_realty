@@ -53,6 +53,7 @@ describe("build environment contract", () => {
     expect(workflow).toContain("ci-build-attestation-${{ env.RAMA_RELEASE_COMMIT }}");
     expect(workflow).toMatch(/attestation:\s*\n\s+needs: \[dependency-integrity, quality\]/);
     expect(workflow).toContain("GITHUB_TOKEN: ${{ github.token }}");
+    expect(workflow).toContain("node scripts/write-ci-build-attestation.mjs --output artifacts/ci-build-attestation.json");
     expect(workflow).toMatch(/permissions:\s*\n\s+actions: read\s*\n\s+contents: read/);
     expect(readFileSync("scripts/write-ci-build-attestation.mjs", "utf8")).toContain("authenticated success evidence");
     expect(imageBuilder).not.toContain("rights.updatedAt = new Date().toISOString()");
