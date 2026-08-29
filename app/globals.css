@@ -4148,7 +4148,6 @@ html[data-discovery-dialog-open="true"] {
   object-fit: cover;
   object-position: center;
   background: var(--ink);
-  will-change: transform;
 }
 
 .cinematic-hero-media__wash {

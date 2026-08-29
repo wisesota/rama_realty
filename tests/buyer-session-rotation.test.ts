@@ -37,6 +37,22 @@ afterEach(() => {
 });
 
 describe("buyer-session token rotation", () => {
+  it("refuses a missing signing secret in production", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("BUYER_SESSION_SECRET", "");
+
+    expect(() => hashBuyerSessionToken(mocks.cookieValue))
+      .toThrow("BUYER_SESSION_SECRET must be configured");
+  });
+
+  it("refuses an undersized signing secret in production", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("BUYER_SESSION_SECRET", "too-short");
+
+    expect(() => hashBuyerSessionToken(mocks.cookieValue))
+      .toThrow("BUYER_SESSION_SECRET must be configured");
+  });
+
   it("derives the same retry-safe handoff token from the same cookie and idempotency key", async () => {
     const first = await createBuyerSessionTokenRotation("handoff:idempotency-key");
     const retry = await createBuyerSessionTokenRotation("handoff:idempotency-key");

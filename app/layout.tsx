@@ -15,7 +15,9 @@ const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  display: "swap",
+  // Keep the metric-compatible fallback when the editorial face misses the
+  // constrained-network LCP window; a late hero repaint is worse than no swap.
+  display: "optional",
 });
 
 

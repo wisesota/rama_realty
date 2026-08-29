@@ -44,6 +44,34 @@ describe("landing shortlist state", () => {
     expect(store.getState().searchStatus).not.toMatch(/[A-Za-z]/);
   });
 
+  it.each([
+    ["en" as const, "Brief preparation took too long. Please try again."],
+    ["ar" as const, "استغرق إعداد الموجز وقتاً طويلاً. حاول مرة أخرى."],
+  ])("bounds stalled brief preparation in %s", async (locale, expectedMessage) => {
+    vi.useFakeTimers();
+    vi.stubGlobal("fetch", vi.fn((_input: RequestInfo | URL, init?: RequestInit) => (
+      new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener(
+          "abort",
+          () => reject(new DOMException("Aborted", "AbortError")),
+          { once: true },
+        );
+      })
+    )));
+    const store = createLandingStore(locale);
+
+    const preparation = store.getState().prepareBrief("Two-bedroom apartment in Dubai Marina", "text");
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    await expect(preparation).resolves.toBe(false);
+    expect(store.getState()).toMatchObject({
+      searchPhase: "error",
+      searchError: expectedMessage,
+      searchStatus: expectedMessage,
+      briefRecalculating: false,
+    });
+  });
+
   it("restores the last optimistic favorite change when synchronization fails", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
     const store = createLandingStore();
@@ -104,5 +132,37 @@ describe("landing shortlist state", () => {
     expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body))).toMatchObject({ brief: "Quiet home in Dubai" });
     expect(store.getState().preparedBrief?.transcript).toBe("Quiet home in Dubai");
     expect(store.getState().briefRecalculating).toBe(false);
+  });
+
+  it("bounds confirmed discovery through response body parsing", async () => {
+    vi.useFakeTimers();
+    const prepared = new Response(JSON.stringify({
+      schemaVersion: "1",
+      draftId: "draft-timeout",
+      source: "text",
+      transcript: "Home in Dubai Marina",
+      criteria: [{ key: "location", label: "Dubai Marina", value: "Dubai Marina", kind: "hard" }],
+      missingFields: [],
+      contradictions: [],
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(prepared)
+      .mockImplementationOnce((_input: RequestInfo | URL, init?: RequestInit) => (
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+        })
+      ));
+    vi.stubGlobal("fetch", fetchMock);
+    const store = createLandingStore("en");
+    await store.getState().prepareBrief("Home in Dubai Marina", "text", "draft-timeout");
+
+    const confirmation = store.getState().confirmPreparedBrief();
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    await expect(confirmation).resolves.toBeNull();
+    expect(store.getState()).toMatchObject({
+      searchPhase: "error",
+      searchError: "Opening the Decision Room took too long. Please try again.",
+    });
   });
 });

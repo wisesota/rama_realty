@@ -1,9 +1,9 @@
 # CTO plan and pending-task audit
 
-**Audit date:** 25 August 2026  
+**Audit date:** 28 August 2026
 **Scope:** `JUMPING_THE_CURVE_CTO_PLAN`, work packages P0-P8, current source, migrations, tests, release contracts, and documentation  
 **Decision owner:** CTO under delegated product authority  
-**Conclusion:** the approved feature, security, observability, token, registry, and staging-harness work is implemented or fails closed. One measured repository release gate remains open: mobile Fast 3G LCP is 3997.29 ms against the 2500 ms target. External staging, legal, provider, backup, device, pilot, and activation evidence also remains open and must not be simulated or relabelled as complete.
+**Conclusion:** the approved feature, security, observability, token, registry, and staging-harness work is implemented or fails closed. The five-run Fast 3G median LCP is 2188 ms against the 2500 ms target, but that result is preliminary rather than a production SLO: it lacks P75/P95 power and hosted field data. External staging, legal, provider, backup, representative-device, pilot, and activation evidence remains open and must not be simulated or relabelled as complete.
 
 ## Executive decision
 
@@ -39,9 +39,9 @@ The repository includes independent rollout flags, credential-free illustrative 
 | --- | --- | --- | --- |
 | P0 | Complete and locally verified | None | production credential rotation record, provider audit-log review, hosted privacy canary |
 | P1 | Operating thesis and claims boundary complete | None | buyer/advisor interviews, partner selection, legal/commercial approval |
-| P2 | Locale, truth-led landing, assets register, responsive/RTL harness, interaction-loaded composer, zero active token findings, and five-run performance harness complete | Continue mobile LCP optimization; current median is 3997.29 ms against 2500 ms | documentary asset rights and assistive-technology device evidence |
+| P2 | Locale, truth-led landing, assets register, responsive/RTL harness, interaction-loaded composer, zero active token findings, and five-run performance harness complete | Local mobile Fast 3G median LCP is 2188 ms against the 2500 ms target | 20-run P75/P95 capture, hosted RUM/field data, documentary asset rights, and assistive-technology device evidence |
 | P3 | Prepare/review/confirm, idempotency, route restoration, and ownership contracts complete; development two-identity/RLS execution passed | None | repeat the identity matrix in deployed staging |
-| P4 | Live/recorded/text resilience and bounded telemetry complete | None | representative-device and network P50/P95 baseline plus failure matrix |
+| P4 | Live/recorded/text resilience, stage deadlines, late-resource cleanup, accepted-socket regression coverage, session resumption, and privacy-safe staged telemetry complete | None | representative-device and network P50/P95 baseline plus failure matrix |
 | P5 | Evidence v2, snapshots, ledger, current/as-seen differences, and rollback complete; development migrations are applied | None | deployed staging v1/v2 shadow validation |
 | P6 | Publication boundary complete and deliberately disabled | None without a licensed provider | signed rights, approved provider, hosted staging/reconciliation and activation evidence |
 | P7 | Data rights, telemetry, feedback, and processor-erasure worker core complete | None without an approved processor | processor adapter certification, scheduler/alerts, privacy canary, named incident/on-call owners |
@@ -61,6 +61,7 @@ The current tree already contains the fixes for the issues found during the adve
 8. Provider validation and SQL catalog constraints agree on enums, integer bounds, descriptions, URLs, slugs, and published facts.
 9. Generated database types include the new foreign-key relationship metadata.
 10. Text and voice preparation are compared through their actual route/tool entry points after normalizing transport-only fields.
+11. The Live handshake cleanup now closes only sockets that resolve after a failed deadline; the prior promise-ordering race that closed accepted sockets is covered by paired accepted/late socket regression tests. Token-body, microphone, first-event, first-audio, and tool deadlines prevent an attempt from remaining in a multi-minute pending state.
 
 ## Error and rescue registry
 
@@ -135,7 +136,7 @@ The main remaining DX issue is operational, not code: preview/staging deployment
 | # | Decision | Classification | Rationale | Rejected |
 | --- | --- | --- | --- | --- |
 | 1 | Keep Option A and the Decision Ledger wedge | Strategic confirmation | refreshed primary market sources still show off-plan dominance, moderation, and foreign-buyer demand | portal clone or voice-only gallery |
-| 2 | Treat all repository packages as locally complete | Evidence-based | current source, tests, migrations, and full build cover their declared implementation scope | inventing new local work to make the backlog look active |
+| 2 | Treat all repository packages as locally complete | Evidence-based | current source, tests, and migrations cover their declared implementation scope; a clean build must still be reproduced on a healthy pnpm store/fresh CI runner | inventing evidence or reusing a pre-final-slice cached build |
 | 3 | Keep production readiness red | Security/operations | legal, provider, hosted, device, pilot, and credential-rotation evidence is absent | self-attested production approval |
 | 4 | Continue with independent throwaway local secrets | Reversible local choice | local development is unblocked while production rotation stays mandatory | reusing local values at launch |
 | 5 | Do not activate licensed supply or processor adapters | One-way risk boundary | no approved provider or processor contract exists | placeholder production integrations |
@@ -158,6 +159,6 @@ The main remaining DX issue is operational, not code: preview/staging deployment
 | DX Review | `/plan-devex-review` via plan audit | First run and operations | 2 | `CLEAR (LOCAL)` | Credential-free demo and diagnostics exist; hosted test identities and owners remain external |
 | Security Review | `/cso` via plan audit | Secrets, auth, supply chain, privacy | 3 | `CLEAR (DEVELOPMENT) / PRODUCTION BLOCKED` | Development migrations, RLS posture, ACLs, and two-user isolation pass. Leaked-password protection is implemented at the application edge via HIBP to support the Supabase Free-plan architecture. Hosted production evidence remains open. |
 
-**VERDICT:** Feature implementation is complete for P0-P8 and locally verified, but release readiness remains red for the measured mobile LCP gate as well as the external evidence listed above. Production remains unauthorized until every item is real, current, reviewed, and bound to the release commit.
+**VERDICT:** Feature implementation is complete for P0-P8 and locally verified, including the local mobile LCP gate. Production readiness remains red for the external evidence listed above and stays unauthorized until every item is real, current, reviewed, and bound to the release commit.
 
 NO UNRESOLVED DECISIONS

@@ -38,6 +38,18 @@ describe("Decision OS v2 release contracts", () => {
     expect(normalized).toMatch(/if \(wasCompared\) setCompareIds/);
   });
 
+  it("keeps client request deadlines active through JSON body parsing", () => {
+    const landing = source("components/landing-page.tsx");
+    const voiceTurn = landing.slice(landing.indexOf('fetch("/api/voice/turn"'), landing.indexOf("if (!response.ok)", landing.indexOf('fetch("/api/voice/turn"')));
+    expect(voiceTurn.indexOf("response.json()")).toBeGreaterThan(-1);
+    expect(voiceTurn.indexOf("response.json()")).toBeLessThan(voiceTurn.indexOf("clearTimeout(timeoutId)"));
+
+    const room = source("components/buyer-decision-room.tsx");
+    const toolRequest = room.slice(room.indexOf("async function runTool"), room.indexOf("function toggleCompare"));
+    expect(toolRequest).toContain("12_000");
+    expect(toolRequest.indexOf("response.json()")).toBeLessThan(toolRequest.indexOf("clearTimeout(timeoutId)"));
+  });
+
   it("keeps checked-in database types aligned with the additive v2 schema", () => {
     const types = source("lib/supabase/database.types.ts");
     for (const contract of [

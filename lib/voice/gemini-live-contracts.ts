@@ -19,6 +19,7 @@ export type GeminiLiveTokenResponse = {
   token: string;
   model: string;
   expiresAt: string;
+  sessionResumptionEnabled: boolean;
 };
 
 export type GeminiLiveTokenError = {

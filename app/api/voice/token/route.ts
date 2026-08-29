@@ -13,6 +13,7 @@ import {
   type GeminiLiveTokenError,
   type GeminiLiveTokenResponse,
 } from "@/lib/voice/gemini-live-contracts";
+import { geminiLiveSessionResumptionEnabled } from "@/lib/voice/gemini-live-policy";
 import {
   consumeApiRateLimit,
   RateLimitBackendUnavailableError,
@@ -24,6 +25,12 @@ import { decisionOsEnabledForBuyer, publicExperienceEnabled } from "@/lib/rollou
 
 const tokenWindowMs = 60_000;
 const maximumTokensPerWindow = 5;
+const dailyWindowMs = 24 * 60 * 60_000;
+
+function dailySessionLimit() {
+  const configured = Number(process.env.GEMINI_LIVE_DAILY_SESSION_LIMIT);
+  return Number.isInteger(configured) && configured >= 1 && configured <= 10_000 ? configured : 500;
+}
 
 const voiceAgentInstruction = `
 You are Rama, a professional AI real-estate advisor for buyers and investors exploring governed Dubai property inventory.
@@ -106,6 +113,7 @@ export async function POST(request: Request) {
     const model = defaultGeminiLiveModel;
     const expiresAt = new Date(Date.now() + 15 * 60_000).toISOString();
     const newSessionExpiresAt = new Date(Date.now() + 60_000).toISOString();
+    const sessionResumptionEnabled = geminiLiveSessionResumptionEnabled();
 
     try {
       const client = new GoogleGenAI({
@@ -135,7 +143,7 @@ export async function POST(request: Request) {
                   silenceDurationMs: 700,
                 },
               },
-              sessionResumption: {},
+              ...(sessionResumptionEnabled ? { sessionResumption: {} } : {}),
               contextWindowCompression: {
                 triggerTokens: "25000",
                 slidingWindow: { targetTokens: "8000" },
@@ -149,11 +157,33 @@ export async function POST(request: Request) {
 
       if (!authToken.name) return jsonError("Gemini did not issue a voice-session token.", 502);
 
+      // This limit governs sessions delivered to buyers, not provider token-mint
+      // attempts. Commit capacity atomically only after a valid token exists and
+      // before exposing it; a denied/failed commit discards the token.
+      try {
+        const dailySession = await consumeApiRateLimit({
+          request,
+          scope: "gemini-live-daily",
+          maximumRequests: dailySessionLimit(),
+          windowMs: dailyWindowMs,
+          bucket: "global",
+        });
+        if (!dailySession.allowed) {
+          return jsonError("Live voice has reached its daily capacity; switching to recorded voice mode.", 503);
+        }
+      } catch (error) {
+        if (error instanceof RateLimitBackendUnavailableError) {
+          return jsonError("Voice sessions are temporarily unavailable.", 503);
+        }
+        throw error;
+      }
+
       return Response.json(
         {
           token: authToken.name,
           model,
           expiresAt,
+          sessionResumptionEnabled,
         } satisfies GeminiLiveTokenResponse,
         {
           headers: {

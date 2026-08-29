@@ -7,6 +7,10 @@ on:
         description: HTTPS origin of the already-deployed staging release candidate
         required: true
         type: string
+      release_commit:
+        description: Exact 40-character commit SHA deployed to staging
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -16,27 +20,70 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate-release:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      release_commit: ${{ steps.release.outputs.release_commit }}
+    steps:
+      - name: Authorize exact release commit
+        id: release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAMA_RELEASE_COMMIT: ${{ inputs.release_commit }}
+        run: |
+          if [[ ! "$RAMA_RELEASE_COMMIT" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "release_commit must be an exact lowercase 40-character SHA." >&2
+            exit 1
+          fi
+
+          tag_name="$({
+            gh api --paginate "repos/$GITHUB_REPOSITORY/tags?per_page=100"
+          } | jq -sr --arg sha "$RAMA_RELEASE_COMMIT" '
+            add
+            | map(select(.commit.sha == $sha))
+            | map(select(.name | test("^release/v[0-9]+\\.[0-9]+\\.[0-9]+-rc\\.[0-9]+$")))
+            | first
+            | .name // empty
+          ')"
+          if [[ -z "$tag_name" ]]; then
+            echo "release_commit must be the target of a release/vX.Y.Z-rc.N tag." >&2
+            exit 1
+          fi
+
+          comparison="$(gh api "repos/$GITHUB_REPOSITORY/compare/$RAMA_RELEASE_COMMIT...main" --jq .status)"
+          if [[ "$comparison" != "ahead" && "$comparison" != "identical" ]]; then
+            echo "release_commit must already be contained in protected main." >&2
+            exit 1
+          fi
+
+          echo "release_commit=$RAMA_RELEASE_COMMIT" >> "$GITHUB_OUTPUT"
+          echo "Validated $RAMA_RELEASE_COMMIT as $tag_name on protected main."
+
   deployed-matrix:
+    needs: validate-release
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
       name: staging
     env:
       RAMA_STAGING_URL: ${{ inputs.staging_url }}
+      RAMA_RELEASE_COMMIT: ${{ needs.validate-release.outputs.release_commit }}
       NEXT_PUBLIC_SITE_URL: ${{ inputs.staging_url }}
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.STAGING_SUPABASE_PUBLISHABLE_KEY }}
-      SUPABASE_SECRET_KEY: ${{ secrets.STAGING_SUPABASE_SECRET_KEY }}
-      RATE_LIMIT_SECRET: ${{ secrets.STAGING_RATE_LIMIT_SECRET }}
-      BUYER_SESSION_SECRET: ${{ secrets.STAGING_BUYER_SESSION_SECRET }}
       RAMA_DEMO_MODE: "false"
       GEMINI_LIVE_ENABLED: "false"
+      GEMINI_LIVE_SESSION_RESUMPTION_ENABLED: "false"
+      GEMINI_LIVE_DAILY_SESSION_LIMIT: "500"
+      RAMA_OPERATIONAL_TELEMETRY_ENABLED: "false"
       NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: "0"
       SENTRY_TRACES_SAMPLE_RATE: "0"
     steps:
       - name: Check out release candidate
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ needs.validate-release.outputs.release_commit }}
           fetch-depth: 0
           persist-credentials: false
       - name: Install pnpm
@@ -44,14 +91,70 @@ jobs:
         with:
           version: 11.20.0
           run_install: false
-      - name: Set up Node.js
+      - name: Set up pinned Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm env:check
-      - run: pnpm verify:supabase
-      - run: pnpm verify:supabase-identities
+          node-version: 24.19.0
+      - name: Select isolated pnpm store
+        run: echo "RAMA_PNPM_STORE_DIR=$RUNNER_TEMP/rama-staging-pnpm-store" >> "$GITHUB_ENV"
+      - run: pnpm fetch --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
+      - run: pnpm install --offline --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
+      - run: pnpm environment:diagnose
+      - run: pnpm release:candidate
+      - run: pnpm verify:deployment
+      - name: Verify protected staging configuration and hosted Supabase controls
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.STAGING_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.STAGING_SUPABASE_SECRET_KEY }}
+          RATE_LIMIT_SECRET: ${{ secrets.STAGING_RATE_LIMIT_SECRET }}
+          BUYER_SESSION_SECRET: ${{ secrets.STAGING_BUYER_SESSION_SECRET }}
+        run: |
+          pnpm env:check
+          pnpm verify:supabase
+          pnpm verify:supabase-identities
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e:staging
+
+  live-provider:
+    needs: [validate-release, deployed-matrix]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: staging-live-provider
+    env:
+      RAMA_VERIFY_BASE_URL: ${{ inputs.staging_url }}
+      RAMA_RELEASE_COMMIT: ${{ needs.validate-release.outputs.release_commit }}
+    steps:
+      - name: Check out exact release candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.validate-release.outputs.release_commit }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install pnpm
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 11.20.0
+          run_install: false
+      - name: Set up pinned Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - name: Select isolated pnpm store
+        run: echo "RAMA_PNPM_STORE_DIR=$RUNNER_TEMP/rama-provider-pnpm-store" >> "$GITHUB_ENV"
+      - run: pnpm fetch --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
+      - run: pnpm install --offline --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
+      - run: pnpm environment:diagnose
+      - run: pnpm release:candidate
+      - name: Verify Gemini Live provider contract
+        env:
+          GEMINI_API_KEY: ${{ secrets.STAGING_GEMINI_API_KEY }}
+        run: pnpm verify:gemini-live -- --runs 2 --output artifacts/gemini-live-provider.json
+      - name: Upload privacy-safe provider evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: gemini-live-provider-${{ needs.validate-release.outputs.release_commit }}
+          path: artifacts/gemini-live-provider.json
+          if-no-files-found: error
+          retention-days: 30

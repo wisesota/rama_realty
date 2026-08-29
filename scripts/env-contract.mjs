@@ -18,6 +18,9 @@ export const environmentContract = [
   { key: "RAMA_LOCALE_ROUTES_ENABLED", exposure: "server", required: false, kind: "boolean" },
   { key: "RAMA_DECISION_OS_ROLLOUT_PERCENT", exposure: "server", required: false, kind: "percentage" },
   { key: "GEMINI_LIVE_ENABLED", exposure: "server", required: true, kind: "boolean" },
+  { key: "GEMINI_LIVE_SESSION_RESUMPTION_ENABLED", exposure: "server", required: true, kind: "boolean" },
+  { key: "GEMINI_LIVE_DAILY_SESSION_LIMIT", exposure: "server", required: true, kind: "positive-integer" },
+  { key: "RAMA_OPERATIONAL_TELEMETRY_ENABLED", exposure: "server", required: true, kind: "boolean" },
   { key: "LICENSED_SUPPLY_PUBLICATION_ENABLED", exposure: "server", required: false, kind: "boolean" },
   { key: "LICENSED_SUPPLY_PROVIDER_IDS", exposure: "server", required: false, kind: "identifier-list" },
   { key: "GEMINI_API_KEY", exposure: "server", requiredWhen: (env) => env.GEMINI_LIVE_ENABLED !== "false", kind: "secret" },
@@ -64,6 +67,10 @@ function validateValue(entry, value) {
   if (entry.kind === "percentage") {
     const percentage = Number(value);
     if (!Number.isInteger(percentage) || percentage < 0 || percentage > 100) return "invalid_percentage";
+  }
+  if (entry.kind === "positive-integer") {
+    const amount = Number(value);
+    if (!Number.isInteger(amount) || amount < 1 || amount > 10_000) return "invalid_positive_integer";
   }
   if (entry.kind === "identifier-list" && !value.split(",").every((item) => /^[a-z0-9][a-z0-9_-]{1,62}$/.test(item.trim()))) return "invalid_identifier_list";
   if (entry.kind === "commit-sha" && !commitPattern.test(value)) return "invalid_commit_sha";

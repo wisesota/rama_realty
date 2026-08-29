@@ -41,6 +41,8 @@ build-storybook.log
 # Playwright
 /playwright-report/
 /test-results/
+/artifacts/
+/results.sarif
 
 # Agent skills and customizations
 .agents/

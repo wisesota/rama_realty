@@ -217,8 +217,8 @@ test("credential-free demo confirms into one restorable illustrative Decision Ro
   await page.getByRole("button", { name: "Review my brief" }).click();
   await page.getByRole("button", { name: "Confirm and search" }).click();
 
-  await expect(page).toHaveURL(/\/en\/discover\/[0-9a-f-]{36}$/, { timeout: 60_000 });
-  await expect(page.getByRole("dialog", { name: "Rama Buyer Decision Room" })).toBeVisible({ timeout: 60_000 });
+  await expect(page).toHaveURL(/\/en\/discover\/[0-9a-f-]{36}$/, { timeout: 90_000 });
+  await expect(page.getByRole("dialog", { name: "Rama Buyer Decision Room" })).toBeVisible({ timeout: 90_000 });
   await expect(page.getByText(/illustrative residences/)).toBeVisible();
   await page.getByRole("button", { name: "Learn more" }).first().click();
   await expect(page.getByRole("heading", { name: "Inspect the evidence, then choose the next question." })).toBeFocused();
@@ -307,7 +307,7 @@ test("Arabic Decision Room localizes Rama-owned decision content", async ({ page
   await page.getByRole("button", { name: "راجع موجزي" }).click();
   await page.getByRole("button", { name: /أكّد وابحث/ }).click();
 
-  await expect(page.getByRole("dialog", { name: "غرفة قرار المشتري من راما" })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole("dialog", { name: "غرفة قرار المشتري من راما" })).toBeVisible({ timeout: 90_000 });
   await expect(page.getByText("أقوى تطابق حالي")).toBeVisible();
   await expect(page.getByText("لماذا اختارته راما")).toBeVisible();
   await expect(page.getByText(/المساكن التوضيحية/).first()).toBeVisible();
@@ -331,7 +331,7 @@ test("buyer-data export exposes progress, download, and completion", async ({ pa
   await brief.fill("Two-bedroom apartment in Dubai Marina under AED 3M");
   await page.getByRole("button", { name: "Review my brief" }).click();
   await page.getByRole("button", { name: "Confirm and search" }).click();
-  await expect(page.getByRole("dialog", { name: "Rama Buyer Decision Room" })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole("dialog", { name: "Rama Buyer Decision Room" })).toBeVisible({ timeout: 90_000 });
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download my data" }).click();

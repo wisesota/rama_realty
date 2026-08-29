@@ -10,6 +10,9 @@ const validEnvironment = {
   SUPABASE_SECRET_KEY: "sb_secret_test_value",
   RAMA_DEMO_MODE: "false",
   GEMINI_LIVE_ENABLED: "false",
+  GEMINI_LIVE_SESSION_RESUMPTION_ENABLED: "false",
+  GEMINI_LIVE_DAILY_SESSION_LIMIT: "500",
+  RAMA_OPERATIONAL_TELEMETRY_ENABLED: "false",
 };
 
 describe("environment contract", () => {
@@ -39,6 +42,33 @@ describe("environment contract", () => {
   it("requires Gemini only while voice is enabled", () => {
     expect(inspectEnvironment({ ...validEnvironment, GEMINI_LIVE_ENABLED: "true" }).invalidKeys)
       .toContain("GEMINI_API_KEY");
+  });
+
+  it("requires an explicit Live session-resumption privacy decision", () => {
+    const missing: Partial<typeof validEnvironment> = { ...validEnvironment };
+    delete missing.GEMINI_LIVE_SESSION_RESUMPTION_ENABLED;
+    expect(inspectEnvironment(missing).invalidKeys)
+      .toContain("GEMINI_LIVE_SESSION_RESUMPTION_ENABLED");
+    expect(inspectEnvironment({
+      ...validEnvironment,
+      GEMINI_LIVE_SESSION_RESUMPTION_ENABLED: "sometimes",
+    }).invalidKeys).toContain("GEMINI_LIVE_SESSION_RESUMPTION_ENABLED");
+  });
+
+  it("requires an explicit operational voice telemetry choice", () => {
+    const missing: Partial<typeof validEnvironment> = { ...validEnvironment };
+    delete missing.RAMA_OPERATIONAL_TELEMETRY_ENABLED;
+    expect(inspectEnvironment(missing).invalidKeys).toContain("RAMA_OPERATIONAL_TELEMETRY_ENABLED");
+    expect(inspectEnvironment({ ...validEnvironment, RAMA_OPERATIONAL_TELEMETRY_ENABLED: "sometimes" }).invalidKeys)
+      .toContain("RAMA_OPERATIONAL_TELEMETRY_ENABLED");
+  });
+
+  it("requires a bounded daily Gemini Live session budget", () => {
+    const missing: Partial<typeof validEnvironment> = { ...validEnvironment };
+    delete missing.GEMINI_LIVE_DAILY_SESSION_LIMIT;
+    expect(inspectEnvironment(missing).invalidKeys).toContain("GEMINI_LIVE_DAILY_SESSION_LIMIT");
+    expect(inspectEnvironment({ ...validEnvironment, GEMINI_LIVE_DAILY_SESSION_LIMIT: "10001" }).invalidKeys)
+      .toContain("GEMINI_LIVE_DAILY_SESSION_LIMIT");
   });
 
   it("validates optional rollout percentages without making them required", () => {

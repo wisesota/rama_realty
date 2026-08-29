@@ -35,7 +35,8 @@ describe("performance baseline harness", () => {
     const layout = readFileSync("app/layout.tsx", "utf8");
     const hero = readFileSync("components/rama/cinematic-hero-media.tsx", "utf8");
 
-    expect(layout.match(/display: "swap"/g)).toHaveLength(2);
+    expect(layout.match(/display: "swap"/g)).toHaveLength(1);
+    expect(layout.match(/display: "optional"/g)).toHaveLength(1);
     expect(layout.match(/weight: \["400", "500", "600", "700"\]/g)).toHaveLength(1);
     expect(layout.match(/preload: false/g)).toBeNull();
     expect(hero.match(/rel="preload"/g)).toHaveLength(2);

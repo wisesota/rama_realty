@@ -69,6 +69,7 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffStatus, setHandoffStatus] = useState("");
   const [handoffSubmitting, setHandoffSubmitting] = useState(false);
+  const [closing, setClosing] = useState(false);
   const selected = properties.find((property) => property.id === selectedId) ?? properties[0];
   const selectedIdRef = useRef(selected?.id ?? "");
   const restorationNotices = envelope.blocks.filter((block) => block.type === "recoverable_error");
@@ -102,7 +103,10 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
   }, [modal]);
 
   function closeModal() {
+    if (closing) return;
+    setClosing(true);
     sessionStorage.setItem("rama:decision-room-restore-focus", returnFocusSourceRef.current);
+    window.dispatchEvent(new Event("rama:restore-decision-focus"));
     router.back();
   }
 
@@ -188,6 +192,11 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
     emitProductEvent({ event: "room.tool_request", searchRunId: envelope.searchRunId, propertyId: publicPropertyId(selected), sourceVersion: sourceVersion(selected), tool: request[action].tool, timestamp: new Date().toISOString() });
     setLoadingTool(action);
     setToolStatus("");
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 12_000);
     try {
       const response = await fetch("/api/agent/tools", { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(request[action]), signal: controller.signal });
       const payload: unknown = await response.json();
@@ -196,10 +205,11 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
       setBlocks(payload.blocks);
       setToolStatus(locale === "ar" ? copy.toolReady : payload.summary);
     } catch (error) {
-      if (controller.signal.aborted || toolRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
+      if ((controller.signal.aborted && !timedOut) || toolRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
       setBlocks([]);
-      setToolStatus(locale === "ar" ? copy.factUnavailable : error instanceof Error ? error.message : copy.factUnavailable);
+      setToolStatus(timedOut || locale === "ar" ? copy.factUnavailable : error instanceof Error ? error.message : copy.factUnavailable);
     } finally {
+      clearTimeout(timeoutId);
       if (toolRequestRef.current?.id === requestId) {
         toolRequestRef.current = null;
         setLoadingTool(null);
@@ -347,7 +357,7 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
           <section className="decision-room__empty">
             <p className="eyebrow">{copy.briefPreserved}</p><h1>{copy.noExact}</h1>
             <p>{copy.noExactBody}</p>
-            <Button onPress={() => modal ? router.back() : router.push(`${localizedPath(locale)}#guided-search`)}>{copy.refine}</Button>
+            <Button onPress={() => modal ? closeModal() : router.push(`${localizedPath(locale)}#guided-search`)}>{copy.refine}</Button>
           </section>
         ) : (
           <>
@@ -467,6 +477,7 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
   );
 
   if (!modal) return <div className="decision-room-page">{room}</div>;
+  if (closing) return null;
   return (
     <ModalOverlay isOpen isDismissable onOpenChange={(open) => { if (!open) closeModal(); }} className="decision-room-overlay">
       <Modal className="decision-room-modal"><Dialog aria-label={copy.room} className="decision-room-dialog">{room}</Dialog></Modal>

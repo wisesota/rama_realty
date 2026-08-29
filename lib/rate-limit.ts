@@ -2,12 +2,14 @@ import { createHmac } from "node:crypto";
 
 export const rateLimitScopes = [
   "gemini-live-token",
+  "gemini-live-daily",
   "gemini-voice-turn",
   "agent-tool",
   "property-search",
   "prepare-brief",
   "decision-ledger",
   "buyer-deletion-verification",
+  "voice-telemetry",
 ] as const;
 
 export type RateLimitScope = (typeof rateLimitScopes)[number];

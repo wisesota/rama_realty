@@ -5,11 +5,19 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { AgentToolResponse } from "@/lib/agent/contracts";
 import type { PublicLocale } from "@/lib/i18n";
+import { elapsedBucket, emitProductEvent } from "@/lib/product-events";
 import { defaultGeminiVoiceName } from "@/lib/voice/gemini-live-contracts";
 import type {
   GeminiLiveVoiceSession,
+  GeminiVoiceStageMetric,
   GeminiVoiceStatus,
 } from "@/lib/voice/gemini-live-session";
+import {
+  requestMicrophoneStream,
+  stopMediaStream,
+  type MicrophoneStageMetric,
+} from "@/lib/voice/media-lifecycle";
+import { emitOperationalVoiceStage } from "@/lib/voice/operational-voice-telemetry";
 
 type ComposerPhase = "idle" | "requesting" | GeminiVoiceStatus | "complete" | "error";
 
@@ -30,10 +38,6 @@ const composerCopy = {
   },
 } as const;
 
-function stopStream(stream: MediaStream | null) {
-  stream?.getTracks().forEach((track) => track.stop());
-}
-
 export function DecisionRoomVoiceComposer({
   context,
   locale,
@@ -46,6 +50,8 @@ export function DecisionRoomVoiceComposer({
   const [error, setError] = useState("");
   const streamRef = useRef<MediaStream | null>(null);
   const sessionRef = useRef<GeminiLiveVoiceSession | null>(null);
+  const requestAbortRef = useRef<AbortController | null>(null);
+  const voiceAttemptIdRef = useRef(crypto.randomUUID());
   const onToolResultRef = useRef(onToolResult);
   const attemptRef = useRef(0);
 
@@ -58,14 +64,42 @@ export function DecisionRoomVoiceComposer({
       attemptRef.current += 1;
       const session = sessionRef.current;
       sessionRef.current = null;
-      stopStream(streamRef.current);
+      requestAbortRef.current?.abort();
+      requestAbortRef.current = null;
+      stopMediaStream(streamRef.current);
       streamRef.current = null;
       void session?.dispose();
     };
   }, []);
 
+  function emitVoiceStage(metric: MicrophoneStageMetric | GeminiVoiceStageMetric) {
+    const mode = metric.stage === "permission" || metric.stage === "microphone" ? "unknown" : "live";
+    emitProductEvent({
+      event: "voice.stage",
+      stage: metric.stage,
+      outcome: metric.outcome,
+      mode,
+      locale,
+      elapsed: elapsedBucket(metric.durationMs),
+      timestamp: new Date().toISOString(),
+    });
+    emitOperationalVoiceStage({
+      attemptId: voiceAttemptIdRef.current,
+      stage: metric.stage,
+      outcome: metric.outcome,
+      mode,
+      locale,
+      durationMs: metric.durationMs,
+      reconnectCount: "reconnectCount" in metric ? metric.reconnectCount ?? 0 : 0,
+    });
+  }
+
   async function start() {
     const attempt = ++attemptRef.current;
+    voiceAttemptIdRef.current = crypto.randomUUID();
+    requestAbortRef.current?.abort();
+    const requestController = new AbortController();
+    requestAbortRef.current = requestController;
     setPhase("requesting");
     setTranscript("");
     setAgentTranscript("");
@@ -79,17 +113,21 @@ export function DecisionRoomVoiceComposer({
       const previousSession = sessionRef.current;
       sessionRef.current = null;
       await previousSession?.dispose();
-      stopStream(streamRef.current);
+      stopMediaStream(streamRef.current);
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          autoGainControl: true,
-          echoCancellation: true,
-          noiseSuppression: true,
+      const stream = await requestMicrophoneStream({
+        signal: requestController.signal,
+        onMetric: emitVoiceStage,
+        constraints: {
+          audio: {
+            autoGainControl: true,
+            echoCancellation: true,
+            noiseSuppression: true,
+          },
         },
       });
       if (attempt !== attemptRef.current) {
-        stopStream(stream);
+        stopMediaStream(stream);
         return;
       }
       streamRef.current = stream;
@@ -115,21 +153,24 @@ export function DecisionRoomVoiceComposer({
         },
         onError: (message) => {
           if (attempt !== attemptRef.current) return;
-          stopStream(streamRef.current);
+          stopMediaStream(streamRef.current);
           streamRef.current = null;
           sessionRef.current = null;
+          requestAbortRef.current = null;
           setError(message);
           setPhase("error");
           void session.dispose();
         },
         onComplete: () => {
           if (attempt !== attemptRef.current) return;
-          stopStream(streamRef.current);
+          stopMediaStream(streamRef.current);
           streamRef.current = null;
           sessionRef.current = null;
+          requestAbortRef.current = null;
           setPhase("complete");
           void session.dispose();
         },
+        onMetric: emitVoiceStage,
       });
       sessionRef.current = session;
       await session.start(stream, defaultGeminiVoiceName, context);
@@ -140,9 +181,10 @@ export function DecisionRoomVoiceComposer({
       if (attempt !== attemptRef.current) return;
       const session = sessionRef.current;
       sessionRef.current = null;
-      stopStream(streamRef.current);
+      stopMediaStream(streamRef.current);
       streamRef.current = null;
       await session?.dispose();
+      if (requestAbortRef.current === requestController) requestAbortRef.current = null;
       setError(caught instanceof Error ? caught.message : copy.failed);
       setPhase("error");
     }
@@ -151,16 +193,18 @@ export function DecisionRoomVoiceComposer({
   async function stop() {
     if (["requesting", "connecting", "thinking", "speaking"].includes(phase)) {
       attemptRef.current += 1;
+      requestAbortRef.current?.abort();
+      requestAbortRef.current = null;
       const session = sessionRef.current;
       sessionRef.current = null;
-      stopStream(streamRef.current);
+      stopMediaStream(streamRef.current);
       streamRef.current = null;
       await session?.dispose();
       setPhase("idle");
       return;
     }
     setPhase("thinking");
-    stopStream(streamRef.current);
+    stopMediaStream(streamRef.current);
     streamRef.current = null;
     await sessionRef.current?.endInput();
   }
