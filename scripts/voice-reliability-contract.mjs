@@ -58,7 +58,9 @@ export function assessVoiceReliabilityEvidence(evidence, policy, now = new Date(
   }
 
   const allowedKinds = new Set(["live-provider", "fault-injection"]);
-  if (runs.some((run) => !run?.id || !allowedKinds.has(run.kind) || run.environment !== "staging")) blockers.push("run_shape_invalid");
+  if (runs.some((run) => typeof run?.id !== "string" || !run.id.trim() || !allowedKinds.has(run.kind) || run.environment !== "staging")) blockers.push("run_shape_invalid");
+  const runIds = runs.map((run) => run?.id);
+  if (new Set(runIds).size !== runIds.length) blockers.push("duplicate_run_ids");
   if (successfulLiveRuns.some((run) => timingFields.some((field) => !Number.isFinite(run?.stages?.[field]) || run.stages[field] < 0 || run.stages[field] > policy.hardMaximumStageMs))) {
     blockers.push("success_timing_invalid");
   }

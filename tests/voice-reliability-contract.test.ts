@@ -62,6 +62,14 @@ describe("voice reliability evidence contract", () => {
     expect(result.privacyFindings.some((path: string) => path.includes("transcript"))).toBe(true);
   });
 
+  it("rejects duplicate run IDs even when the row count reaches 100", () => {
+    const evidence = validEvidence();
+    for (const run of evidence.runs) run.id = "duplicate-run";
+    const result = assessVoiceReliabilityEvidence(evidence, policy, evaluationTime);
+    expect(result.ok).toBe(false);
+    expect(result.blockers).toContain("duplicate_run_ids");
+  });
+
   it("rejects latency, success-rate, and freshness claims outside the approved policy", () => {
     const evidence = validEvidence();
     evidence.generatedAt = "2026-08-20T22:00:00Z";
