@@ -2,6 +2,7 @@ import "server-only";
 
 import { posthogServer } from "@/lib/telemetry-server";
 import type { OperationalVoicePayload } from "@/lib/voice/operational-voice-contract";
+import { defaultGeminiLiveModel } from "@/lib/voice/gemini-live-contracts";
 
 type DurationBucket = "under_500ms" | "500_1500ms" | "1500_3000ms" | "over_3000ms";
 type ResultCountBucket = "0" | "1" | "2_5" | "6_plus";
@@ -51,7 +52,7 @@ export function operationalEventProperties(event: OperationalEvent) {
       release_commit: /^[a-f0-9]{40}$/.test(process.env.RAMA_RELEASE_COMMIT ?? "")
         ? process.env.RAMA_RELEASE_COMMIT
         : "unconfigured",
-      provider_model: process.env.GEMINI_VOICE_MODEL || "gemini-3.1-flash-live-preview",
+      provider_model: defaultGeminiLiveModel,
       provider_api_version: "v1alpha",
       $process_person_profile: false,
     };

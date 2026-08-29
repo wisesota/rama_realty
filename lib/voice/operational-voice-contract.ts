@@ -4,7 +4,7 @@ import {
 } from "@/lib/voice/operational-voice-schema.mjs";
 
 export { operationalVoicePayloadKeys, operationalVoiceStages };
-export type OperationalVoiceStage = "permission" | "token" | "socket" | "first_server_event" | "first_audio" | "tool" | "reconnect" | "fallback";
+export type OperationalVoiceStage = "permission" | "microphone" | "token" | "socket" | "first_server_event" | "first_audio" | "tool" | "reconnect" | "fallback";
 export type OperationalVoicePayload = {
   attemptId: string;
   stage: OperationalVoiceStage;

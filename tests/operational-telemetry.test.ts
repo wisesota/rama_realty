@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { operationalEventProperties } from "@/lib/operational-telemetry";
 import { parseOperationalVoicePayload } from "@/lib/voice/operational-voice-contract";
+import { defaultGeminiLiveModel } from "@/lib/voice/gemini-live-contracts";
 
 describe("operational telemetry envelopes", () => {
   it("buckets recorded-voice latency without buyer content or identifiers", () => {
@@ -58,9 +59,24 @@ describe("operational telemetry envelopes", () => {
       stage: "first_audio",
       duration_bucket: "1500_3000ms",
       release_commit: "a".repeat(40),
+      provider_model: defaultGeminiLiveModel,
       $process_person_profile: false,
     }));
     expect(JSON.stringify(properties)).not.toContain("transcript");
+  });
+
+  it("accepts bounded microphone acquisition metrics", () => {
+    expect(parseOperationalVoicePayload({
+      attemptId: "123e4567-e89b-42d3-a456-426614174000",
+      stage: "microphone",
+      outcome: "denied",
+      durationMs: 1_200,
+      mode: "unknown",
+      locale: "ar",
+      browserClass: "safari",
+      networkClass: "4g",
+      reconnectCount: 0,
+    })).toEqual(expect.objectContaining({ stage: "microphone", outcome: "denied" }));
   });
 
   it("rejects extra buyer-content fields and out-of-bounds timing", () => {

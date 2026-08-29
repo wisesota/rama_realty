@@ -1,7 +1,7 @@
 "use client";
 
 export type MicrophoneStageMetric = {
-  stage: "permission";
+  stage: "permission" | "microphone";
   durationMs: number;
   outcome: "success" | "denied" | "timeout" | "error";
 };
@@ -77,34 +77,39 @@ export async function requestMicrophoneStream({
   signal,
   timeoutMs = 12_000,
   getUserMedia = (value) => navigator.mediaDevices.getUserMedia(value),
+  onMetric,
 }: {
   constraints: MediaStreamConstraints;
   signal: AbortSignal;
   timeoutMs?: number;
   getUserMedia?: (constraints: MediaStreamConstraints) => Promise<MediaStream>;
+  onMetric?: (metric: MicrophoneStageMetric) => void;
 }) {
+  const startedAt = now();
   let expired = false;
+  let timedOut = false;
   let timeout: ReturnType<typeof setTimeout> | undefined;
   let rejectAttempt: ((reason: Error) => void) | undefined;
   const onAbort = () => {
     expired = true;
     rejectAttempt?.(abortError("Microphone request was cancelled."));
   };
-  const pendingStream = getUserMedia(constraints);
-
-  // getUserMedia has no AbortSignal. If the browser resolves after our attempt
-  // ended, immediately stop the late tracks instead of leaking the microphone.
-  void pendingStream.then((stream) => {
-    if (expired || signal.aborted) stopMediaStream(stream);
-  }).catch(() => undefined);
-
   try {
+    const pendingStream = getUserMedia(constraints);
+
+    // getUserMedia has no AbortSignal. If the browser resolves after our attempt
+    // ended, immediately stop the late tracks instead of leaking the microphone.
+    void pendingStream.then((stream) => {
+      if (expired || signal.aborted) stopMediaStream(stream);
+    }).catch(() => undefined);
+
     const stream = await Promise.race([
       pendingStream,
       new Promise<never>((_, reject) => {
         rejectAttempt = reject;
         timeout = setTimeout(() => {
           expired = true;
+          timedOut = true;
           reject(abortError("Microphone access timed out."));
         }, timeoutMs);
         signal.addEventListener("abort", onAbort, { once: true });
@@ -114,7 +119,16 @@ export async function requestMicrophoneStream({
       stopMediaStream(stream);
       throw abortError("Microphone request was cancelled.");
     }
+    onMetric?.({ stage: "microphone", durationMs: now() - startedAt, outcome: "success" });
     return stream;
+  } catch (error) {
+    const denied = error instanceof DOMException && ["NotAllowedError", "SecurityError"].includes(error.name);
+    onMetric?.({
+      stage: "microphone",
+      durationMs: now() - startedAt,
+      outcome: timedOut ? "timeout" : denied ? "denied" : "error",
+    });
+    throw error;
   } finally {
     if (timeout) clearTimeout(timeout);
     signal.removeEventListener("abort", onAbort);

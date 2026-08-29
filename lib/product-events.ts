@@ -9,7 +9,7 @@ export type ProductEvent =
     }
   | {
       event: "voice.stage";
-      stage: "permission" | "token" | "socket" | "first_server_event" | "first_audio" | "tool" | "reconnect";
+      stage: "permission" | "microphone" | "token" | "socket" | "first_server_event" | "first_audio" | "tool" | "reconnect";
       outcome: "success" | "denied" | "timeout" | "error";
       mode: "live" | "recorded" | "unknown";
       locale: "en" | "ar";
