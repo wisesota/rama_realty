@@ -15,6 +15,8 @@ describe("staging verification workflow", () => {
     expect(workflow).toContain("secrets.STAGING_SUPABASE_SECRET_KEY");
     expect(workflow).toContain("secrets.STAGING_RATE_LIMIT_SECRET");
     expect(workflow).toContain("secrets.STAGING_BUYER_SESSION_SECRET");
+    expect(workflow).toContain("secrets.STAGING_GEMINI_API_KEY");
+    expect(workflow).not.toContain("secrets.GEMINI_API_KEY");
     expect(workflow).toContain("pnpm verify:supabase-identities");
     expect(workflow).toContain("pnpm e2e:staging");
     expect(workflow).not.toMatch(/(^|\s)npm\s/m);
