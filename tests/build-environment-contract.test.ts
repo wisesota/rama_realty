@@ -1,4 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
@@ -7,6 +8,9 @@ const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
 const stagingWorkflow = readFileSync(".github/workflows/staging-verification.yml", "utf8");
 const imageBuilder = readFileSync("scripts/build-public-images.mjs", "utf8");
 const workspace = readFileSync("pnpm-workspace.yaml", "utf8");
+const canonicalLockfileSha256 = createHash("sha256")
+  .update(readFileSync("pnpm-lock.yaml", "utf8").replace(/\r\n/g, "\n"), "utf8")
+  .digest("hex");
 
 describe("build environment contract", () => {
   it("pins one Node and pnpm toolchain across package and version-manager files", () => {
@@ -65,6 +69,7 @@ describe("build environment contract", () => {
 
   it("keeps the lockfile syntax and package manifest readable", () => {
     expect(readFileSync("pnpm-lock.yaml", "utf8")).toMatch(/^lockfileVersion: '9\.0'/);
+    expect(canonicalLockfileSha256).toBe("fbe442ca3dbfcca30d14b64960a1628b9d242698e0ef62fda71ff3fc46364d46");
     expect(() => execFileSync(process.execPath, ["-e", "JSON.parse(require('fs').readFileSync('package.json','utf8'))"])).not.toThrow();
   });
 });

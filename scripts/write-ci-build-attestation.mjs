@@ -18,7 +18,8 @@ const outputPath = resolve(root, argumentValue("--output", "artifacts/ci-build-a
 const commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
 const status = execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim();
 const expectedCommit = process.env.RAMA_RELEASE_COMMIT?.trim() ?? "";
-const lockfileSha256 = createHash("sha256").update(readFileSync(resolve(root, "pnpm-lock.yaml"))).digest("hex");
+const lockfile = readFileSync(resolve(root, "pnpm-lock.yaml"), "utf8").replace(/\r\n/g, "\n");
+const lockfileSha256 = createHash("sha256").update(lockfile, "utf8").digest("hex");
 const pnpmCommand = pnpmInvocation(["--version"]);
 const pnpmVersion = execFileSync(pnpmCommand.command, pnpmCommand.args, { cwd: root, encoding: "utf8" }).trim();
 

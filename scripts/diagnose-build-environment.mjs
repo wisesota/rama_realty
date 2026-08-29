@@ -31,8 +31,9 @@ function runPnpm(args) {
   return run(invocation.command, invocation.args);
 }
 
-function sha256(path) {
-  return createHash("sha256").update(readFileSync(path)).digest("hex");
+function canonicalTextSha256(path) {
+  const content = readFileSync(path, "utf8").replace(/\r\n/g, "\n");
+  return createHash("sha256").update(content, "utf8").digest("hex");
 }
 
 function packageRoot(entryPath) {
@@ -67,7 +68,7 @@ const packageJsonPath = resolve(root, "package.json");
 const lockfilePath = resolve(root, "pnpm-lock.yaml");
 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
 const lockfile = readFileSync(lockfilePath, "utf8");
-const lockfileHash = sha256(lockfilePath);
+const lockfileHash = canonicalTextSha256(lockfilePath);
 const lockfileVersion = lockfile.match(/^lockfileVersion:\s*['\"]?([^'\"\r\n]+)['\"]?/m)?.[1] ?? null;
 
 let pnpmVersion = null;
