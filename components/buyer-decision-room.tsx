@@ -192,6 +192,11 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
     emitProductEvent({ event: "room.tool_request", searchRunId: envelope.searchRunId, propertyId: publicPropertyId(selected), sourceVersion: sourceVersion(selected), tool: request[action].tool, timestamp: new Date().toISOString() });
     setLoadingTool(action);
     setToolStatus("");
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 12_000);
     try {
       const response = await fetch("/api/agent/tools", { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(request[action]), signal: controller.signal });
       const payload: unknown = await response.json();
@@ -200,10 +205,11 @@ export function BuyerDecisionRoom({ envelope, modal = false, locale = "en" }: { 
       setBlocks(payload.blocks);
       setToolStatus(locale === "ar" ? copy.toolReady : payload.summary);
     } catch (error) {
-      if (controller.signal.aborted || toolRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
+      if ((controller.signal.aborted && !timedOut) || toolRequestRef.current?.id !== requestId || selectedIdRef.current !== propertyId) return;
       setBlocks([]);
-      setToolStatus(locale === "ar" ? copy.factUnavailable : error instanceof Error ? error.message : copy.factUnavailable);
+      setToolStatus(timedOut || locale === "ar" ? copy.factUnavailable : error instanceof Error ? error.message : copy.factUnavailable);
     } finally {
+      clearTimeout(timeoutId);
       if (toolRequestRef.current?.id === requestId) {
         toolRequestRef.current = null;
         setLoadingTool(null);

@@ -133,4 +133,36 @@ describe("landing shortlist state", () => {
     expect(store.getState().preparedBrief?.transcript).toBe("Quiet home in Dubai");
     expect(store.getState().briefRecalculating).toBe(false);
   });
+
+  it("bounds confirmed discovery through response body parsing", async () => {
+    vi.useFakeTimers();
+    const prepared = new Response(JSON.stringify({
+      schemaVersion: "1",
+      draftId: "draft-timeout",
+      source: "text",
+      transcript: "Home in Dubai Marina",
+      criteria: [{ key: "location", label: "Dubai Marina", value: "Dubai Marina", kind: "hard" }],
+      missingFields: [],
+      contradictions: [],
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(prepared)
+      .mockImplementationOnce((_input: RequestInfo | URL, init?: RequestInit) => (
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+        })
+      ));
+    vi.stubGlobal("fetch", fetchMock);
+    const store = createLandingStore("en");
+    await store.getState().prepareBrief("Home in Dubai Marina", "text", "draft-timeout");
+
+    const confirmation = store.getState().confirmPreparedBrief();
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    await expect(confirmation).resolves.toBeNull();
+    expect(store.getState()).toMatchObject({
+      searchPhase: "error",
+      searchError: "Opening the Decision Room took too long. Please try again.",
+    });
+  });
 });

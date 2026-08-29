@@ -121,6 +121,7 @@ export function createLandingStore(locale: PublicLocale = "en") {
   let preparationTimer: ReturnType<typeof setTimeout> | null = null;
   let queuedPreparationResolve: (() => void) | null = null;
   let confirmationPromise: Promise<string | null> | null = null;
+  let confirmationController: AbortController | null = null;
   const favoriteMutations = new Map<string, number>();
   const searchCopy = locale === "ar" ? {
     governedReady: (count: number) => `${count} ${count === 1 ? "مسكن منضبط جاهز" : "مساكن منضبطة جاهزة"} في غرفة القرار.`,
@@ -131,6 +132,7 @@ export function createLandingStore(locale: PublicLocale = "en") {
     cancelled: "أُلغيت مراجعة الموجز. لم يتم حفظ أي شيء.",
     opening: "جارٍ حفظ الموجز المؤكد وفتح غرفة القرار…",
     discoveryFailed: "البحث عن العقارات غير متاح مؤقتاً.",
+    discoveryTimedOut: "استغرق فتح غرفة القرار وقتاً طويلاً. حاول مرة أخرى.",
     invalidResponse: "أعاد البحث عن العقارات استجابة غير صالحة.",
     retry: "يبقى موجزك المؤكد متاحاً لإعادة المحاولة.",
   } : {
@@ -142,6 +144,7 @@ export function createLandingStore(locale: PublicLocale = "en") {
     cancelled: "Brief review cancelled. Nothing was saved.",
     opening: "Saving the confirmed brief and opening the Decision Room…",
     discoveryFailed: "Property search is unavailable.",
+    discoveryTimedOut: "Opening the Decision Room took too long. Please try again.",
     invalidResponse: "Property search returned an invalid response.",
     retry: "Your confirmed draft remains available to retry.",
   };
@@ -336,6 +339,8 @@ export function createLandingStore(locale: PublicLocale = "en") {
       queuedPreparationResolve = null;
       preparationController?.abort();
       preparationController = null;
+      confirmationController?.abort();
+      confirmationController = null;
       confirmationPromise = null;
       set({ preparedBrief: null, briefRecalculating: false, searchPhase: "idle", searchError: null, searchStatus: searchCopy.cancelled });
     },
@@ -346,12 +351,20 @@ export function createLandingStore(locale: PublicLocale = "en") {
       if (!draft) return null;
       confirmationPromise = (async () => {
         const searchId = ++activeSearch;
+        const controller = new AbortController();
+        confirmationController = controller;
+        let timedOut = false;
+        const timeoutId = setTimeout(() => {
+          timedOut = true;
+          controller.abort();
+        }, 30_000);
         set({ searchPhase: "loading", searchError: null, searchStatus: searchCopy.opening });
         try {
           const response = await fetch("/api/discovery/query", {
             method: "POST",
             headers: { Accept: "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({ brief: draft.transcript, source: draft.source, idempotencyKey: draft.draftId, locale }),
+            signal: controller.signal,
           });
           const payload: unknown = await response.json();
           if (!response.ok) {
@@ -364,10 +377,15 @@ export function createLandingStore(locale: PublicLocale = "en") {
           return payload.searchRunId;
         } catch (error) {
           if (searchId !== activeSearch) return null;
-          const message = error instanceof Error ? error.message : searchCopy.discoveryFailed;
+          if (controller.signal.aborted && !timedOut) return null;
+          const message = timedOut
+            ? searchCopy.discoveryTimedOut
+            : error instanceof Error ? error.message : searchCopy.discoveryFailed;
           set({ searchPhase: "error", searchError: message, searchStatus: `${message} ${searchCopy.retry}` });
           return null;
         } finally {
+          clearTimeout(timeoutId);
+          if (confirmationController === controller) confirmationController = null;
           confirmationPromise = null;
         }
       })();

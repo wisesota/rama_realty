@@ -366,6 +366,7 @@ export function LandingPage({
       recordedTurnAbort.current = controller;
       const timeoutId = setTimeout(() => controller.abort(), 35_000);
       let response: Response;
+      let payload: unknown;
       try {
         response = await fetch("/api/voice/turn", {
           method: "POST",
@@ -374,12 +375,12 @@ export function LandingPage({
           signal: controller.signal,
           cache: "no-store",
         });
+        payload = await response.json();
       } finally {
         clearTimeout(timeoutId);
         if (recordedTurnAbort.current === controller) recordedTurnAbort.current = null;
       }
 
-      const payload: unknown = await response.json();
       if (!response.ok) {
         const message = (payload as Partial<GeminiRecordedVoiceError>).error;
         throw new Error(message || voiceCopy.errors.couldNotUnderstand);
@@ -554,6 +555,7 @@ export function LandingPage({
 
       const stream = await requestMicrophoneStream({
         signal: attemptController.signal,
+        onMetric: emitVoiceStage,
         constraints: {
           audio: {
             channelCount: 1,
