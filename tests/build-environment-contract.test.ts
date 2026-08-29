@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
 const stagingWorkflow = readFileSync(".github/workflows/staging-verification.yml", "utf8");
+const imageBuilder = readFileSync("scripts/build-public-images.mjs", "utf8");
 const workspace = readFileSync("pnpm-workspace.yaml", "utf8");
 
 describe("build environment contract", () => {
@@ -39,6 +40,13 @@ describe("build environment contract", () => {
       expect(source).not.toMatch(/^ {6}[A-Z_]+:\s*\$\{\{\s*runner\./m);
       expect(source).toMatch(/RAMA_PNPM_STORE_DIR=\$RUNNER_TEMP\/rama-/);
     }
+  });
+
+  it("attests the checked-out PR head SHA and keeps generated asset metadata deterministic", () => {
+    expect(workflow).toContain("github.event.pull_request.head.sha");
+    expect(workflow).toContain("ref: ${{ env.RAMA_RELEASE_COMMIT }}");
+    expect(workflow).toContain("ci-build-attestation-${{ env.RAMA_RELEASE_COMMIT }}");
+    expect(imageBuilder).not.toContain("rights.updatedAt = new Date().toISOString()");
   });
 
   it("refuses to generate an authoritative build attestation locally", () => {
