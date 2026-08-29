@@ -115,33 +115,3 @@ export async function consumeApiRateLimit(options: {
     );
   }
 }
-
-export async function releaseApiRateLimit(options: {
-  request: Request;
-  scope: RateLimitScope;
-  resetAt: string;
-  bucket?: "request" | "global";
-}) {
-  const bucketKey = rateLimitBucketKey(options);
-  const memoryKey = `${options.scope}:${bucketKey}`;
-
-  try {
-    const supabase = createAdminClient();
-    const { data, error } = await supabase.rpc("release_api_rate_limit", {
-      p_scope: options.scope,
-      p_bucket_key: bucketKey,
-      p_reset_at: options.resetAt,
-    });
-    if (error || typeof data !== "boolean") throw new RateLimitBackendUnavailableError();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV === "production") {
-      if (error instanceof RateLimitBackendUnavailableError) throw error;
-      throw new RateLimitBackendUnavailableError();
-    }
-    const bucket = developmentBuckets.get(memoryKey);
-    if (!bucket || new Date(options.resetAt).getTime() !== bucket.resetAt || bucket.count <= 0) return false;
-    bucket.count -= 1;
-    return true;
-  }
-}

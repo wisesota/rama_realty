@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
+const attestationJob = workflow.slice(workflow.indexOf("\n  attestation:"));
 const stagingWorkflow = readFileSync(".github/workflows/staging-verification.yml", "utf8");
 const imageBuilder = readFileSync("scripts/build-public-images.mjs", "utf8");
 const workspace = readFileSync("pnpm-workspace.yaml", "utf8");
@@ -51,10 +52,10 @@ describe("build environment contract", () => {
     expect(workflow).toContain("github.event.pull_request.head.sha");
     expect(workflow.match(/ref: \$\{\{ env\.RAMA_RELEASE_COMMIT \}\}/g)).toHaveLength(3);
     expect(workflow).toContain("ci-build-attestation-${{ env.RAMA_RELEASE_COMMIT }}");
-    expect(workflow).toMatch(/attestation:\s*\n\s+needs: \[dependency-integrity, quality\]/);
-    expect(workflow).toContain("if: github.event_name == 'push' && github.ref == 'refs/heads/main'");
-    expect(workflow).toContain("GITHUB_TOKEN: ${{ github.token }}");
-    expect(workflow).toContain("node scripts/write-ci-build-attestation.mjs --output artifacts/ci-build-attestation.json");
+    expect(attestationJob).toMatch(/attestation:\s*\n\s+needs: \[dependency-integrity, quality\]/);
+    expect(attestationJob).toContain("if: github.event_name == 'push' && github.ref == 'refs/heads/main'");
+    expect(attestationJob).toContain("GITHUB_TOKEN: ${{ github.token }}");
+    expect(attestationJob).toContain("node scripts/write-ci-build-attestation.mjs --output artifacts/ci-build-attestation.json");
     expect(workflow).toMatch(/permissions:\s*\n\s+actions: read\s*\n\s+contents: read/);
     expect(readFileSync("scripts/write-ci-build-attestation.mjs", "utf8")).toContain("authenticated success evidence");
     expect(readFileSync("scripts/write-ci-build-attestation.mjs", "utf8")).toContain("protected main-branch push");

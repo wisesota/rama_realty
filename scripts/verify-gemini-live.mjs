@@ -7,6 +7,10 @@ import {
 } from "@google/genai";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import {
+  assertCompleteLiveTurn,
+  isCompleteLiveTokenPayload,
+} from "./gemini-live-verification-contract.mjs";
 
 const geminiLiveTools = JSON.parse(
   readFileSync(new URL("../lib/agent/gemini-live-tools.json", import.meta.url), "utf8"),
@@ -94,7 +98,7 @@ async function verifyTurn(runIndex) {
   const payload = tokenResult.payload;
   stages.tokenComplete = Math.round(performance.now() - startedAt);
   stages.tokenDurationMs = tokenResult.durationMs;
-  if (!tokenResult.response.ok || typeof payload.token !== "string" || typeof payload.model !== "string") {
+  if (!tokenResult.response.ok || !isCompleteLiveTokenPayload(payload)) {
     throw new Error(
       typeof payload.error === "string"
         ? payload.error
@@ -254,18 +258,16 @@ async function verifyTurn(runIndex) {
     session.close();
   }
 
-  if (!generationComplete || audioChunks === 0 || !inputTranscript.trim() || !outputTranscript.trim() || toolCalls === 0 || toolResponses !== toolCalls) {
-    throw new Error(`Gemini Live run ${runIndex + 1} completed without the full contract: ${JSON.stringify({
-      inputTranscript: Boolean(inputTranscript.trim()),
-      outputTranscript: Boolean(outputTranscript.trim()),
-      nativeAudioChunks: audioChunks,
-      toolCalls,
-      toolResponses,
-      generationComplete,
-      liveTurnComplete: turnComplete,
-      stages,
-    })}`);
-  }
+  assertCompleteLiveTurn({
+    audioChunks,
+    inputTranscript,
+    outputTranscript,
+    toolCalls,
+    toolResponses,
+    generationComplete,
+    turnComplete,
+    stages,
+  }, runIndex);
 
   return {
     run: runIndex + 1,
