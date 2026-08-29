@@ -57,6 +57,7 @@ export type GeminiLiveSessionOptions = {
   firstResponseTimeoutMs?: number;
   firstAudioTimeoutMs?: number;
   toolTimeoutMs?: number;
+  audioActivationTimeoutMs?: number;
   createClient?: (token: string) => GeminiLiveClient;
 };
 
@@ -66,6 +67,7 @@ const defaultSessionOptions = {
   firstResponseTimeoutMs: 15_000,
   firstAudioTimeoutMs: 20_000,
   toolTimeoutMs: 12_000,
+  audioActivationTimeoutMs: 8_000,
 } as const;
 
 function monotonicNow() {
@@ -76,6 +78,20 @@ function durationToMilliseconds(value: string | undefined) {
   if (!value) return 0;
   const match = value.match(/^([0-9]+(?:\.[0-9]+)?)s$/);
   return match ? Number(match[1]) * 1_000 : 0;
+}
+
+async function withDeadline<T>(promise: Promise<T>, timeoutMs: number, message: string) {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(new Error(message)), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
 }
 
 function isTokenResponse(value: unknown): value is GeminiLiveTokenResponse {
@@ -127,9 +143,18 @@ class PcmAudioPlayer {
   private nextStartTime = 0;
   private sources = new Set<AudioBufferSourceNode>();
 
-  async prepare() {
+  async prepare(timeoutMs: number) {
     if (!this.context) this.context = new AudioContext({ sampleRate: 24_000 });
-    if (this.context.state === "suspended") await this.context.resume();
+    const context = this.context;
+    try {
+      if (context.state === "suspended") {
+        await withDeadline(context.resume(), timeoutMs, "Audio output activation took too long.");
+      }
+    } catch (error) {
+      if (this.context === context) this.context = null;
+      if (context.state !== "closed") void context.close().catch(() => undefined);
+      throw error;
+    }
   }
 
   enqueue(base64Audio: string) {
@@ -228,7 +253,7 @@ export class GeminiLiveVoiceSession {
     this.startedAt = monotonicNow();
     this.inputStream = stream;
     this.callbacks.onStatus("connecting");
-    await this.player.prepare();
+    await this.player.prepare(this.options.audioActivationTimeoutMs);
     this.assertActive();
 
     const controller = new AbortController();
@@ -377,10 +402,6 @@ export class GeminiLiveVoiceSession {
       callbacks: {
         onmessage: (message) => {
           if (generation !== this.connectionGeneration) return;
-          if (this.inputEnded && !this.firstServerEventSeen) {
-            this.firstServerEventSeen = true;
-            this.metric("first_server_event", this.turnStartedAt, "success");
-          }
           this.handleMessage(message);
         },
         onerror: (event) => {
@@ -406,7 +427,6 @@ export class GeminiLiveVoiceSession {
         throw new Error("Gemini Live connection was superseded.");
       }
       configured = true;
-      this.reconnectAttempts = 0;
       this.session = session;
       this.metric("socket", connectStartedAt, "success");
     } catch (error) {
@@ -469,10 +489,26 @@ export class GeminiLiveVoiceSession {
     this.assertActive();
     const context = new AudioContext();
     this.inputContext = context;
-    await context.audioWorklet.addModule("/audio/pcm-processor.js");
-    this.assertActive();
-    if (context.state === "suspended") await context.resume();
-    this.assertActive();
+    try {
+      await withDeadline(
+        context.audioWorklet.addModule("/audio/pcm-processor.js"),
+        this.options.audioActivationTimeoutMs,
+        "Microphone audio processing took too long to initialize.",
+      );
+      this.assertActive();
+      if (context.state === "suspended") {
+        await withDeadline(
+          context.resume(),
+          this.options.audioActivationTimeoutMs,
+          "Microphone audio activation took too long.",
+        );
+      }
+      this.assertActive();
+    } catch (error) {
+      if (this.inputContext === context) this.inputContext = null;
+      if (context.state !== "closed") void context.close().catch(() => undefined);
+      throw error;
+    }
 
     this.inputSource = context.createMediaStreamSource(stream);
     this.inputWorklet = new AudioWorkletNode(context, "rama-pcm-processor", {
@@ -515,6 +551,10 @@ export class GeminiLiveVoiceSession {
 
   private handleMessage(message: LiveServerMessage) {
     const isTurnEvent = Boolean(message.serverContent || message.toolCall);
+    if (isTurnEvent && this.inputEnded && !this.firstServerEventSeen) {
+      this.firstServerEventSeen = true;
+      this.metric("first_server_event", this.turnStartedAt, "success");
+    }
     if (isTurnEvent && this.responseTimer) {
       clearTimeout(this.responseTimer);
       this.responseTimer = null;

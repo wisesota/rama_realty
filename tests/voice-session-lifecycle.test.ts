@@ -226,6 +226,123 @@ describe("voice session lifecycle", () => {
     expect(close).toHaveBeenCalledOnce();
   });
 
+  it("counts successful reconnects across the session and fails after the second recovery", async () => {
+    const close = vi.fn();
+    const connect = vi.fn().mockResolvedValue({ close });
+    const handlers = callbacks();
+    const session = new GeminiLiveVoiceSession(handlers, {
+      createClient: () => ({ live: { connect } } as never),
+    });
+    const internals = session as unknown as {
+      token: string;
+      model: string;
+      voiceName: "Kore";
+      resumptionHandle: string;
+      reconnectAttempts: number;
+      session: { close: () => void } | null;
+      resumeOrFail: (message: string) => Promise<void>;
+    };
+    internals.token = "ephemeral-token";
+    internals.model = "gemini-live-test";
+    internals.voiceName = "Kore";
+    internals.resumptionHandle = "resume-handle";
+    internals.session = { close };
+
+    await internals.resumeOrFail("closed once");
+    expect(internals.reconnectAttempts).toBe(1);
+    await internals.resumeOrFail("closed twice");
+    expect(internals.reconnectAttempts).toBe(2);
+    await internals.resumeOrFail("closed three times");
+
+    expect(connect).toHaveBeenCalledTimes(2);
+    expect(handlers.onMetric).toHaveBeenCalledWith(expect.objectContaining({
+      stage: "reconnect",
+      outcome: "success",
+      reconnectCount: 2,
+    }));
+    expect(handlers.onError).toHaveBeenCalledWith("closed three times");
+  });
+
+  it("records the first server event only for actionable turn content", async () => {
+    let onmessage!: (message: unknown) => void;
+    const close = vi.fn();
+    const connect = vi.fn((parameters: { callbacks: { onmessage: (message: unknown) => void } }) => {
+      onmessage = parameters.callbacks.onmessage;
+      return Promise.resolve({ close });
+    });
+    const handlers = callbacks();
+    const session = new GeminiLiveVoiceSession(handlers, {
+      createClient: () => ({ live: { connect } } as never),
+    });
+    const internals = session as unknown as {
+      token: string;
+      model: string;
+      voiceName: "Kore";
+      inputEnded: boolean;
+      turnStartedAt: number;
+      connectSession: () => Promise<void>;
+    };
+    internals.token = "ephemeral-token";
+    internals.model = "gemini-live-test";
+    internals.voiceName = "Kore";
+    internals.inputEnded = true;
+    internals.turnStartedAt = performance.now();
+    await internals.connectSession();
+
+    onmessage({ sessionResumptionUpdate: { resumable: true, newHandle: "handle" } });
+    expect(handlers.onMetric).not.toHaveBeenCalledWith(expect.objectContaining({ stage: "first_server_event" }));
+
+    onmessage({ serverContent: {} });
+    expect(handlers.onMetric).toHaveBeenCalledWith(expect.objectContaining({
+      stage: "first_server_event",
+      outcome: "success",
+    }));
+    await session.dispose();
+  });
+
+  it("bounds output audio activation when AudioContext.resume stalls", async () => {
+    vi.useFakeTimers();
+    const close = vi.fn().mockResolvedValue(undefined);
+    class SuspendedAudioContext extends FakeAudioContext {
+      state: AudioContextState = "suspended";
+      resume = vi.fn(() => new Promise<void>(() => undefined));
+      close = close;
+    }
+    vi.stubGlobal("AudioContext", SuspendedAudioContext);
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const session = new GeminiLiveVoiceSession(callbacks(), { audioActivationTimeoutMs: 25 });
+
+    const start = session.start({} as MediaStream, "Kore");
+    const rejectedStart = expect(start).rejects.toThrow("Audio output activation took too long.");
+    await vi.advanceTimersByTimeAsync(25);
+    await rejectedStart;
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it("bounds microphone worklet loading and closes the late audio context", async () => {
+    vi.useFakeTimers();
+    const close = vi.fn().mockResolvedValue(undefined);
+    class StalledWorkletAudioContext extends FakeAudioContext {
+      audioWorklet = { addModule: vi.fn(() => new Promise<void>(() => undefined)) };
+      close = close;
+    }
+    vi.stubGlobal("AudioContext", StalledWorkletAudioContext);
+    const session = new GeminiLiveVoiceSession(callbacks(), { audioActivationTimeoutMs: 25 });
+    const internals = session as unknown as {
+      startAudioCapture: (stream: MediaStream) => Promise<void>;
+    };
+
+    const capture = internals.startAudioCapture({} as MediaStream);
+    const rejectedCapture = expect(capture).rejects.toThrow("Microphone audio processing took too long to initialize.");
+    await vi.advanceTimersByTimeAsync(25);
+    await rejectedCapture;
+
+    expect(close).toHaveBeenCalledOnce();
+  });
+
   it("cannot resume recorded capture after disposal wins an audio-worklet race", async () => {
     let releaseModule!: () => void;
     const moduleReady = new Promise<void>((resolve) => {
