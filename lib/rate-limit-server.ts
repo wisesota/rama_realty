@@ -4,7 +4,7 @@ import { createHmac } from "node:crypto";
 import { buildRateLimitBucketKey, type RateLimitScope } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-type RateLimitResult = {
+export type RateLimitResult = {
   allowed: boolean;
   remaining: number;
   resetAt: string;
@@ -27,6 +27,23 @@ export class RateLimitBackendUnavailableError extends Error {
 
 function getRateLimitSecret() {
   return process.env.RATE_LIMIT_SECRET || "";
+}
+
+function rateLimitBucketKey({
+  request,
+  scope,
+  bucket,
+}: {
+  request: Request;
+  scope: RateLimitScope;
+  bucket?: "request" | "global";
+}) {
+  const secret = getRateLimitSecret();
+  return secret
+    ? bucket === "global"
+      ? createHmac("sha256", secret).update(`${scope}\nglobal`).digest("hex")
+      : buildRateLimitBucketKey(request, scope, secret)
+    : "anonymous";
 }
 
 function consumeDevelopmentBucket(
@@ -57,12 +74,7 @@ export async function consumeApiRateLimit(options: {
   windowMs: number;
   bucket?: "request" | "global";
 }): Promise<RateLimitResult> {
-  const secret = getRateLimitSecret();
-  const bucketKey = secret
-    ? options.bucket === "global"
-      ? createHmac("sha256", secret).update(`${options.scope}\nglobal`).digest("hex")
-      : buildRateLimitBucketKey(options.request, options.scope, secret)
-    : "anonymous";
+  const bucketKey = rateLimitBucketKey(options);
   const memoryKey = `${options.scope}:${bucketKey}`;
 
   try {
@@ -101,5 +113,35 @@ export async function consumeApiRateLimit(options: {
       options.maximumRequests,
       options.windowMs,
     );
+  }
+}
+
+export async function releaseApiRateLimit(options: {
+  request: Request;
+  scope: RateLimitScope;
+  resetAt: string;
+  bucket?: "request" | "global";
+}) {
+  const bucketKey = rateLimitBucketKey(options);
+  const memoryKey = `${options.scope}:${bucketKey}`;
+
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.rpc("release_api_rate_limit", {
+      p_scope: options.scope,
+      p_bucket_key: bucketKey,
+      p_reset_at: options.resetAt,
+    });
+    if (error || typeof data !== "boolean") throw new RateLimitBackendUnavailableError();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      if (error instanceof RateLimitBackendUnavailableError) throw error;
+      throw new RateLimitBackendUnavailableError();
+    }
+    const bucket = developmentBuckets.get(memoryKey);
+    if (!bucket || new Date(options.resetAt).getTime() !== bucket.resetAt || bucket.count <= 0) return false;
+    bucket.count -= 1;
+    return true;
   }
 }

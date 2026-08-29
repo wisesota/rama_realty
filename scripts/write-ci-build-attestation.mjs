@@ -23,6 +23,9 @@ if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository) || !/^\d+$/.test(runI
 if (process.env.GITHUB_WORKFLOW !== "CI" || process.env.GITHUB_JOB !== "attestation") {
   throw new Error("CI attestation refused outside the dedicated attestation job.");
 }
+if (process.env.GITHUB_EVENT_NAME !== "push" || process.env.GITHUB_REF !== "refs/heads/main") {
+  throw new Error("CI attestation refused outside a protected main-branch push.");
+}
 
 const jobsResponse = await fetch(`${apiUrl}/repos/${repository}/actions/runs/${runId}/jobs?filter=latest&per_page=100`, {
   headers: {

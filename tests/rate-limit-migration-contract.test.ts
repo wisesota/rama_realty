@@ -15,6 +15,9 @@ describe("shared limiter migration contract", () => {
     expect(migration).toContain("p_max_requests > 10000");
     expect(migration).toContain("revoke all on function public.consume_api_rate_limit");
     expect(migration).toContain("grant execute on function public.consume_api_rate_limit");
+    expect(migration).toContain("release_api_rate_limit");
+    expect(migration).toContain("and expires_at = p_reset_at");
+    expect(migration).toContain("grant execute on function public.release_api_rate_limit");
     expect(migration).toContain("to service_role");
   });
 

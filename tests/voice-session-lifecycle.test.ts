@@ -341,6 +341,7 @@ describe("voice session lifecycle", () => {
     const session = new GeminiLiveVoiceSession(handlers);
     const internals = session as unknown as {
       inputEnded: boolean;
+      firstAudioSeen: boolean;
       resumptionHandle: string;
       goAwayTimer: ReturnType<typeof setTimeout> | null;
       session: { close: () => void } | null;
@@ -350,6 +351,7 @@ describe("voice session lifecycle", () => {
       }) => void;
     };
     internals.inputEnded = true;
+    internals.firstAudioSeen = true;
     internals.resumptionHandle = "resume-handle";
     internals.session = { close };
 
@@ -360,6 +362,27 @@ describe("voice session lifecycle", () => {
     expect(internals.goAwayTimer).toBeNull();
     expect(close).toHaveBeenCalledOnce();
     expect(handlers.onComplete).toHaveBeenCalledOnce();
+  });
+
+  it("fails a completed input turn that returns no audio", async () => {
+    const close = vi.fn();
+    const handlers = callbacks();
+    const session = new GeminiLiveVoiceSession(handlers);
+    const internals = session as unknown as {
+      inputEnded: boolean;
+      firstAudioSeen: boolean;
+      session: { close: () => void } | null;
+      handleMessage: (message: { serverContent: { turnComplete: boolean } }) => void;
+    };
+    internals.inputEnded = true;
+    internals.firstAudioSeen = false;
+    internals.session = { close };
+
+    internals.handleMessage({ serverContent: { turnComplete: true } });
+
+    expect(handlers.onError).toHaveBeenCalledWith("Gemini Live completed the turn without returning audio.");
+    expect(handlers.onComplete).not.toHaveBeenCalled();
+    await vi.waitFor(() => expect(close).toHaveBeenCalledOnce());
   });
 
   it("bounds output audio activation when AudioContext.resume stalls", async () => {

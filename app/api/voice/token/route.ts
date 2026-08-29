@@ -16,7 +16,9 @@ import {
 import { geminiLiveSessionResumptionEnabled } from "@/lib/voice/gemini-live-policy";
 import {
   consumeApiRateLimit,
+  releaseApiRateLimit,
   RateLimitBackendUnavailableError,
+  type RateLimitResult,
 } from "@/lib/rate-limit-server";
 import { geminiLiveTools } from "@/lib/agent/contracts";
 import { isSameOrigin } from "@/lib/supabase/auth";
@@ -63,6 +65,23 @@ function jsonError(error: string, status: number) {
     status,
     headers: { "Cache-Control": "no-store" },
   });
+}
+
+async function releaseDailyReservation(request: Request, reservation: RateLimitResult | null) {
+  if (!reservation?.allowed) return;
+  try {
+    await releaseApiRateLimit({
+      request,
+      scope: "gemini-live-daily",
+      resetAt: reservation.resetAt,
+      bucket: "global",
+    });
+  } catch (error) {
+    console.error(
+      "Gemini daily-capacity reservation release failed:",
+      error instanceof Error ? error.message : "UnknownError",
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -115,6 +134,25 @@ export async function POST(request: Request) {
     const newSessionExpiresAt = new Date(Date.now() + 60_000).toISOString();
     const sessionResumptionEnabled = geminiLiveSessionResumptionEnabled();
 
+    let dailyReservation: RateLimitResult | null = null;
+    try {
+      dailyReservation = await consumeApiRateLimit({
+        request,
+        scope: "gemini-live-daily",
+        maximumRequests: dailySessionLimit(),
+        windowMs: dailyWindowMs,
+        bucket: "global",
+      });
+      if (!dailyReservation.allowed) {
+        return jsonError("Live voice has reached its daily capacity; switching to recorded voice mode.", 503);
+      }
+    } catch (error) {
+      if (error instanceof RateLimitBackendUnavailableError) {
+        return jsonError("Voice sessions are temporarily unavailable.", 503);
+      }
+      throw error;
+    }
+
     try {
       const client = new GoogleGenAI({
         apiKey,
@@ -155,27 +193,9 @@ export async function POST(request: Request) {
         },
       });
 
-      if (!authToken.name) return jsonError("Gemini did not issue a voice-session token.", 502);
-
-      // Count only tokens that were actually issued. The shared limiter remains
-      // atomic, so concurrent requests cannot deliver more than the daily cap;
-      // tokens created after the cap is reached are discarded and never exposed.
-      try {
-        const dailyBudget = await consumeApiRateLimit({
-          request,
-          scope: "gemini-live-daily",
-          maximumRequests: dailySessionLimit(),
-          windowMs: dailyWindowMs,
-          bucket: "global",
-        });
-        if (!dailyBudget.allowed) {
-          return jsonError("Live voice has reached its daily capacity; switching to recorded voice mode.", 503);
-        }
-      } catch (error) {
-        if (error instanceof RateLimitBackendUnavailableError) {
-          return jsonError("Voice sessions are temporarily unavailable.", 503);
-        }
-        throw error;
+      if (!authToken.name) {
+        await releaseDailyReservation(request, dailyReservation);
+        return jsonError("Gemini did not issue a voice-session token.", 502);
       }
 
       return Response.json(
@@ -193,6 +213,7 @@ export async function POST(request: Request) {
         },
       );
     } catch (error) {
+      await releaseDailyReservation(request, dailyReservation);
       console.error(
         "Gemini ephemeral-token creation failed:",
         error instanceof Error ? error.message : "UnknownError",

@@ -60,7 +60,50 @@ begin
 end;
 $$;
 
+create or replace function public.release_api_rate_limit(
+  p_scope text,
+  p_bucket_key text,
+  p_reset_at timestamptz
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_released boolean;
+begin
+  if p_scope not in (
+    'gemini-live-token',
+    'gemini-live-daily',
+    'gemini-voice-turn',
+    'agent-tool',
+    'property-search',
+    'prepare-brief',
+    'decision-ledger',
+    'buyer-deletion-verification',
+    'voice-telemetry'
+  ) then
+    raise exception 'Unsupported rate-limit scope';
+  end if;
+  if p_bucket_key !~ '^[a-f0-9]{64}$' then raise exception 'Invalid rate-limit bucket'; end if;
+
+  update public.api_rate_limits
+  set request_count = request_count - 1
+  where scope = p_scope
+    and bucket_key = p_bucket_key
+    and expires_at = p_reset_at
+    and expires_at > clock_timestamp()
+    and request_count > 0
+  returning true into v_released;
+
+  return coalesce(v_released, false);
+end;
+$$;
+
 revoke all on table public.api_rate_limits from public, anon, authenticated;
 revoke all on function public.consume_api_rate_limit(text, text, integer, integer) from public, anon, authenticated;
+revoke all on function public.release_api_rate_limit(text, text, timestamptz) from public, anon, authenticated;
 grant select, insert, update, delete on table public.api_rate_limits to service_role;
 grant execute on function public.consume_api_rate_limit(text, text, integer, integer) to service_role;
+grant execute on function public.release_api_rate_limit(text, text, timestamptz) to service_role;

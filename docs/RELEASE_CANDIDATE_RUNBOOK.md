@@ -30,8 +30,8 @@ This runbook creates an immutable candidate; it does not grant production approv
    git push --set-upstream origin release/v1.0.0-rc.1
    ```
 
-4. Open a pull request. The exact candidate SHA must pass the `dependency-integrity` job and the full `quality` job. Download and hash `ci-build-attestation-<SHA>`; local logs are diagnostic only.
-5. Deploy that SHA to staging and run the protected staging workflow. Do not accept artifacts generated from a different SHA, provider configuration, Supabase project, or workflow attempt.
+4. Open a pull request. The exact candidate SHA must pass the `dependency-integrity` job and the full `quality` job. Pull-request code cannot mint authoritative release evidence. After required review, merge without bypassing protection; the protected `main` push reruns both jobs and creates `ci-build-attestation-<SHA>` only after their authenticated success. Download and hash that artifact; local and pull-request logs are diagnostic only.
+5. Deploy the attested `main` SHA to staging and run the protected staging workflow. Do not accept artifacts generated from a different SHA, provider configuration, Supabase project, or workflow attempt.
 6. After all external gates are complete and the evidence packet is frozen, create a signed annotated `v1.0.0-rc.1` tag at the already-verified SHA and push only that tag. If any code changes, abandon the candidate and form `v1.0.0-rc.2`; never move or replace an RC tag.
 
 ## Drift controls

@@ -45,7 +45,7 @@ describe("release utility safety", () => {
   it("rejects npm subcommands beyond install and run", () => {
     const workspace = temporaryWorkspace();
     writeFileSync(join(workspace, "package.json"), JSON.stringify({
-      scripts: { test: "npm exec vitest" },
+      scripts: { test: "echo ready && npm exec vitest" },
     }));
     const script = resolve("scripts/verify-package-manager-policy.mjs");
 

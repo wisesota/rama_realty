@@ -15,4 +15,8 @@ describe("Gemini Live release verifier", () => {
     expect(source).not.toContain("inputTranscript: inputTranscript.trim()");
     expect(source).not.toContain("outputTranscript: outputTranscript.trim()");
   });
+
+  it("rejects a truncated turn that never reports generation completion", () => {
+    expect(source).toContain("if (!generationComplete || audioChunks === 0");
+  });
 });

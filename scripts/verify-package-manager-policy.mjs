@@ -4,7 +4,7 @@ import { join, relative } from "node:path";
 const root = process.cwd();
 const forbiddenLockfiles = ["package-lock.json", "npm-shrinkwrap.json", "yarn.lock", "bun.lock", "bun.lockb"];
 const executableRoots = ["package.json", "scripts", ".github/workflows"];
-const forbiddenCommand = /(^|[\s"'])(?:npx|npm(?=\s)|yarn(?=\s|$)|bun(?:x|(?=\s)))/m;
+const forbiddenCommand = /(^|[\s"';&|])(?:npx|npm|yarn|bunx|bun)(?=\s|$)/m;
 
 function filesUnder(path) {
   if (!existsSync(path)) return [];

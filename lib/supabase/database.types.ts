@@ -1924,6 +1924,10 @@ export type Database = {
           reset_at: string
         }[]
       }
+      release_api_rate_limit: {
+        Args: { p_bucket_key: string; p_reset_at: string; p_scope: string }
+        Returns: boolean
+      }
       complete_buyer_deletion_challenge: {
         Args: {
           p_authorization_hash: string

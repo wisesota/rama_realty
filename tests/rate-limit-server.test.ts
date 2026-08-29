@@ -10,6 +10,7 @@ vi.mock("@/lib/supabase/admin", () => ({
 
 import {
   consumeApiRateLimit,
+  releaseApiRateLimit,
   RateLimitBackendUnavailableError,
 } from "@/lib/rate-limit-server";
 
@@ -85,6 +86,24 @@ describe("server rate-limit backend policy", () => {
       p_scope: "gemini-live-daily",
       p_max_requests: 500,
       p_window_seconds: 86_400,
+      p_bucket_key: expect.stringMatching(/^[a-f0-9]{64}$/),
+    }));
+  });
+
+  it("releases only the matching daily reservation window", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
+
+    await expect(releaseApiRateLimit({
+      request,
+      scope: "gemini-live-daily",
+      resetAt: "2026-08-30T00:00:00Z",
+      bucket: "global",
+    })).resolves.toBe(true);
+
+    expect(mocks.rpc).toHaveBeenCalledWith("release_api_rate_limit", expect.objectContaining({
+      p_scope: "gemini-live-daily",
+      p_reset_at: "2026-08-30T00:00:00Z",
       p_bucket_key: expect.stringMatching(/^[a-f0-9]{64}$/),
     }));
   });

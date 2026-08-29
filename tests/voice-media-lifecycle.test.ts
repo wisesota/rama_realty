@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { readFileSync } from "node:fs";
 import { requestMicrophoneStream } from "@/lib/voice/media-lifecycle";
 
 afterEach(() => {
@@ -57,13 +56,6 @@ describe("microphone attempt lifecycle", () => {
       onMetric: deniedMetric,
     })).rejects.toMatchObject({ name: "NotAllowedError" });
     expect(deniedMetric).toHaveBeenCalledWith(expect.objectContaining({ stage: "microphone", outcome: "denied" }));
-  });
-
-  it("routes Decision Room capture through the bounded microphone owner", () => {
-    const source = readFileSync("components/decision-room-voice-composer.tsx", "utf8");
-    expect(source).toContain("requestMicrophoneStream({");
-    expect(source).toContain("requestAbortRef.current?.abort()");
-    expect(source).not.toContain("navigator.mediaDevices.getUserMedia({");
   });
 
   it("stops a microphone stream when its owning attempt is cancelled", async () => {

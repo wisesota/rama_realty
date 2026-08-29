@@ -52,10 +52,12 @@ describe("build environment contract", () => {
     expect(workflow.match(/ref: \$\{\{ env\.RAMA_RELEASE_COMMIT \}\}/g)).toHaveLength(3);
     expect(workflow).toContain("ci-build-attestation-${{ env.RAMA_RELEASE_COMMIT }}");
     expect(workflow).toMatch(/attestation:\s*\n\s+needs: \[dependency-integrity, quality\]/);
+    expect(workflow).toContain("if: github.event_name == 'push' && github.ref == 'refs/heads/main'");
     expect(workflow).toContain("GITHUB_TOKEN: ${{ github.token }}");
     expect(workflow).toContain("node scripts/write-ci-build-attestation.mjs --output artifacts/ci-build-attestation.json");
     expect(workflow).toMatch(/permissions:\s*\n\s+actions: read\s*\n\s+contents: read/);
     expect(readFileSync("scripts/write-ci-build-attestation.mjs", "utf8")).toContain("authenticated success evidence");
+    expect(readFileSync("scripts/write-ci-build-attestation.mjs", "utf8")).toContain("protected main-branch push");
     expect(imageBuilder).not.toContain("rights.updatedAt = new Date().toISOString()");
     expect(packageJson.scripts.prebuild).toContain("verify-public-assets.mjs");
     expect(packageJson.scripts.prebuild).not.toContain("images:build");

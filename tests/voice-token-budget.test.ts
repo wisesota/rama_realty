@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   createToken: vi.fn(),
   consumeApiRateLimit: vi.fn(),
+  releaseApiRateLimit: vi.fn(),
 }));
 
 vi.mock("@google/genai", () => ({
@@ -16,6 +17,7 @@ vi.mock("@google/genai", () => ({
 }));
 vi.mock("@/lib/rate-limit-server", () => ({
   consumeApiRateLimit: mocks.consumeApiRateLimit,
+  releaseApiRateLimit: mocks.releaseApiRateLimit,
   RateLimitBackendUnavailableError: class RateLimitBackendUnavailableError extends Error {},
 }));
 vi.mock("@/lib/supabase/auth", () => ({ isSameOrigin: () => true }));
@@ -40,7 +42,13 @@ function request() {
 beforeEach(() => {
   vi.stubEnv("GEMINI_API_KEY", "test-api-key");
   vi.stubEnv("GEMINI_LIVE_ENABLED", "true");
-  mocks.consumeApiRateLimit.mockReset().mockResolvedValue({ allowed: true });
+  mocks.consumeApiRateLimit.mockReset().mockResolvedValue({
+    allowed: true,
+    remaining: 10,
+    resetAt: "2026-08-30T00:00:00.000Z",
+    backend: "supabase",
+  });
+  mocks.releaseApiRateLimit.mockReset().mockResolvedValue(true);
   mocks.createToken.mockReset();
 });
 
@@ -49,15 +57,20 @@ afterEach(() => {
 });
 
 describe("Gemini Live daily capacity", () => {
-  it("does not consume daily capacity when token issuance fails", async () => {
+  it("releases reserved daily capacity when token issuance fails", async () => {
     mocks.createToken.mockRejectedValue(new Error("provider unavailable"));
 
     const response = await POST(request());
 
     expect(response.status).toBe(502);
-    expect(mocks.consumeApiRateLimit).toHaveBeenCalledTimes(1);
-    expect(mocks.consumeApiRateLimit).not.toHaveBeenCalledWith(expect.objectContaining({
+    expect(mocks.consumeApiRateLimit).toHaveBeenCalledTimes(2);
+    expect(mocks.consumeApiRateLimit).toHaveBeenCalledWith(expect.objectContaining({
       scope: "gemini-live-daily",
+    }));
+    expect(mocks.releaseApiRateLimit).toHaveBeenCalledWith(expect.objectContaining({
+      scope: "gemini-live-daily",
+      resetAt: "2026-08-30T00:00:00.000Z",
+      bucket: "global",
     }));
   });
 
@@ -71,5 +84,6 @@ describe("Gemini Live daily capacity", () => {
       scope: "gemini-live-daily",
       bucket: "global",
     }));
+    expect(mocks.releaseApiRateLimit).not.toHaveBeenCalled();
   });
 });

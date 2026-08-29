@@ -254,7 +254,7 @@ async function verifyTurn(runIndex) {
     session.close();
   }
 
-  if (audioChunks === 0 || !inputTranscript.trim() || !outputTranscript.trim() || toolCalls === 0 || toolResponses !== toolCalls) {
+  if (!generationComplete || audioChunks === 0 || !inputTranscript.trim() || !outputTranscript.trim() || toolCalls === 0 || toolResponses !== toolCalls) {
     throw new Error(`Gemini Live run ${runIndex + 1} completed without the full contract: ${JSON.stringify({
       inputTranscript: Boolean(inputTranscript.trim()),
       outputTranscript: Boolean(outputTranscript.trim()),

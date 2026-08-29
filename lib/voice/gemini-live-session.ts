@@ -635,6 +635,10 @@ export class GeminiLiveVoiceSession {
     }
 
     if (content.turnComplete) {
+      if (this.inputEnded && !this.firstAudioSeen) {
+        this.fail("Gemini Live completed the turn without returning audio.");
+        return;
+      }
       this.clearResponseWatchdogs();
       this.finalizeTranscript();
       this.agentTranscript = "";
