@@ -22,7 +22,9 @@ const lockfileSha256 = createHash("sha256").update(readFileSync(resolve(root, "p
 const pnpmCommand = pnpmInvocation(["--version"]);
 const pnpmVersion = execFileSync(pnpmCommand.command, pnpmCommand.args, { cwd: root, encoding: "utf8" }).trim();
 
-if (status) throw new Error("CI attestation refused because the checkout is dirty.");
+if (status) {
+  throw new Error(`CI attestation refused because the checkout is dirty:\n${status}`);
+}
 if (!/^[a-f0-9]{40}$/.test(expectedCommit) || expectedCommit !== commit) {
   throw new Error("CI attestation refused because RAMA_RELEASE_COMMIT does not match HEAD.");
 }
