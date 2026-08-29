@@ -8,7 +8,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/require-pnpm.mjs",
-    "prebuild": "node scripts/build-tokens.mjs && pnpm images:build",
+    "prebuild": "node scripts/build-tokens.mjs && node scripts/verify-public-assets.mjs",
     "pretest": "node scripts/build-tokens.mjs",
     "dev": "next dev --webpack",
     "demo": "node scripts/demo.mjs",

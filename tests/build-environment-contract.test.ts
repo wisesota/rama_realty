@@ -48,6 +48,9 @@ describe("build environment contract", () => {
     expect(workflow).toContain("ref: ${{ env.RAMA_RELEASE_COMMIT }}");
     expect(workflow).toContain("ci-build-attestation-${{ env.RAMA_RELEASE_COMMIT }}");
     expect(imageBuilder).not.toContain("rights.updatedAt = new Date().toISOString()");
+    expect(packageJson.scripts.prebuild).toContain("verify-public-assets.mjs");
+    expect(packageJson.scripts.prebuild).not.toContain("images:build");
+    expect(readFileSync(".gitignore", "utf8")).toMatch(/^\/results\.sarif$/m);
   });
 
   it("refuses to generate an authoritative build attestation locally", () => {
