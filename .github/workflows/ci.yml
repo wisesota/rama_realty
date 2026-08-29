@@ -16,8 +16,6 @@ jobs:
   dependency-integrity:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      RAMA_PNPM_STORE_DIR: ${{ runner.temp }}/rama-pnpm-store
     steps:
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -33,6 +31,8 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.19.0
+      - name: Select isolated pnpm store
+        run: echo "RAMA_PNPM_STORE_DIR=$RUNNER_TEMP/rama-pnpm-store" >> "$GITHUB_ENV"
       - name: Fetch exact lockfile graph into an isolated store
         run: pnpm fetch --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
       - name: Trust the already-verified frozen lockfile for the offline phase
@@ -59,7 +59,6 @@ jobs:
       GEMINI_LIVE_DAILY_SESSION_LIMIT: "500"
       RAMA_OPERATIONAL_TELEMETRY_ENABLED: "false"
       RAMA_RELEASE_COMMIT: ${{ github.sha }}
-      RAMA_PNPM_STORE_DIR: ${{ runner.temp }}/rama-quality-pnpm-store
       NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: "0"
       SENTRY_TRACES_SAMPLE_RATE: "0"
     steps:
@@ -81,6 +80,8 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.19.0
+      - name: Select isolated pnpm store
+        run: echo "RAMA_PNPM_STORE_DIR=$RUNNER_TEMP/rama-quality-pnpm-store" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
       - run: pnpm environment:diagnose -- --store-status
       - run: pnpm package-manager:check

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
+const stagingWorkflow = readFileSync(".github/workflows/staging-verification.yml", "utf8");
 const workspace = readFileSync("pnpm-workspace.yaml", "utf8");
 
 describe("build environment contract", () => {
@@ -31,6 +32,13 @@ describe("build environment contract", () => {
     expect(workflow).toMatch(/needs: dependency-integrity/);
     expect(workflow).toMatch(/environment:diagnose -- --store-status/);
     expect(workflow).toMatch(/node-version: 24\.19\.0/);
+  });
+
+  it("resolves runner-temporary stores at step runtime instead of job parsing time", () => {
+    for (const source of [workflow, stagingWorkflow]) {
+      expect(source).not.toMatch(/^ {6}[A-Z_]+:\s*\$\{\{\s*runner\./m);
+      expect(source).toMatch(/RAMA_PNPM_STORE_DIR=\$RUNNER_TEMP\/rama-/);
+    }
   });
 
   it("refuses to generate an authoritative build attestation locally", () => {

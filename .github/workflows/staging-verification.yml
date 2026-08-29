@@ -41,7 +41,6 @@ jobs:
       RAMA_OPERATIONAL_TELEMETRY_ENABLED: "false"
       NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: "0"
       SENTRY_TRACES_SAMPLE_RATE: "0"
-      RAMA_PNPM_STORE_DIR: ${{ runner.temp }}/rama-staging-pnpm-store
     steps:
       - name: Check out release candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -58,6 +57,8 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.19.0
+      - name: Select isolated pnpm store
+        run: echo "RAMA_PNPM_STORE_DIR=$RUNNER_TEMP/rama-staging-pnpm-store" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
       - run: pnpm environment:diagnose -- --store-status
       - run: pnpm release:candidate
@@ -78,7 +79,6 @@ jobs:
       RAMA_VERIFY_BASE_URL: ${{ inputs.staging_url }}
       RAMA_RELEASE_COMMIT: ${{ inputs.release_commit }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      RAMA_PNPM_STORE_DIR: ${{ runner.temp }}/rama-provider-pnpm-store
     steps:
       - name: Check out exact release candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -95,6 +95,8 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.19.0
+      - name: Select isolated pnpm store
+        run: echo "RAMA_PNPM_STORE_DIR=$RUNNER_TEMP/rama-provider-pnpm-store" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile --store-dir "$RAMA_PNPM_STORE_DIR"
       - run: pnpm environment:diagnose -- --store-status
       - run: pnpm release:candidate
